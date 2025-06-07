@@ -50,4 +50,7 @@ jspm_packages/
 .npm
 
 # Optional eslint cache
-.eslintcache 
+.eslintcache
+
+# Unused images
+public/images/unused/ 
