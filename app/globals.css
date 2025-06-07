@@ -2,20 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import default Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Chango&family=Roboto:wght@300;400;500;600;700&family=Oswald:wght@300;400;500;600;700&display=swap');
+
+/* Set default font CSS variables */
+:root {
+  --font-display: 'Chango', cursive;
+  --font-sans: 'Roboto', sans-serif;
+  --font-button: 'Oswald', sans-serif;
+  --color-stroke: #F13F27;
+}
+
+/* Apply default fonts immediately */
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-sans {
+  font-family: var(--font-sans);
+}
+
+.font-button {
+  font-family: var(--font-button);
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
   }
 
-  :root {
-    --color-stroke: #F13F27;
-  }
-
   body {
     @apply font-sans bg-primary2 text-accent1 leading-relaxed;
+    font-family: var(--font-sans);
   }
 }
-
 
 @layer utilities {
   @keyframes marquee {
@@ -33,5 +53,9 @@
 
   .wave path {
     fill: #ffffff;
+  }
+
+  .text-balance {
+    text-wrap: balance;
   }
 } 
