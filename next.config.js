@@ -1,11 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    outputFileTracingExcludes: {
-      '*': [
-        'public/images/optimized/**/*',
-      ],
-    },
+    outputFileTracing: false,
   },
   images: {
     formats: ['image/webp', 'image/avif'],
