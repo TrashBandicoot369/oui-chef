@@ -17,7 +17,7 @@ const loadGoogleFont = (fontName: string) => {
 const quickPresets = [
   {
     name: 'Default',
-    display: 'Cherry Cream Soda',
+    display: 'Chango',
     sans: 'Roboto',
     button: 'Oswald'
   },
