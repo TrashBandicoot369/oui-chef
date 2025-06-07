@@ -1,11 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    outputFileTracing: false,
-  },
+  outputFileTracing: false, // moved out of experimental
   images: {
     formats: ['image/webp', 'image/avif'],
   },
-}
+};
 
-module.exports = nextConfig 
+module.exports = nextConfig;
