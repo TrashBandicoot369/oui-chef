@@ -74,7 +74,7 @@ export default function Home() {
   <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
     <img
       src="/images/optimized/IMG_6253.webp"
-      className="w-full h-full object-cover rounded-lg shadow-lg"
+      className="w-full h-full object-cover rounded-lg shadow-lg opacity-80"
       alt="Chef Alex J at work"
     />
     <div>
