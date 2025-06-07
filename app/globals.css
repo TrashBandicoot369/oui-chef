@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  :root {
+    --color-stroke: #F13F27;
+  }
+
+  body {
+    @apply font-sans bg-primary2 text-accent1 leading-relaxed;
+  }
+}
+
+
+@layer utilities {
+  @keyframes marquee {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
+  .animate-marquee {
+    animation: marquee 30s linear infinite;
+  }
+
+  .wave path {
+    fill: #ffffff;
+  }
+} 

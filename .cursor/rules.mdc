@@ -1,0 +1,79 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Chef Alex J Website – Master Rule Set
+
+## GENERAL
+- Use Next.js App Router (`app/` directory with `page.tsx`, `layout.tsx`, etc.).
+- All components must be in TypeScript and use functional components.
+- Use `pnpm` as your package manager. Do not use npm or yarn.
+- Follow mobile-first design principles.
+- Maintain a flat, minimalist visual style with no shadows, no gradients, no blurs unless explicitly styled.
+- All content must follow a playful, chic, professional vibe inspired by Omsom and The Tin Fiddler.
+- Colors must come from `lib/colors.ts` — no hardcoded hex values in components.
+- Keep the README.md updated after major changes.
+
+## FILE STRUCTURE
+- `app/` → all routes using App Router
+- `components/` → all reusable UI elements, one component per file
+- `hooks/` → for any reusable logic built with React hooks
+- `lib/` → utilities like color config, date formatting, etc.
+- `public/` → static assets (images, fonts)
+- `styles/` → contains `globals.css` and optional base layer styling
+
+## NAMING CONVENTIONS
+- Directories: kebab-case (e.g. `tastemaker-cards/`)
+- Component files: PascalCase (e.g. `Hero.tsx`)
+- Utility/hook files: camelCase (e.g. `useInViewScroll.ts`)
+
+## TAILWIND CSS RULES
+- Use Tailwind utility classes for all styling. Do not write custom CSS unless necessary.
+- Extend `tailwind.config.ts` with your brand palette (`cream`, `teal`, `orange`, `yellow`, etc.).
+- Use responsive classes (e.g., `text-xl md:text-2xl`) for scalable layout.
+- Stick to Tailwind spacing scale (e.g., `px-6 py-4`, not `px-[17px]`).
+- Apply state variants for interactivity (`hover:`, `focus:`, `group-hover:`).
+- Use semantic HTML (`<header>`, `<section>`, `<main>`, etc.) with appropriate `aria-*` attributes.
+- Apply typography hierarchy with Tailwind: `text-4xl font-bold leading-tight` for headings, `text-base leading-relaxed` for body text.
+
+## REACT + TYPESCRIPT RULES
+- All props must be typed with interfaces.
+- Avoid using `any`; use `unknown` and narrow where needed.
+- Memoize pure components with `React.memo` if reused in large layouts.
+- Prefer small, composable components over large monoliths.
+- Use `export default` for components, matching the filename.
+
+## FRAMER MOTION RULES
+- Use `motion.div`, `motion.section`, etc., for animated elements.
+- Use `initial`, `animate`, `exit`, and `transition` props to define entrance and exit animations.
+- For scroll-based motion, use `whileInView` or `useInView`.
+- Centralize animation variants in a shared `lib/animations.ts` file.
+- Animate layout transitions using `layout` prop carefully — avoid with absolute positioning.
+
+## COLOR MANAGER
+- Include a `ColorManager.tsx` component for live dev-only color editing.
+- It must:
+  - Use `useState` or `useLocalStorage` to modify palette
+  - Display a floating panel with color pickers + hex inputs
+  - Auto-update preview in real-time (backgrounds, accents, text)
+
+## BOOKING FORM + DATA
+- Booking form must include fields: Name, Email, Phone, Event Type, Event Date, Location, Notes
+- Validate required fields before submission
+- On submit, print to console in dev mode (backend optional)
+- Form button should be bold, uppercase, and follow brand styling (e.g. `bg-orange text-cream`)
+
+## OPTIMIZATION & SEO
+- Use `next/image` for all images with defined width, height, and alt attributes.
+- Use `metadata` exports in route files for SEO titles and descriptions.
+- Avoid unnecessary client components (`use client`) unless interactivity is needed.
+- Set viewport meta tag in `layout.tsx`.
+
+## DEPLOYMENT
+- Dev: `pnpm dev`
+- Build: `pnpm build`
+- Production: `pnpm start` (after export if static)
+- Project must run without errors or TypeScript warnings.
+
+
