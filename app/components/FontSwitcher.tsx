@@ -44,7 +44,7 @@ const quickPresets = [
 export default function FontSwitcher() {
   const [isOpen, setIsOpen] = useState(false)
   const [currentFonts, setCurrentFonts] = useState({
-    display: 'Cherry Cream Soda',
+    display: 'Chango',
     sans: 'Roboto',
     button: 'Oswald'
   })
