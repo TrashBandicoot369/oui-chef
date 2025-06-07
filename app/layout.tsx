@@ -1,10 +1,10 @@
 import type { Metadata } from 'next'
 import React from 'react'
-import { Cherry_Cream_Soda, Roboto, Oswald } from 'next/font/google'
+import { Chango, Roboto, Oswald } from 'next/font/google'
 import './globals.css'
 
 // Font configurations with CSS variables
-const cherryCreamSoda = Cherry_Cream_Soda({
+const chango = Chango({
   weight: '400',
   subsets: ['latin'],
   variable: '--font-display',
@@ -38,7 +38,7 @@ export default function RootLayout({
   return (
     <html 
       lang="en" 
-      className={`scroll-smooth ${cherryCreamSoda.variable} ${roboto.variable} ${oswald.variable}`}
+      className={`scroll-smooth ${chango.variable} ${roboto.variable} ${oswald.variable}`}
     >
       <body>
         {children}
