@@ -67,11 +67,6 @@ export default function FontSwitcher() {
 
   // Apply fonts by directly setting CSS custom properties
   const applyFonts = (fonts: typeof currentFonts) => {
-    const existingStyle = document.getElementById('font-switcher-style')
-    if (existingStyle) {
-      existingStyle.remove()
-    }
-
     // Load Google Fonts for any non-standard font names
     Object.values(fonts).forEach(fontName => {
       if (!['Arial', 'Helvetica', 'Times New Roman', 'Georgia', 'Verdana', 'Impact', 'Courier New'].includes(fontName)) {
@@ -79,23 +74,11 @@ export default function FontSwitcher() {
       }
     })
 
-    const style = document.createElement('style')
-    style.id = 'font-switcher-style'
-    style.textContent = `
-      .font-display {
-        font-family: "${fonts.display}", sans-serif !important;
-      }
-      .font-sans {
-        font-family: "${fonts.sans}", sans-serif !important;
-      }
-      .font-button {
-        font-family: "${fonts.button}", sans-serif !important;
-      }
-      body {
-        font-family: "${fonts.sans}", sans-serif !important;
-      }
-    `
-    document.head.appendChild(style)
+    // Set CSS custom properties on the root element
+    const root = document.documentElement
+    root.style.setProperty('--font-display', `"${fonts.display}", cursive`)
+    root.style.setProperty('--font-sans', `"${fonts.sans}", sans-serif`)
+    root.style.setProperty('--font-button', `"${fonts.button}", sans-serif`)
     
     // Save to localStorage
     localStorage.setItem('chef-fonts', JSON.stringify(fonts))
