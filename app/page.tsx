@@ -55,7 +55,7 @@ export default function Home() {
   xmlns="http://www.w3.org/2000/svg"
   viewBox="0 0 1440 320"
   preserveAspectRatio="none"
-  className="absolute bottom-0 w-full h-40 z-10"
+  className="absolute bottom-0 w-full h-20 z-10"
 >
   {/* filled wave */}
   <path
@@ -109,7 +109,7 @@ export default function Home() {
   xmlns="http://www.w3.org/2000/svg"
   viewBox="0 0 1440 320"
   preserveAspectRatio="none"
-  className="block w-full h-40 -mt-px"
+  className="block w-full h-20 -mt-px"
 >
   {/* Fill shape */}
   <path
@@ -176,41 +176,72 @@ export default function Home() {
 
 
       {/* gallery */}
-      <section id="gallery" className="bg-primary3 text-accent1 py-24 px-4">
-        <h2 className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">Event Highlights</h2>
-        <div className="max-w-6xl mx-auto grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <img
-            src="/images/optimized/IMG_8262.webp"
-            className="w-full h-80 object-cover rounded-md shadow"
-            alt="Intimate dining event with guests enjoying conversation"
-          />
-          <img
-            src="/images/optimized/IMG_8301.webp"
-            className="w-full h-80 object-cover rounded-md shadow"
-            alt="Elegantly plated dish with artistic presentation"
-          />
-          <img
-            src="/images/optimized/IMG_8355.webp"
-            className="w-full h-80 object-cover rounded-md shadow"
-            alt="Gourmet dish with green sauce in artisan bowl"
-          />
-          <img
-            src="/images/optimized/IMG_8386.webp"
-            className="w-full h-80 object-cover rounded-md shadow"
-            alt="Artistic plated dish with creative garnish"
-          />
-          <img
-            src="/images/optimized/IMG_8436-Edit.webp"
-            className="w-full h-80 object-cover rounded-md shadow"
-            alt="Premium meat dish with colorful vegetable garnish"
-          />
-          <img
-            src="/images/optimized/IMG_8223.webp"
-            className="w-full h-80 object-cover rounded-md shadow"
-            alt="Additional culinary creation"
-          />
-        </div>
-      </section>
+<section id="gallery" className="bg-primary3 text-accent1 py-24 px-4">
+  <h2 className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">Event Highlights</h2>
+  <div className="max-w-6xl mx-auto grid sm:grid-cols-2 lg:grid-cols-3 gap-6 opacity-80">
+    <img
+      src="/images/optimized/IMG_8262.webp"
+      className="w-full h-80 object-cover rounded-md"
+      style={{
+        outline: '4px solid var(--color-stroke)',
+        outlineOffset: '-2px',
+        boxShadow: '8px 8px 0 var(--color-accent2)'
+      }}
+      alt="Intimate dining event with guests enjoying conversation"
+    />
+    <img
+      src="/images/optimized/IMG_8301.webp"
+      className="w-full h-80 object-cover rounded-md"
+      style={{
+        outline: '4px solid var(--color-stroke)',
+        outlineOffset: '-2px',
+        boxShadow: '8px 8px 0 var(--color-accent2)'
+      }}
+      alt="Elegantly plated dish with artistic presentation"
+    />
+    <img
+      src="/images/optimized/IMG_8355.webp"
+      className="w-full h-80 object-cover rounded-md"
+      style={{
+        outline: '4px solid var(--color-stroke)',
+        outlineOffset: '-2px',
+        boxShadow: '8px 8px 0 var(--color-accent2)'
+      }}
+      alt="Gourmet dish with green sauce in artisan bowl"
+    />
+    <img
+      src="/images/optimized/IMG_8386.webp"
+      className="w-full h-80 object-cover rounded-md"
+      style={{
+        outline: '4px solid var(--color-stroke)',
+        outlineOffset: '-2px',
+        boxShadow: '8px 8px 0 var(--color-accent2)'
+      }}
+      alt="Artistic plated dish with creative garnish"
+    />
+    <img
+      src="/images/optimized/IMG_8436-Edit.webp"
+      className="w-full h-80 object-cover rounded-md"
+      style={{
+        outline: '4px solid var(--color-stroke)',
+        outlineOffset: '-2px',
+        boxShadow: '8px 8px 0 var(--color-accent2)'
+      }}
+      alt="Premium meat dish with colorful vegetable garnish"
+    />
+    <img
+      src="/images/optimized/IMG_8223.webp"
+      className="w-full h-80 object-cover rounded-md"
+      style={{
+        outline: '4px solid var(--color-stroke)',
+        outlineOffset: '-2px',
+        boxShadow: '8px 8px 0 var(--color-accent2)'
+      }}
+      alt="Additional culinary creation"
+    />
+  </div>
+</section>
+
 
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
   {/* Filled base wave */}
