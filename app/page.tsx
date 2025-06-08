@@ -7,7 +7,13 @@ export default function Home() {
       <FontSwitcher />
       <ColorManager />
       {/* navbar */}
-      <nav className="w-full bg-accent2 sticky top-0 z-50">
+      <nav
+  className="w-full bg-accent2 sticky top-0 z-50"
+  style={{
+    outline: '5px solid var(--color-stroke)',
+    outlineOffset: '-6px'
+  }}
+>
         <div className="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-8 py-4">
           <span className="font-display text-2xl">Chef Alex J</span>
           <ul className="hidden md:flex space-x-8 uppercase text-sm tracking-wide">
@@ -72,11 +78,18 @@ export default function Home() {
 {/* about */}
 <section id="about" className="-mt-1 bg-primary3 text-accent1 py-20 px-4">
   <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-    <img
-      src="/images/optimized/IMG_6253.webp"
-      className="w-full h-full object-cover rounded-lg shadow-lg opacity-80"
-      alt="Chef Alex J at work"
-    />
+  <img
+  src="/images/optimized/IMG_6253.webp"
+  className="w-full h-full object-cover rounded-lg opacity-80"
+  style={{
+    outline: '4px solid var(--color-stroke)',
+    outlineOffset: '-2px',
+    boxShadow: '8px 8px 0 var(--color-accent2)'
+  }}
+  alt="Chef Alex J at work"
+/>
+
+
     <div>
       <h3 className="font-display text-4xl sm:text-5xl mb-4">Meet Chef Alex J</h3>
       <p className="mb-4">
