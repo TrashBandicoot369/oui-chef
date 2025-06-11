@@ -1,39 +1,112 @@
+'use client';
+
 import FontSwitcher from './components/FontSwitcher'
 import ColorManager from './components/ColorManager'
+import QuoteChat from './components/QuoteChat'
+import { motion, useScroll, useTransform } from 'framer-motion'
+import { useState, useEffect } from 'react'
 
-export default function Home() {
+function HomeContent() {
+  const [scrolled, setScrolled] = useState(false);
+  const { scrollY } = useScroll();
+
+  useEffect(() => {
+    const unsubscribe = scrollY.on('change', (y) => {
+      setScrolled(y > 30);
+    });
+    return () => unsubscribe();
+  }, [scrollY]);
+
   return (
     <>
       <FontSwitcher />
       <ColorManager />
-      {/* navbar */}
-      <nav
-  className="w-full bg-accent2 sticky top-0 z-50"
+
+      {/* Floating logo that appears at top center on load */}
+      <div
+  className={`fixed top-32 left-1/2 z-40 transition-all duration-300 ease-in-out pointer-events-none ${
+    !scrolled ? 'floating-logo' : ''
+  }`}
   style={{
-    outline: '5px solid var(--color-stroke)',
-    outlineOffset: '-6px'
+    transform: scrolled
+      ? 'translate(calc(-50% + 6px), -150px) scale(0.6)'
+      : 'translate(calc(-50% + 6px), 0) scale(3.5)',
+    opacity: scrolled ? 0 : 1
   }}
 >
-        <div className="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-8 py-4">
-          <span className="font-display text-2xl">Chef Alex J</span>
+  <img
+    src="/images/logo-black.png"
+    alt="Chef Alex J Logo"
+    className="w-[80px] sm:w-[100px]"
+  />
+</div>
+
+      {/* Navigation bar */}
+      <nav
+        className="w-full fixed top-0 z-50 transition-all duration-300 ease-in-out"
+        style={{
+          backgroundColor: scrolled ? 'var(--color-accent2)' : 'transparent',
+          
+          outlineOffset: '-6px',
+        }}
+      >
+        <div className="max-w-7xl mx-auto relative flex items-center justify-between px-4 md:px-8 py-4">
+          {/* Left navigation items */}
           <ul className="hidden md:flex space-x-8 uppercase text-sm tracking-wide">
-            <li><a href="#about" className="hover:text-primary1">About</a></li>
-            <li><a href="#menu" className="hover:text-primary1">Menu</a></li>
-            <li><a href="#gallery" className="hover:text-primary1">Gallery</a></li>
-            <li><a href="#testimonials" className="hover:text-primary1">Testimonials</a></li>
-            <li><a href="#booking" className="hover:text-primary1">Book Event</a></li>
+            <li>
+              <a href="#about" className="hover:text-primary1 transition-colors duration-200">
+                About
+              </a>
+            </li>
+            <li>
+              <a href="#menu" className="hover:text-primary1 transition-colors duration-200">
+                Menu
+              </a>
+            </li>
+          </ul>
+
+          {/* Centered logo */}
+          <div
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-in-out"
+            style={{
+              opacity: scrolled ? 1 : 0,
+              transform: scrolled
+                ? 'translate(-50%, -50%) scale(1)'
+                : 'translate(-50%, -50%) scale(0)',
+            }}
+          >
+            <img
+              src="/images/logo-black.png"
+              alt="Chef Alex J Logo"
+              className="w-[40px] h-auto"
+            />
+          </div>
+
+          {/* Right navigation items */}
+          <ul className="hidden md:flex space-x-8 uppercase text-sm tracking-wide">
+            <li>
+              <a href="#gallery" className="hover:text-primary1 transition-colors duration-200">
+                Gallery
+              </a>
+            </li>
+            <li>
+              <a href="#booking" className="hover:text-primary1 transition-colors duration-200">
+                Book Event
+              </a>
+            </li>
           </ul>
         </div>
       </nav>
 
-{/* hero */}
-<header className="relative min-h-[60vh] flex items-center justify-center overflow-hidden bg-[#ffe4d6]">
+{/* hero - now goes to top of page */}
+<header className="relative min-h-[100vh] flex items-center justify-center overflow-hidden bg-[#ffe4d6] pt-0">
   
   <img
     src="/images/optimized/IMG_6969.webp"
     className="absolute inset-0 w-full h-full object-cover opacity-50"
     alt="Chef cooking in kitchen"
   />
+
   <div className="relative z-10 text-center px-4">
     <h1 className="font-display tracking-tight leading-tight text-5xl sm:text-7xl md:text-8xl uppercase">
       restaurant-quality<br />private dining
@@ -42,10 +115,10 @@ export default function Home() {
       From intimate dinners to large galas, Chef Alex J crafts unforgettable culinary experiences wherever you
       celebrate.
     </p>
-         <a
-       href="#booking"
-       className="inline-block mt-8 bg-accent1 text-white px-6 py-2 text-xs uppercase tracking-wider hover:bg-white hover:text-accent1 transition font-button"
-     >
+    <a
+      href="#booking"
+      className="inline-block mt-8 bg-primary1 text-white px-6 py-2 text-xs uppercase tracking-wider hover:bg-white hover:text-accent1 transition font-button"
+    >
       Start Your Booking
     </a>
   </div>
@@ -63,14 +136,7 @@ export default function Home() {
     d="M0,128L34.3,149.3C68.6,171,137,213,206,240C274.3,267,343,277,411,234.7C480,192,549,96,617,85.3C685.7,75,754,149,823,160C891.4,171,960,117,1029,128C1097.1,139,1166,213,1234,213.3C1302.9,213,1371,139,1406,101.3L1440,64L1440,320L0,320Z"
   />
 
-  {/* stroke on curve only */}
-  <path
-    d="M0,128L34.3,149.3C68.6,171,137,213,206,240C274.3,267,343,277,411,234.7C480,192,549,96,617,85.3C685.7,75,754,149,823,160C891.4,171,960,117,1029,128C1097.1,139,1166,213,1234,213.3C1302.9,213,1371,139,1406,101.3L1440,64"
-    fill="none"
-    style={{ stroke: 'var(--color-stroke)' }}
-    strokeWidth="4"
-    vectorEffect="non-scaling-stroke"
-  />
+  
 </svg>
 
 </header>
@@ -88,7 +154,6 @@ export default function Home() {
   }}
   alt="Chef Alex J at work"
 />
-
 
     <div>
       <h3 className="font-display text-4xl sm:text-5xl mb-4">Meet Chef Alex J</h3>
@@ -117,17 +182,8 @@ export default function Home() {
     d="M0,288L26.7,288C53.3,288,107,288,160,282.7C213.3,277,267,267,320,256C373.3,245,427,235,480,229.3C533.3,224,587,224,640,229.3C693.3,235,747,245,800,213.3C853.3,181,907,107,960,112C1013.3,117,1067,203,1120,202.7C1173.3,203,1227,117,1280,90.7C1333.3,64,1387,96,1413,112L1440,128L1440,0L0,0Z"
   />
 
-  {/* Stroke on curve only */}
-  <path
-    d="M0,288L26.7,288C53.3,288,107,288,160,282.7C213.3,277,267,267,320,256C373.3,245,427,235,480,229.3C533.3,224,587,224,640,229.3C693.3,235,747,245,800,213.3C853.3,181,907,107,960,112C1013.3,117,1067,203,1120,202.7C1173.3,203,1227,117,1280,90.7C1333.3,64,1387,96,1413,112L1440,128"
-    fill="none"
-    style={{ stroke: 'var(--color-stroke)' }}
-    strokeWidth="4"
-    vectorEffect="non-scaling-stroke"
-  />
+ 
 </svg>
-
-
 
       {/* menu */}
       <section id="menu" className="bg-primary2 text-accent1 py-24 px-4">
@@ -164,16 +220,8 @@ export default function Home() {
     d="M0,128L34.3,149.3C68.6,171,137,213,206,240C274.3,267,343,277,411,234.7C480,192,549,96,617,85.3C685.7,75,754,149,823,160C891.4,171,960,117,1029,128C1097.1,139,1166,213,1234,213.3C1302.9,213,1371,139,1406,101.3L1440,64L1440,320L1405.7,320C1371.4,320,1303,320,1234,320C1165.7,320,1097,320,1029,320C960,320,891,320,823,320C754.3,320,686,320,617,320C548.6,320,480,320,411,320C342.9,320,274,320,206,320C137.1,320,69,320,34,320L0,320Z"
   />
 
-  {/* red stroke on curve only */}
-  <path
-    d="M0,128L34.3,149.3C68.6,171,137,213,206,240C274.3,267,343,277,411,234.7C480,192,549,96,617,85.3C685.7,75,754,149,823,160C891.4,171,960,117,1029,128C1097.1,139,1166,213,1234,213.3C1302.9,213,1371,139,1406,101.3L1440,64"
-    fill="none"
-    style={{ stroke: 'var(--color-stroke)' }}
-    strokeWidth="4"
-    vectorEffect="non-scaling-stroke"
-  />
+ 
 </svg>
-
 
       {/* gallery */}
 <section id="gallery" className="bg-primary3 text-accent1 py-24 px-4">
@@ -242,7 +290,6 @@ export default function Home() {
   </div>
 </section>
 
-
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
   {/* Filled base wave */}
   <path
@@ -251,16 +298,8 @@ export default function Home() {
     d="M0,160L26.7,138.7C53.3,117,107,75,160,69.3C213.3,64,267,96,320,138.7C373.3,181,427,235,480,250.7C533.3,267,587,245,640,229.3C693.3,213,747,203,800,192C853.3,181,907,171,960,165.3C1013.3,160,1067,160,1120,170.7C1173.3,181,1227,203,1280,176C1333.3,149,1387,75,1413,37.3L1440,0L1440,0L1413.3,0C1386.7,0,1333,0,1280,0C1226.7,0,1173,0,1120,0C1066.7,0,1013,0,960,0C906.7,0,853,0,800,0C746.7,0,693,0,640,0C586.7,0,533,0,480,0C426.7,0,373,0,320,0C266.7,0,213,0,160,0C106.7,0,53,0,27,0L0,0Z"
   />
 
-  {/* Red stroke on the top curve only */}
-  <path
-    d="M0,160L26.7,138.7C53.3,117,107,75,160,69.3C213.3,64,267,96,320,138.7C373.3,181,427,235,480,250.7C533.3,267,587,245,640,229.3C693.3,213,747,203,800,192C853.3,181,907,171,960,165.3C1013.3,160,1067,160,1120,170.7C1173.3,181,1227,203,1280,176C1333.3,149,1387,75,1413,37.3L1440,0"
-    fill="none"
-    style={{ stroke: 'var(--color-stroke)' }}
-    strokeWidth="4"
-    vectorEffect="non-scaling-stroke"
-  />
+ 
 </svg>
-
 
       {/* testimonials */}
       <section id="testimonials" className="relative bg-primary2 text-center py-24 px-4">
@@ -282,69 +321,18 @@ export default function Home() {
     d="M0,128L34.3,149.3C68.6,171,137,213,206,240C274.3,267,343,277,411,234.7C480,192,549,96,617,85.3C685.7,75,754,149,823,160C891.4,171,960,117,1029,128C1097.1,139,1166,213,1234,213.3C1302.9,213,1371,139,1406,101.3L1440,64L1440,320L1405.7,320C1371.4,320,1303,320,1234,320C1165.7,320,1097,320,1029,320C960,320,891,320,823,320C754.3,320,686,320,617,320C548.6,320,480,320,411,320C342.9,320,274,320,206,320C137.1,320,69,320,34,320L0,320Z"
   />
 
-  {/* red stroke on curve only */}
-  <path
-    d="M0,128L34.3,149.3C68.6,171,137,213,206,240C274.3,267,343,277,411,234.7C480,192,549,96,617,85.3C685.7,75,754,149,823,160C891.4,171,960,117,1029,128C1097.1,139,1166,213,1234,213.3C1302.9,213,1371,139,1406,101.3L1440,64"
-    fill="none"
-    style={{ stroke: 'var(--color-stroke)' }}
-    strokeWidth="4"
-    vectorEffect="non-scaling-stroke"
-  />
+  
 </svg>
-
 
       {/* booking */}
       <section id="booking" className="bg-primary3 text-accent1 py-24 px-4">
         <h2 className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">Let&apos;s Craft Your Event</h2>
-        <form className="max-w-xl mx-auto grid gap-6">
-          <div className="grid md:grid-cols-2 gap-4">
-            <input type="text" placeholder="Full Name" className="border px-4 py-3 text-sm w-full" />
-            <input type="email" placeholder="Email" className="border px-4 py-3 text-sm w-full" />
-          </div>
-          <div className="grid md:grid-cols-2 gap-4">
-            <input type="tel" placeholder="Phone" className="border px-4 py-3 text-sm w-full" />
-            <input type="date" placeholder="Event Date" className="border px-4 py-3 text-sm w-full" />
-          </div>
-          <textarea placeholder="Tell us about your event…" rows={4} className="border px-4 py-3 text-sm w-full"></textarea>
-          <button
-            type="submit"
-            className="bg-accent1 text-white px-8 py-3 uppercase text-sm tracking-wider rounded-full hover:bg-white hover:text-accent1 transition font-button"
-          >
-            Submit Inquiry
-          </button>
-        </form>
+        <div className="max-w-xl mx-auto">
+          <QuoteChat />
+        </div>
       </section>
 
-      <svg
-  xmlns="http://www.w3.org/2000/svg"
-  viewBox="0 0 1440 100"
-  preserveAspectRatio="none"
-  className="block w-full"
->
-  {/* Bottom fill - accent1 */}
-  <rect width="100%" height="100%" style={{ fill: 'var(--color-primary3)' }} />
-
-  {/* Top triangles - ACCENT2 */}
-  <path
-    d="M0,100 L60,0 L120,100 L180,0 L240,100 L300,0 L360,100 L420,0 L480,100 L540,0 L600,100 L660,0 L720,100 L780,0 L840,100 L900,0 L960,100 L1020,0 L1080,100 L1140,0 L1200,100 L1260,0 L1320,100 L1380,0 L1440,100 L0,100 Z"
-    style={{ fill: 'var(--color-accent2)' }}
-  />
-
-  {/* Stroke on spikes */}
-  <path
-    d="M0,100 L60,0 L120,100 L180,0 L240,100 L300,0 L360,100 L420,0 L480,100 L540,0 L600,100 L660,0 L720,100 L780,0 L840,100 L900,0 L960,100 L1020,0 L1080,100 L1140,0 L1200,100 L1260,0 L1320,100 L1380,0 L1440,100"
-    fill="none"
-    stroke="var(--color-stroke)"
-    strokeWidth="4"
-    vectorEffect="non-scaling-stroke"
-  />
-</svg>
-
-
-
-
-
-
+  
 
 
       {/* footer */}
@@ -385,4 +373,8 @@ export default function Home() {
       </footer>
     </>
   );
+}
+
+export default function Home() {
+  return <HomeContent />;
 }
