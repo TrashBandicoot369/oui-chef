@@ -13,9 +13,8 @@ interface Message {
 
 export async function summarizeChat(messages: Message[]): Promise<string> {
   try {
-    // Filter out system messages and create conversation text
+    // Create conversation text from user and assistant messages
     const conversationText = messages
-      .filter(msg => msg.role !== 'system')
       .map(msg => `${msg.role === 'user' ? 'Client' : 'Chef Alex AI'}: ${msg.content}`)
       .join('\n');
 
