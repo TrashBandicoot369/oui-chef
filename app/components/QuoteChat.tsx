@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
-import axios from 'axios';
-import { Button } from '@/app/components/ui/button';
-import { Input } from '@/app/components/ui/input';
-import { SendHorizonal, ChefHat, User, Loader2 } from 'lucide-react';
-import BookingForm from './BookingForm';
+import React, { useState, useRef, useEffect } from "react";
+import axios from "axios";
+import { Button } from "@/app/components/ui/button";
+import { Input } from "@/app/components/ui/input";
+import { SendHorizonal, ChefHat, User, Loader2 } from "lucide-react";
+import BookingForm from "./BookingForm";
 
 interface Message {
   role: "user" | "assistant";
@@ -17,7 +17,7 @@ interface Message {
 // Helper function to determine if the booking form should be shown
 const shouldShowForm = (msg: Message): boolean => {
   if (msg.role !== "assistant") return false;
-  return !!( // Ensure boolean return type
+  return !!(
     msg.quoted ||
     /\$/.test(msg.content) ||
     /QUOTE:/i.test(msg.content)
@@ -25,175 +25,236 @@ const shouldShowForm = (msg: Message): boolean => {
 };
 
 const QuoteChat: React.FC = () => {
+  /* ──────────────────────────────── state */
   const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showBookingForm, setShowBookingForm] = useState(false);
   const [cateringQuote, setCateringQuote] = useState<number | null>(null);
 
-  const messagesEndRef = useRef<null | HTMLDivElement>(null);
+  /* ──────────────────────────────── refs */
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const scrollToBottom = () => {
+  const scrollToBottom = () =>
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
 
   useEffect(() => {
-    if (messages.length > 1) {
-      scrollToBottom();
-    }
+    if (messages.length > 1) scrollToBottom();
   }, [messages]);
 
   useEffect(() => {
-    if (inputRef.current && !isLoading && !showBookingForm) {
+    if (inputRef.current && !isLoading && !showBookingForm)
       inputRef.current.focus({ preventScroll: true });
-    }
   }, [isLoading, showBookingForm]);
 
+  /* initial greeting */
   useEffect(() => {
     setMessages([
-      { role: "assistant", content: "Hello! I'm here to help you plan your perfect event with Chef Alex J. Tell me about your upcoming occasion and I'll provide you with a personalized quote!" }
+      {
+        role: "assistant",
+        content:
+          "Hello! I'm here to help you plan your perfect event with Chef Alex J. Tell me about your upcoming occasion and I'll provide you with a personalized quote!",
+      },
     ]);
   }, []);
 
+  /* ─────────────────────────────── send handler */
   const handleSend = async () => {
-    if (input.trim() === '') return;
+    if (input.trim() === "") return;
 
     const newUserMessage: Message = { role: "user", content: input };
     const currentMessages = [...messages, newUserMessage];
     setMessages(currentMessages);
-    setInput('');
+    setInput("");
     setIsLoading(true);
     setError(null);
-    setShowBookingForm(false); // Reset form visibility on new user message
-    setCateringQuote(null);     // Reset quote on new user message
+    setShowBookingForm(false);
+    setCateringQuote(null);
 
     try {
-      const response = await axios.post<{ reply: string; quoted?: boolean; quote?: number | null }>('/api/chat', { history: currentMessages });
-      const assistantResponseData = response.data;
-      
-      const newAssistantMessage: Message = {
-        role: "assistant",
-        content: assistantResponseData.reply,
-        quoted: assistantResponseData.quoted,
-        quote: assistantResponseData.quote
-      };
-      setMessages(prevMessages => [...prevMessages, newAssistantMessage]);
+      const filtered = currentMessages.map(({ role, content }) => ({
+        role,
+        content,
+      }));
 
-      // Updated logic: Trigger booking form based on shouldShowForm helper
-      if (shouldShowForm(newAssistantMessage) && typeof newAssistantMessage.quote === 'number') {
-        setCateringQuote(newAssistantMessage.quote);
+      const res = await axios.post<{
+        reply: string;
+        quoted?: boolean;
+        quote?: number | null;
+      }>("/api/chat", { history: filtered });
+
+      const botMsg: Message = {
+        role: "assistant",
+        content: res.data.reply,
+        quoted: res.data.quoted,
+        quote: res.data.quote,
+      };
+
+      setMessages((m) => [...m, botMsg]);
+
+      if (shouldShowForm(botMsg) && typeof botMsg.quote === "number") {
+        setCateringQuote(botMsg.quote);
         setShowBookingForm(true);
       }
-
-    } catch (err) {
-      console.error("Error sending message:", err);
-      const errorMessage = "Sorry, I'm having trouble connecting. Please try again later.";
-      setError(errorMessage);
-      setMessages(prevMessages => [...prevMessages, { role: "assistant", content: errorMessage }]);
+    } catch (e) {
+      console.error(e);
+      const err =
+        "Sorry, I'm having trouble connecting. Please try again later.";
+      setError(err);
+      setMessages((m) => [...m, { role: "assistant", content: err }]);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !isLoading) {
-      handleSend();
-    }
+    if (e.key === "Enter" && !isLoading) handleSend();
   };
 
   const handleBookingSuccess = () => {
-    console.log("Booking successful, form will hide on next user message.");
-    // Form hides automatically when user sends a new message due to setShowBookingForm(false) in handleSend
+    /* Form hides automatically on next user message */
+    console.log("Booking successful");
   };
 
+  /* ─────────────────────────────── render */
   return (
-    // 🎨 MAIN CHAT CONTAINER - Overall chat window styling
-    <div className="flex flex-col h-[calc(100vh-100px)] md:h-[600px] max-w-lg mx-auto bg-primary2 rounded-lg shadow-xl font-sans">
-      
-      {/* 🎨 CHAT HEADER - Top bar with title */}
-      <header className="bg-accent2 text-white p-4 rounded-t-lg">
-        <h3 className="text-lg font-semibold text-center">Chef Alex J - Event Planner</h3>
-      </header>
+    // 🎨 MAIN CONTAINER - Side-by-side layout when booking form is shown
+    <div
+      className={`flex ${
+        showBookingForm
+          ? "flex-col lg:flex-row lg:justify-center gap-6" /* ⬅️ added lg:justify-between */
+          : "justify-center"
+      } ${
+        showBookingForm ? "w-full max-w-7xl" : "max-w-lg"
+      } mx-auto font-sans transition-all duration-300`}
+    >
+      {/* 🎨 CHAT CONTAINER - Chat window */}
+<div
+  className={`flex flex-col h-[calc(100vh-100px)] md:h-[600px]
+    ${showBookingForm ? 'lg:w-2/3 lg:min-w-[500px] ' : 'max-w-lg lg:translate-x-0'}
+    bg-primary2 rounded-lg shadow-xl
+    transition-transform duration-300 ease-in-out   /* ⬅︎ keep transition on every state */
+  `}
+>
 
-      {/* 🎨 MESSAGES AREA - Chat conversation background */}
-      <div className="flex-grow p-4 overflow-y-auto space-y-4 bg-primary2/20">
-        {messages.map((msg, index) => (
-          <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+        {/* 🎨 CHAT HEADER - Top bar with title */}
+        <header className="bg-accent2 text-white p-4 rounded-t-lg">
+          <h3 className="text-lg font-semibold text-center">
+            Chef Alex J - Event Planner
+          </h3>
+        </header>
+
+        {/* 🎨 MESSAGES AREA - Chat conversation background */}
+        <div className="flex-grow p-4 overflow-y-auto space-y-4 bg-primary2/20">
+          {messages.map((msg, index) => (
             <div
-              className={`max-w-[70%] p-3 rounded-xl shadow ${
-                msg.role === 'user' 
-                  ? 'bg-primary3 text-white rounded-br-none' /* 🎨 USER MESSAGE BUBBLE */
-                  : 'bg-white/50 text-accent1 rounded-bl-none' /* 🎨 AI ASSISTANT MESSAGE BUBBLE */
+              key={index}
+              className={`flex ${
+                msg.role === "user" ? "justify-end" : "justify-start"
               }`}
             >
-              {/* 🎨 CHEF HAT ICON - Assistant message icon */}
-              {msg.role === 'assistant' && <ChefHat className="w-5 h-5 inline mr-2 mb-1 text-accent1/70" />}
-              {/* 🎨 USER ICON - User message icon */}
-              {msg.role === 'user' && <User className="w-5 h-5 inline mr-2 mb-1 text-white/70" />}
-              {msg.content}
-              {/* 🎨 QUOTE DISPLAY - Shows estimated price in message */}
-              {msg.quoted && msg.quote != null && (
-                <p className="text-xs mt-1 pt-1 border-t border-accent1/20">
-                  <span className="font-semibold">Estimated Quote:</span> ${msg.quote} CAD
-                </p>
-              )}
+              <div
+                className={`max-w-[70%] p-3 rounded-xl shadow ${
+                  msg.role === "user"
+                    ? "bg-primary3 text-white rounded-br-none" /* 🎨 USER MESSAGE BUBBLE */
+                    : "bg-white/50 text-accent1 rounded-bl-none" /* 🎨 AI MESSAGE BUBBLE */
+                }`}
+              >
+                {/* 🎨 CHEF HAT ICON - Assistant message icon */}
+                {msg.role === "assistant" && (
+                  <ChefHat className="w-5 h-5 inline mr-2 mb-1 text-accent1/70" />
+                )}
+                {/* 🎨 USER ICON - User message icon */}
+                {msg.role === "user" && (
+                  <User className="w-5 h-5 inline mr-2 mb-1 text-white/70" />
+                )}
+                {msg.content}
+                {/* 🎨 QUOTE DISPLAY - Shows estimated price in message */}
+                {msg.quoted && msg.quote != null && (
+                  <p className="text-xs mt-1 pt-1 border-t border-accent1/20">
+                    <span className="font-semibold">Estimated Quote:</span> $
+                    {msg.quote} CAD
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
-        {/* 🎨 LOADING MESSAGE - Shows while AI is thinking */}
-        {isLoading && messages[messages.length -1]?.role === 'user' && (
-          <div className="flex justify-start">
-            <div className="max-w-[70%] p-3 rounded-xl shadow bg-primary3/50 text-accent1 rounded-bl-none flex items-center">
-              <Loader2 className="w-5 h-5 inline mr-2 animate-spin text-accent1/70" />
-              Preparing your quote...
+          ))}
+
+          {/* 🎨 LOADING MESSAGE - Shows while AI is thinking */}
+          {isLoading && messages[messages.length - 1]?.role === "user" && (
+            <div className="flex justify-start">
+              <div className="max-w-[70%] p-3 rounded-xl shadow bg-primary3/50 text-accent1 rounded-bl-none flex items-center">
+                <Loader2 className="w-5 h-5 inline mr-2 animate-spin text-accent1/70" />
+                Preparing your quote...
+              </div>
             </div>
+          )}
+
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* 🎨 ERROR MESSAGE - Red error display */}
+        {error && (
+          <div className="p-4 text-center bg-red-100 text-red-700 border-t border-accent1/30">
+            {error}
           </div>
         )}
-        <div ref={messagesEndRef} />
+
+        {/* 🎨 INPUT AREA - Bottom section with text input and send button */}
+        <div className="p-4 border-t border-accent1/30 bg-white rounded-b-lg">
+          <div className="flex items-center space-x-2">
+            {/* 🎨 TEXT INPUT FIELD - Where users type messages */}
+            <Input
+              ref={inputRef}
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Tell me about your event..."
+              className="flex-grow focus-visible:ring-accent1 border-accent1/50"
+              disabled={isLoading}
+            />
+            {/* 🎨 SEND BUTTON - Button to send messages */}
+            <Button
+              onClick={handleSend}
+              disabled={isLoading || input.trim() === ""}
+              className="bg-accent1 hover:bg-accent2 text-white"
+            >
+              {isLoading &&
+              messages[messages.length - 1]?.role === "user" ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <SendHorizonal className="w-5 h-5" />
+              )}
+            </Button>
+          </div>
+        </div>
       </div>
 
-      {/* 🎨 BOOKING FORM CONTAINER - Area where booking form appears */}
-      {showBookingForm && cateringQuote !== null && (
-        <div className="p-4 border-t border-accent1/30 bg-primary2">
-          <BookingForm quote={cateringQuote} onBookingSuccess={handleBookingSuccess} chatHistory={messages} />
-        </div>
-      )}
+      {/* 🎨 BOOKING FORM CONTAINER - Side panel for booking form */}
+{showBookingForm && cateringQuote !== null && (
+  <div
+    className="
+      lg:w-[500px] lg:min-w-[500px]            /* same width as chat */
       
-      {/* 🎨 ERROR MESSAGE - Red error display */}
-      {error && !showBookingForm && (
-        <div className="p-4 text-center bg-red-100 text-red-700">
-          {error}
-        </div>
-      )}
-
-      {/* 🎨 INPUT AREA - Bottom section with text input and send button */}
-      <div className="p-4 border-t border-accent1/30 bg-white rounded-b-lg">
-        <div className="flex items-center space-x-2">
-          {/* 🎨 TEXT INPUT FIELD - Where users type messages */}
-          <Input
-            ref={inputRef}
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Tell me about your event..."
-            className="flex-grow focus-visible:ring-accent1 border-accent1/50"
-            disabled={isLoading || (showBookingForm && cateringQuote !== null)}
-          />
-          {/* 🎨 SEND BUTTON - Button to send messages */}
-          <Button 
-            onClick={handleSend} 
-            disabled={isLoading || input.trim() === '' || (showBookingForm && cateringQuote !== null)}
-            className="bg-accent1 hover:bg-accent2 text-white"
-          >
-            {isLoading && messages[messages.length -1]?.role === 'user' ? <Loader2 className="w-5 h-5 animate-spin" /> : <SendHorizonal className="w-5 h-5" />}
-          </Button>
-        </div>
-      </div>
+      bg-white rounded-lg shadow-xl border border-accent1/20
+      transition-opacity duration-300          /* fades in 300 ms */
+      opacity-100                              /* mounted with full opacity */
+    "
+  >
+    <div className="p-6">
+      <BookingForm
+        quote={cateringQuote}
+        onBookingSuccess={handleBookingSuccess}
+        chatHistory={messages}
+      />
+    </div>
+  </div>
+)}
     </div>
   );
 };
 
-export default QuoteChat; 
+export default QuoteChat;

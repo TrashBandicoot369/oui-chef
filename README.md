@@ -26,8 +26,8 @@ This project uses a global font controller implemented with `next/font/google` a
 
 | Font Family | Usage | Weight(s) | CSS Variable | Tailwind Class |
 |-------------|-------|-----------|--------------|----------------|
-| **Cherry Cream Soda** | Display text, headers, logo | 400 | `--font-display` | `font-display` |
-| **Roboto** | Body text, paragraphs | 400, 500 | `--font-sans` | `font-sans` |
+| **Anton** | Display text, headers, logo | 400 | `--font-display` | `font-display` |
+| **Bitter** | Body text, paragraphs | 400, 500 | `--font-sans` | `font-sans` |
 | **Oswald** | Buttons, call-to-actions | 500 | `--font-button` | `font-button` |
 
 ### Font Implementation Details
