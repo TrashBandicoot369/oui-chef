@@ -19,7 +19,12 @@ module.exports = {
         display: ["var(--font-display)", "cursive"],
         sans: ["var(--font-sans)", "sans-serif"],
         button: ["var(--font-button)", "sans-serif"],
-      }
+      },
+     
+      animation: {
+        // 20 s feels buttery; tweak if you want faster/slower
+        marquee: 'marquee 20s linear infinite',
+      },
     },
   },
   plugins: [],

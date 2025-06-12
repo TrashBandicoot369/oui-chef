@@ -5,6 +5,9 @@ import ColorManager from './components/ColorManager'
 import QuoteChat from './components/QuoteChat'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useState, useEffect } from 'react'
+import TextMarquee from './components/TextMarquee';
+
+
 
 function HomeContent() {
   const [scrolled, setScrolled] = useState(false);
@@ -43,16 +46,16 @@ function HomeContent() {
 
       {/* Navigation bar */}
       <nav
-        className="w-full fixed top-0 z-50 transition-all duration-300 ease-in-out"
+        className="w-full fixed h-20 fixed top-0 z-50 transition-all duration-300 font-display ease-in-out"
         style={{
           backgroundColor: scrolled ? 'var(--color-accent2)' : 'transparent',
           
           outlineOffset: '-6px',
         }}
       >
-        <div className="max-w-7xl mx-auto relative flex items-center justify-between px-4 md:px-8 py-4">
+        <div className="max-w-7xl mx-auto relative flex h-full items-center justify-between px-4 md:px-8">
           {/* Left navigation items */}
-          <ul className="hidden md:flex space-x-8 uppercase text-sm tracking-wide">
+          <ul className="hidden md:flex space-x-8 uppercase text-lg tracking-wide">
             <li>
               <a href="#about" className="hover:text-primary1 transition-colors duration-200">
                 About
@@ -71,7 +74,7 @@ function HomeContent() {
             style={{
               opacity: scrolled ? 1 : 0,
               transform: scrolled
-                ? 'translate(-50%, -50%) scale(1)'
+                ? 'translate(-50%, -50%) scale(1.5)'
                 : 'translate(-50%, -50%) scale(0)',
             }}
           >
@@ -83,7 +86,7 @@ function HomeContent() {
           </div>
 
           {/* Right navigation items */}
-          <ul className="hidden md:flex space-x-8 uppercase text-sm tracking-wide">
+          <ul className="hidden md:flex space-x-8 uppercase text-lg tracking-wide">
             <li>
               <a href="#gallery" className="hover:text-primary1 transition-colors duration-200">
                 Gallery
@@ -123,6 +126,8 @@ function HomeContent() {
     </a>
   </div>
 
+  
+  
   {/* Top wave separator now inside hero */}
 <svg
   xmlns="http://www.w3.org/2000/svg"
@@ -136,10 +141,14 @@ function HomeContent() {
     d="M0,128L34.3,149.3C68.6,171,137,213,206,240C274.3,267,343,277,411,234.7C480,192,549,96,617,85.3C685.7,75,754,149,823,160C891.4,171,960,117,1029,128C1097.1,139,1166,213,1234,213.3C1302.9,213,1371,139,1406,101.3L1440,64L1440,320L0,320Z"
   />
 
-  
+
 </svg>
 
 </header>
+
+
+
+
 
 {/* about */}
 <section id="about" className="-mt-1 bg-primary3 text-accent1 py-20 px-4">
@@ -155,17 +164,31 @@ function HomeContent() {
   alt="Chef Alex J at work"
 />
 
-    <div>
-      <h3 className="font-display text-4xl sm:text-5xl mb-4">Meet Chef Alex J</h3>
-      <p className="mb-4">
-        After a decade in award-winning kitchens, Chef Alex now brings his Michelin-trained technique directly to your
-        table—wherever that may be.
-      </p>
-      <ul className="space-y-2 text-sm">
-        <li>• 500+ private events catered</li>
-        <li>• Specialising in farm-to-table menus</li>
-        <li>• 100% five-star client reviews</li>
-      </ul>
+
+
+<div>
+  <h3 className="font-display text-accent2 text-4xl sm:text-5xl mb-4">
+    Meet Chef Alex J
+  </h3>
+
+  <p className="text-accent2 mb-4">
+    Raised in bustling family kitchens in Montréal and Toronto, Alex learned
+    early on that the best way to care for people is through food. Eighteen
+    years later, that passion still drives him. From intimate dinners to large
+    festivals, he brings the flavours and techniques he grew up loving to every
+    plate he serves.
+  </p>
+
+  <p className="text-accent2 mb-4">
+    Every event is tailored to your unique tastes and needs—because when you
+    dine with us, you’re family.
+  </p>
+
+  <p className="text-accent2 mb-4">
+    Welcome to the family,
+    <br />
+    Alex
+  </p>
     </div>
   </div>
 </section>
@@ -224,7 +247,7 @@ function HomeContent() {
 </svg>
 
       {/* gallery */}
-<section id="gallery" className="bg-primary3 text-accent1 py-24 px-4">
+<section id="gallery" className="bg-primary3 text-accent2 py-24 px-4">
   <h2 className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">Event Highlights</h2>
   <div className="max-w-6xl mx-auto grid sm:grid-cols-2 lg:grid-cols-3 gap-6 opacity-80">
     <img
@@ -314,18 +337,22 @@ function HomeContent() {
         </blockquote>
       </section>
 
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+      <svg
+  className="block w-full -mb-px"   /* 1-px negative top margin + display:block */
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 1440 320"
+  preserveAspectRatio="none"        /* stretches edge-to-edge, no sub-pixel gap */
+>
   {/* filled wave */}
   <path
     className="fill-primary3"
-    d="M0,128L34.3,149.3C68.6,171,137,213,206,240C274.3,267,343,277,411,234.7C480,192,549,96,617,85.3C685.7,75,754,149,823,160C891.4,171,960,117,1029,128C1097.1,139,1166,213,1234,213.3C1302.9,213,1371,139,1406,101.3L1440,64L1440,320L1405.7,320C1371.4,320,1303,320,1234,320C1165.7,320,1097,320,1029,320C960,320,891,320,823,320C754.3,320,686,320,617,320C548.6,320,480,320,411,320C342.9,320,274,320,206,320C137.1,320,69,320,34,320L0,320Z"
+    d="M0,128L34.3,149.3C68.6,171,137,213,206,240C274.3,267,343,277,411,234.7C480,192,549,96,617,85.3C685.7,75,754,149,823,160C891.4,171,960,117,1029,128C1097.1,139,1166,213,1234,213.3C1302.9,213,1371,139,1406,101.3L1440,64L1440,320L0,320Z"
   />
-
-  
 </svg>
 
+
       {/* booking */}
-      <section id="booking" className="bg-primary3 text-accent1 py-24 px-4">
+      <section id="booking" className="bg-primary3 text-accent2 py-24 px-8">
         <h2 className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">Let&apos;s Craft Your Event</h2>
         <div className="max-w-xl mx-auto">
           <QuoteChat />
@@ -336,7 +363,7 @@ function HomeContent() {
 
 
       {/* footer */}
-      <footer className="bg-accent2 text-white py-16 px-4">
+      <footer className="bg-accent2 text-accent1 py-16 px-8">
         <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-12">
           <div>
             <h4 className="font-bold uppercase mb-4">Explore</h4>
