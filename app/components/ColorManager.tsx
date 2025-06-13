@@ -116,11 +116,16 @@ export default function ColorManager() {
       [key]: { brightness: 0, saturation: 0 }
     }), {} as any)
   )
+  const [groupAdjustments, setGroupAdjustments] = useState({
+    primary: { brightness: 0, saturation: 0 },
+    accent: { brightness: 0, saturation: 0 }
+  })
 
   useEffect(() => {
     // Load saved colors and adjustments on mount
     const savedColors = localStorage.getItem('chef-colors')
     const savedAdjustments = localStorage.getItem('chef-color-adjustments')
+    const savedGroupAdjustments = localStorage.getItem('chef-group-adjustments')
     
     if (savedColors) {
       try {
@@ -141,24 +146,55 @@ export default function ColorManager() {
         // Ignore
       }
     }
+
+    if (savedGroupAdjustments) {
+      try {
+        setGroupAdjustments(JSON.parse(savedGroupAdjustments))
+      } catch (e) {
+        // Ignore
+      }
+    }
   }, [])
 
   const applyColors = (newColors: typeof colors) => {
-    // Apply adjustments before setting colors
+    // Apply individual adjustments first, then global adjustments
     const adjustedColors = { ...newColors }
     Object.keys(adjustedColors).forEach(key => {
       const colorKey = key as keyof typeof colors
       const adjustment = adjustments[colorKey]
+      let adjusted = adjustedColors[colorKey]
+      
+      // Apply individual adjustments
       if (adjustment) {
-        let adjusted = adjustedColors[colorKey]
         if (adjustment.saturation !== 0) {
           adjusted = adjustSaturation(adjusted, adjustment.saturation)
         }
         if (adjustment.brightness !== 0) {
           adjusted = adjustBrightness(adjusted, adjustment.brightness)
         }
-        adjustedColors[colorKey] = adjusted
       }
+      
+      // Apply group adjustments
+      const isPrimary = ['primary1', 'primary2', 'primary3'].includes(key)
+      const isAccent = ['accent1', 'accent2', 'stroke'].includes(key)
+      
+      if (isPrimary) {
+        if (groupAdjustments.primary.saturation !== 0) {
+          adjusted = adjustSaturation(adjusted, groupAdjustments.primary.saturation)
+        }
+        if (groupAdjustments.primary.brightness !== 0) {
+          adjusted = adjustBrightness(adjusted, groupAdjustments.primary.brightness)
+        }
+      } else if (isAccent) {
+        if (groupAdjustments.accent.saturation !== 0) {
+          adjusted = adjustSaturation(adjusted, groupAdjustments.accent.saturation)
+        }
+        if (groupAdjustments.accent.brightness !== 0) {
+          adjusted = adjustBrightness(adjusted, groupAdjustments.accent.brightness)
+        }
+      }
+      
+      adjustedColors[colorKey] = adjusted
     })
 
     // Set CSS root variables
@@ -173,6 +209,7 @@ export default function ColorManager() {
     // Save to localStorage
     localStorage.setItem('chef-colors', JSON.stringify(newColors))
     localStorage.setItem('chef-color-adjustments', JSON.stringify(adjustments))
+    localStorage.setItem('chef-group-adjustments', JSON.stringify(groupAdjustments))
   }
 
   const updateColor = (key: keyof typeof colors, value: string) => {
@@ -194,12 +231,29 @@ export default function ColorManager() {
     applyColors(colors) // Reapply colors with new adjustments
   }
 
+  const updateGroupAdjustment = (group: 'primary' | 'accent', type: 'brightness' | 'saturation', value: number) => {
+    const newGroupAdjustments = {
+      ...groupAdjustments,
+      [group]: {
+        ...groupAdjustments[group],
+        [type]: value
+      }
+    }
+    setGroupAdjustments(newGroupAdjustments)
+    localStorage.setItem('chef-group-adjustments', JSON.stringify(newGroupAdjustments))
+    applyColors(colors) // Reapply colors with new group adjustments
+  }
+
   const resetColors = () => {
     setColors(defaultColors)
     setAdjustments(Object.keys(defaultColors).reduce((acc, key) => ({
       ...acc,
       [key]: { brightness: 0, saturation: 0 }
     }), {} as any))
+    setGroupAdjustments({
+      primary: { brightness: 0, saturation: 0 },
+      accent: { brightness: 0, saturation: 0 }
+    })
     applyColors(defaultColors)
   }
 
@@ -427,6 +481,75 @@ export default function ColorManager() {
               >
                 Neutral + Accent
               </button>
+            </div>
+          </div>
+          
+          {/* NEW: Group Adjustments */}
+          <div className="mt-3">
+            <div className="text-xs font-medium mb-2 text-gray-600">Group Adjustments</div>
+            
+            {/* Primary Colors */}
+            <div className="mb-3">
+              <div className="text-xs font-medium mb-1 text-gray-500">Primary Colors</div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs w-16">Brightness</span>
+                  <input
+                    type="range"
+                    min="-100"
+                    max="100"
+                    value={groupAdjustments.primary.brightness}
+                    onChange={(e) => updateGroupAdjustment('primary', 'brightness', parseInt(e.target.value))}
+                    className="flex-1"
+                  />
+                  <span className="text-xs w-8 text-right">{groupAdjustments.primary.brightness}%</span>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <span className="text-xs w-16">Saturation</span>
+                  <input
+                    type="range"
+                    min="-100"
+                    max="100"
+                    value={groupAdjustments.primary.saturation}
+                    onChange={(e) => updateGroupAdjustment('primary', 'saturation', parseInt(e.target.value))}
+                    className="flex-1"
+                  />
+                  <span className="text-xs w-8 text-right">{groupAdjustments.primary.saturation}%</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Accent Colors */}
+            <div>
+              <div className="text-xs font-medium mb-1 text-gray-500">Accent Colors</div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs w-16">Brightness</span>
+                  <input
+                    type="range"
+                    min="-100"
+                    max="100"
+                    value={groupAdjustments.accent.brightness}
+                    onChange={(e) => updateGroupAdjustment('accent', 'brightness', parseInt(e.target.value))}
+                    className="flex-1"
+                  />
+                  <span className="text-xs w-8 text-right">{groupAdjustments.accent.brightness}%</span>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <span className="text-xs w-16">Saturation</span>
+                  <input
+                    type="range"
+                    min="-100"
+                    max="100"
+                    value={groupAdjustments.accent.saturation}
+                    onChange={(e) => updateGroupAdjustment('accent', 'saturation', parseInt(e.target.value))}
+                    className="flex-1"
+                  />
+                  <span className="text-xs w-8 text-right">{groupAdjustments.accent.saturation}%</span>
+                </div>
+              </div>
             </div>
           </div>
           

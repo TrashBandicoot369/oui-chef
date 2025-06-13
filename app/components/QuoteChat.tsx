@@ -141,7 +141,7 @@ const QuoteChat: React.FC = () => {
 
         {/* 🎨 CHAT HEADER - Top bar with title */}
         <header className="bg-accent2 text-white p-4 rounded-t-lg">
-          <h3 className="text-lg font-semibold text-center">
+          <h3 className="text-lg font-semibold text-center text-stroke">
             Chef Alex J - Event Planner
           </h3>
         </header>
@@ -158,17 +158,17 @@ const QuoteChat: React.FC = () => {
               <div
                 className={`max-w-[70%] p-3 rounded-xl shadow ${
                   msg.role === "user"
-                    ? "bg-primary3 text-white rounded-br-none" /* 🎨 USER MESSAGE BUBBLE */
-                    : "bg-white/50 text-accent1 rounded-bl-none" /* 🎨 AI MESSAGE BUBBLE */
+                    ? "bg-primary3 text-stroke rounded-br-none" /* 🎨 USER MESSAGE BUBBLE */
+                    : "bg-white/50 text-stroke rounded-bl-none" /* 🎨 AI MESSAGE BUBBLE */
                 }`}
               >
                 {/* 🎨 CHEF HAT ICON - Assistant message icon */}
                 {msg.role === "assistant" && (
-                  <ChefHat className="w-5 h-5 inline mr-2 mb-1 text-accent1/70" />
+                  <ChefHat className="w-5 h-5 inline mr-2 mb-1 text-stroke" />
                 )}
                 {/* 🎨 USER ICON - User message icon */}
                 {msg.role === "user" && (
-                  <User className="w-5 h-5 inline mr-2 mb-1 text-white/70" />
+                  <User className="w-5 h-5 inline mr-2 mb-1 text-stroke" />
                 )}
                 {msg.content}
                 {/* 🎨 QUOTE DISPLAY - Shows estimated price in message */}
@@ -203,7 +203,7 @@ const QuoteChat: React.FC = () => {
         )}
 
         {/* 🎨 INPUT AREA - Bottom section with text input and send button */}
-        <div className="p-4 border-t border-accent1/30 bg-white rounded-b-lg">
+        <div className="p-4 border-t border-accent1/30 bg-accent2 rounded-b-lg">
           <div className="flex items-center space-x-2">
             {/* 🎨 TEXT INPUT FIELD - Where users type messages */}
             <Input
