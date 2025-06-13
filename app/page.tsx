@@ -7,11 +7,14 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import TextMarquee from './components/TextMarquee'
 import EventHighlights from './components/EventHighlights'
+import TestimonialCarousel from './components/TestimonialCarousel';
+
 
 
 
 function HomeContent() {
   const [scrolled, setScrolled] = useState(false);
+  const [parallaxOffset, setParallaxOffset] = useState({ x: 0, y: 0 });
   const { scrollY } = useScroll();
 
   useEffect(() => {
@@ -20,6 +23,17 @@ function HomeContent() {
     });
     return () => unsubscribe();
   }, [scrollY]);
+
+  const handleMouseMove = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 20;
+    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 20;
+    setParallaxOffset({ x, y });
+  };
+
+  const handleMouseLeave = () => setParallaxOffset({ x: 0, y: 0 });
 
   return (
     <>
@@ -103,11 +117,16 @@ function HomeContent() {
       </nav>
 
 {/* hero - now goes to top of page */}
-<header className="relative min-h-[100vh] flex items-center justify-center overflow-hidden bg-[#ffe4d6] pt-0">
+<header
+  className="relative min-h-[100vh] flex items-center justify-center overflow-hidden bg-[#ffe4d6] pt-0"
+  onMouseMove={handleMouseMove}
+  onMouseLeave={handleMouseLeave}
+>
   
   <img
     src="/images/optimized/IMG_6969.webp"
     className="absolute inset-0 w-full h-full object-cover opacity-50"
+    style={{ transform: `translate(${parallaxOffset.x}px, ${parallaxOffset.y}px)` }}
     alt="Chef cooking in kitchen"
   />
 
@@ -168,9 +187,9 @@ function HomeContent() {
 
 
 <div>
-  <h3 className="font-display text-accent2 text-4xl sm:text-5xl mb-4">
+  <TextMarquee className="font-display text-accent2 text-4xl sm:text-5xl mb-4">
     Meet Chef Alex J
-  </h3>
+  </TextMarquee>
 
   <p className="text-accent2 mb-4">
     Raised in bustling family kitchens in Montréal and Toronto, Alex learned
@@ -211,7 +230,9 @@ function HomeContent() {
 
       {/* menu */}
       <section id="menu" className="bg-primary2 text-accent1 py-24 px-4">
-        <h2 className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">Signature Menus</h2>
+        <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">
+          Signature Menus
+        </TextMarquee>
         <div className="max-w-6xl mx-auto grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
           <article className="bg-white p-6 rounded-xl shadow-lg hover:scale-105 transition">
             <h3 className="font-bold mb-2">Seasonal Tasting</h3>
@@ -251,6 +272,71 @@ function HomeContent() {
 <section id="gallery" className="bg-primary3 text-accent2 py-24 px-4">
   <h2 className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">Event Highlights</h2>
   <EventHighlights />
+  <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">
+    Event Highlights
+  </TextMarquee>
+  <div className="max-w-6xl mx-auto grid sm:grid-cols-2 lg:grid-cols-3 gap-6 opacity-80">
+    <img
+      src="/images/optimized/IMG_8262.webp"
+      className="w-full h-80 object-cover rounded-md"
+      style={{
+        outline: '4px solid var(--color-stroke)',
+        outlineOffset: '-2px',
+        boxShadow: '8px 8px 0 var(--color-accent2)'
+      }}
+      alt="Intimate dining event with guests enjoying conversation"
+    />
+    <img
+      src="/images/optimized/IMG_8301.webp"
+      className="w-full h-80 object-cover rounded-md"
+      style={{
+        outline: '4px solid var(--color-stroke)',
+        outlineOffset: '-2px',
+        boxShadow: '8px 8px 0 var(--color-accent2)'
+      }}
+      alt="Elegantly plated dish with artistic presentation"
+    />
+    <img
+      src="/images/optimized/IMG_8355.webp"
+      className="w-full h-80 object-cover rounded-md"
+      style={{
+        outline: '4px solid var(--color-stroke)',
+        outlineOffset: '-2px',
+        boxShadow: '8px 8px 0 var(--color-accent2)'
+      }}
+      alt="Gourmet dish with green sauce in artisan bowl"
+    />
+    <img
+      src="/images/optimized/IMG_8386.webp"
+      className="w-full h-80 object-cover rounded-md"
+      style={{
+        outline: '4px solid var(--color-stroke)',
+        outlineOffset: '-2px',
+        boxShadow: '8px 8px 0 var(--color-accent2)'
+      }}
+      alt="Artistic plated dish with creative garnish"
+    />
+    <img
+      src="/images/optimized/IMG_8436-Edit.webp"
+      className="w-full h-80 object-cover rounded-md"
+      style={{
+        outline: '4px solid var(--color-stroke)',
+        outlineOffset: '-2px',
+        boxShadow: '8px 8px 0 var(--color-accent2)'
+      }}
+      alt="Premium meat dish with colorful vegetable garnish"
+    />
+    <img
+      src="/images/optimized/IMG_8223.webp"
+      className="w-full h-80 object-cover rounded-md"
+      style={{
+        outline: '4px solid var(--color-stroke)',
+        outlineOffset: '-2px',
+        boxShadow: '8px 8px 0 var(--color-accent2)'
+      }}
+      alt="Additional culinary creation"
+    />
+  </div>
 </section>
 
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
@@ -266,15 +352,7 @@ function HomeContent() {
 
       {/* testimonials */}
       <section id="testimonials" className="relative bg-primary2 text-center py-24 px-4">
-        <img
-          src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1600&q=60"
-          className="absolute inset-0 w-full h-full object-cover opacity-0"
-          alt="Food background"
-        />
-        <blockquote className="relative z-10 max-w-3xl mx-auto text-2xl sm:text-3xl font-light leading-relaxed">
-          &quot;Chef Alex delivered a flawless five-course meal that our guests still rave about.&quot;
-          <footer className="mt-6 text-sm opacity-70">— Olivia P., Corporate Event</footer>
-        </blockquote>
+        <TestimonialCarousel />
       </section>
 
       <svg
@@ -293,7 +371,9 @@ function HomeContent() {
 
       {/* booking */}
       <section id="booking" className="bg-primary3 text-accent2 py-24 px-8">
-        <h2 className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">Let&apos;s Craft Your Event</h2>
+        <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">
+          Let&apos;s Craft Your Event
+        </TextMarquee>
         <div className="max-w-xl mx-auto">
           <QuoteChat />
         </div>
