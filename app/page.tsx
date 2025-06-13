@@ -5,7 +5,7 @@ import ColorManager from './components/ColorManager'
 import QuoteChat from './components/QuoteChat'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useState, useEffect } from 'react'
-import TextMarquee from './components/TextMarquee';
+import TestimonialCarousel from './components/TestimonialCarousel';
 
 
 
@@ -326,15 +326,7 @@ function HomeContent() {
 
       {/* testimonials */}
       <section id="testimonials" className="relative bg-primary2 text-center py-24 px-4">
-        <img
-          src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1600&q=60"
-          className="absolute inset-0 w-full h-full object-cover opacity-0"
-          alt="Food background"
-        />
-        <blockquote className="relative z-10 max-w-3xl mx-auto text-2xl sm:text-3xl font-light leading-relaxed">
-          &quot;Chef Alex delivered a flawless five-course meal that our guests still rave about.&quot;
-          <footer className="mt-6 text-sm opacity-70">— Olivia P., Corporate Event</footer>
-        </blockquote>
+        <TestimonialCarousel />
       </section>
 
       <svg
