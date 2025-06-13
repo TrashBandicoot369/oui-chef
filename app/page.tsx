@@ -8,9 +8,6 @@ import { useState, useEffect } from 'react'
 import TextMarquee from './components/TextMarquee'
 import EventHighlights from './components/EventHighlights'
 import TestimonialCarousel from './components/TestimonialCarousel';
-import TextMarquee from './components/TextMarquee'
-
-
 
 
 function HomeContent() {
