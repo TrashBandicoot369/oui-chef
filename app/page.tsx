@@ -17,7 +17,7 @@ function HomeContent() {
 
   // Logo Color - uses exact accent1 color by masking
   const logoStyle = {
-    backgroundColor: 'var(--color-accent2)',
+    backgroundColor: 'var(--color-accent1)',
     WebkitMask: 'url("/images/logo-white.png") no-repeat center',
     WebkitMaskSize: 'contain',
     mask: 'url("/images/logo-white.png") no-repeat center',
@@ -97,7 +97,7 @@ function HomeContent() {
       <nav
         className="w-full fixed h-20 fixed top-0 z-50 transition-all duration-300 font-display ease-in-out"
         style={{
-          backgroundColor: scrolled ? 'var(--color-accent2)' : 'transparent',
+          backgroundColor: scrolled ? 'var(--color-primary1)' : 'transparent',
           
           outlineOffset: '-6px',
         }}
@@ -189,7 +189,7 @@ function HomeContent() {
     
       <a
       href="#booking"
-      className="inline-block mt-8 bg-primary1 text-white px-6 py-2 text-xs uppercase tracking-wider hover:bg-white hover:text-accent1 transition font-button"
+      className="inline-block mt-8 bg-accent1 text-white px-6 py-2 text-xs uppercase tracking-wider hover:bg-white hover:text-accent1 transition font-button"
     >
       Start Your Booking
     </a>
@@ -283,17 +283,17 @@ function HomeContent() {
           Signature Menus
         </TextMarquee>
         <div className="max-w-6xl mx-auto grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
-          <article className="bg-white p-6 rounded-xl shadow-lg hover:scale-105 transition">
+          <article className="bg-primary1 p-6 rounded-xl shadow-lg hover:scale-105 transition">
             <h3 className="font-bold mb-2">Seasonal Tasting</h3>
             <p className="text-sm mb-4">Five courses celebrating Ontario&apos;s freshest produce.</p>
             <span className="text-xs uppercase tracking-widest">ideal for weddings</span>
           </article>
-          <article className="bg-white p-6 rounded-xl shadow-lg hover:scale-105 transition">
+          <article className="bg-primary1 p-6 rounded-xl shadow-lg hover:scale-105 transition">
             <h3 className="font-bold mb-2">Family-Style Feast</h3>
             <p className="text-sm mb-4">Abundant platters designed for sharing and conversation.</p>
             <span className="text-xs uppercase tracking-widest">perfect for festivals</span>
           </article>
-          <article className="bg-white p-6 rounded-xl shadow-lg hover:scale-105 transition">
+          <article className="bg-primary1 p-6 rounded-xl shadow-lg hover:scale-105 transition">
             <h3 className="font-bold mb-2">Corporate Luncheon</h3>
             <p className="text-sm mb-4">Elegant three-course menu delivered to your boardroom.</p>
             <span className="text-xs uppercase tracking-widest">ideal for business</span>
@@ -376,7 +376,7 @@ function HomeContent() {
 
 
       {/* footer */}
-      <footer className="bg-accent2 text-accent1 py-16 px-8">
+      <footer className="bg-primary1 text-accent1 py-16 px-8">
         <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-12">
           <div>
             <h4 className="font-bold uppercase mb-4">Explore</h4>
