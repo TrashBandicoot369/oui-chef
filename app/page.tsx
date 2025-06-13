@@ -268,9 +268,7 @@ function HomeContent() {
 
       {/* gallery */}
 <section id="gallery" className="bg-primary3 text-accent2 py-24 px-4">
-  <h2 className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">Event Highlights</h2>
-
-  <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">
+    <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">
     Event Highlights
   </TextMarquee>
 
