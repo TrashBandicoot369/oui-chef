@@ -7,12 +7,12 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import TextMarquee from './components/TextMarquee'
 import EventHighlights from './components/EventHighlights'
-import TestimonialCarousel from './components/TestimonialCarousel';
+import VerticalMarquee from './components/VerticalMarquee';
 
 
 function HomeContent() {
   const [scrolled, setScrolled] = useState(false);
-  const [parallaxOffset, setParallaxOffset] = useState({ x: 0, y: 0 });
+  const [parallaxOffset, setParallaxOffset] = useState({ x: 0, y: 0, tiltX: 0, tiltY: 0 });
   const { scrollY } = useScroll();
 
   useEffect(() => {
@@ -26,12 +26,39 @@ function HomeContent() {
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
     const rect = e.currentTarget.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    // PARALLAX PAN EFFECT
+    // Adjust the multiplier (20) to change how far the image moves
+    // Higher = more movement, Lower = less movement
     const x = ((e.clientX - rect.left) / rect.width - 0.5) * 20;
     const y = ((e.clientY - rect.top) / rect.height - 0.5) * 20;
-    setParallaxOffset({ x, y });
+    
+    // TILT EFFECT PARAMETERS
+    // Adjust these values to change the tilt behavior:
+    // MAX_TILT_DEGREES: Maximum rotation in degrees (currently 15)
+    // - Higher = more dramatic tilt
+    // - Lower = subtler tilt
+    const MAX_TILT_DEGREES = 4;
+    
+    // Calculate tilt based on mouse position relative to center
+    // Negative multiplier for tiltX makes the image tilt down when mouse is below center
+    // Positive multiplier for tiltY makes the image tilt right when mouse is right of center
+    const tiltX = ((e.clientY - rect.top - centerY) / centerY) * -MAX_TILT_DEGREES;
+    const tiltY = ((e.clientX - rect.left - centerX) / centerX) * MAX_TILT_DEGREES;
+    
+    setParallaxOffset({ x, y, tiltX, tiltY });
   };
 
-  const handleMouseLeave = () => setParallaxOffset({ x: 0, y: 0 });
+  const handleMouseLeave = () => {
+    // TRANSITION TIMING
+    // Adjust the timeout (300) to change how quickly the image returns to center
+    // Higher = slower return, Lower = faster return
+    setTimeout(() => {
+      setParallaxOffset({ x: 0, y: 0, tiltX: 0, tiltY: 0 });
+    }, 300);
+  };
 
   return (
     <>
@@ -116,15 +143,29 @@ function HomeContent() {
 
 {/* hero - now goes to top of page */}
 <header
-  className="relative min-h-[100vh] flex items-center justify-center overflow-hidden bg-[#ffe4d6] pt-0"
+  className="relative min-h-[120vh] flex items-center justify-center overflow-hidden bg-[#ffe4d6] pt-0"
+  // PERSPECTIVE DEPTH
+  // Adjust the perspective value (5000px) to change the 3D effect depth
+  // Higher = more subtle 3D, Lower = more dramatic 3D
+  style={{ perspective: '10000px' }}
   onMouseMove={handleMouseMove}
   onMouseLeave={handleMouseLeave}
 >
   
-  <img
+<img
     src="/images/optimized/IMG_6969.webp"
     className="absolute inset-0 w-full h-full object-cover opacity-50"
-    style={{ transform: `translate(${parallaxOffset.x}px, ${parallaxOffset.y}px)` }}
+    style={{ 
+      transform: `translate(${parallaxOffset.x}px, ${parallaxOffset.y}px) scale(1.1) rotateX(${parallaxOffset.tiltX}deg) rotateY(${parallaxOffset.tiltY}deg)`,
+      transformOrigin: 'center center',
+      // TRANSITION TIMING
+      // Adjust the duration (0.3s) and easing (ease-out) to change animation smoothness
+      // Duration: Higher = slower movement, Lower = snappier movement
+      // Easing: ease-out = smooth deceleration, ease-in-out = smooth both ways
+      transition: 'transform 0.3s ease-out',
+      transformStyle: 'preserve-3d',
+      willChange: 'transform' // Optimize performance
+    }}
     alt="Chef cooking in kitchen"
   />
 
@@ -136,7 +177,8 @@ function HomeContent() {
       From intimate dinners to large galas, Chef Alex J crafts unforgettable culinary experiences wherever you
       celebrate.
     </p>
-    <a
+    
+      <a
       href="#booking"
       className="inline-block mt-8 bg-primary1 text-white px-6 py-2 text-xs uppercase tracking-wider hover:bg-white hover:text-accent1 transition font-button"
     >
@@ -185,9 +227,9 @@ function HomeContent() {
 
 
 <div>
-  <TextMarquee className="font-display text-accent2 text-4xl sm:text-5xl mb-4">
+<h2 className="font-display text-accent2 text-4xl sm:text-5xl mb-4">
     Meet Chef Alex J
-  </TextMarquee>
+  </h2>
 
   <p className="text-accent2 mb-4">
     Raised in bustling family kitchens in Montréal and Toronto, Alex learned
@@ -199,7 +241,7 @@ function HomeContent() {
 
   <p className="text-accent2 mb-4">
     Every event is tailored to your unique tastes and needs—because when you
-    dine with us, you’re family.
+    dine with us, you're family.
   </p>
 
   <p className="text-accent2 mb-4">
@@ -295,22 +337,28 @@ function HomeContent() {
 </svg>
 
       {/* testimonials */}
-      <section id="testimonials" className="relative bg-primary2 text-center py-24 px-4">
-        <TestimonialCarousel />
+      <section id="testimonials" className="relative bg-primary2 text-center px-4 py-24">
+        <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">
+          Testimonials
+        </TextMarquee>
+        <VerticalMarquee 
+          items={[
+            "Chef Alex transformed our backyard into a Michelin-starred experience. Every dish was a masterpiece!",
+            "The attention to detail was incredible. From the menu planning to the final presentation, everything was perfect.",
+            "Our corporate event was a huge success thanks to Chef Alex's innovative menu and professional service.",
+            "The seasonal tasting menu was a journey through local flavors. Each course told a story.",
+            "What impressed me most was how Chef Alex made everyone feel like family while maintaining professional excellence.",
+            "The family-style feast was perfect for our large gathering. Everyone raved about the food!",
+            "Chef Alex's passion for local ingredients shines through in every dish. Truly exceptional dining.",
+            "The wine pairings were spot on, and the service was impeccable. A memorable evening!",
+            "From intimate dinners to large events, Chef Alex delivers consistently outstanding experiences."
+          ]}
+          speed={30} // Slightly slower speed for better readability
+          className="max-w-6xl mx-auto"
+        />
       </section>
 
-      <svg
-  className="block w-full -mb-px"   /* 1-px negative top margin + display:block */
-  xmlns="http://www.w3.org/2000/svg"
-  viewBox="0 0 1440 320"
-  preserveAspectRatio="none"        /* stretches edge-to-edge, no sub-pixel gap */
->
-  {/* filled wave */}
-  <path
-    className="fill-primary3"
-    d="M0,128L34.3,149.3C68.6,171,137,213,206,240C274.3,267,343,277,411,234.7C480,192,549,96,617,85.3C685.7,75,754,149,823,160C891.4,171,960,117,1029,128C1097.1,139,1166,213,1234,213.3C1302.9,213,1371,139,1406,101.3L1440,64L1440,320L0,320Z"
-  />
-</svg>
+     
 
 
       {/* booking */}
