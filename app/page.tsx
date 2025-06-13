@@ -15,6 +15,15 @@ function HomeContent() {
   const [parallaxOffset, setParallaxOffset] = useState({ x: 0, y: 0, tiltX: 0, tiltY: 0 });
   const { scrollY } = useScroll();
 
+  // Logo Color - uses exact accent1 color by masking
+  const logoStyle = {
+    backgroundColor: 'var(--color-accent2)',
+    WebkitMask: 'url("/images/logo-white.png") no-repeat center',
+    WebkitMaskSize: 'contain',
+    mask: 'url("/images/logo-white.png") no-repeat center',
+    maskSize: 'contain'
+  };
+
   useEffect(() => {
     const unsubscribe = scrollY.on('change', (y) => {
       setScrolled(y > 30);
@@ -77,10 +86,10 @@ function HomeContent() {
     opacity: scrolled ? 0 : 1
   }}
 >
-  <img
-    src="/images/logo-black.png"
-    alt="Chef Alex J Logo"
-    className="w-[80px] sm:w-[100px]"
+  <div
+    className="w-[80px] sm:w-[100px] h-[80px] sm:h-[100px]"
+    style={logoStyle}
+    aria-label="Chef Alex J Logo"
   />
 </div>
 
@@ -110,20 +119,20 @@ function HomeContent() {
 
           {/* Centered logo */}
           <div
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-in-out"
-            style={{
-              opacity: scrolled ? 1 : 0,
-              transform: scrolled
-                ? 'translate(-50%, -50%) scale(1.5)'
-                : 'translate(-50%, -50%) scale(0)',
-            }}
-          >
-            <img
-              src="/images/logo-black.png"
-              alt="Chef Alex J Logo"
-              className="w-[40px] h-auto"
-            />
-          </div>
+  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-in-out"
+  style={{
+    opacity: scrolled ? 1 : 0,
+    transform: scrolled
+      ? 'translate(-50%, -50%) scale(1.5)'
+      : 'translate(-50%, -50%) scale(0)',
+  }}
+>
+  <div
+    className="w-[40px] h-[40px]"
+    style={logoStyle}
+    aria-label="Chef Alex J Logo"
+  />
+</div>
 
           {/* Right navigation items */}
           <ul className="hidden md:flex space-x-8 uppercase text-lg tracking-wide">
@@ -270,7 +279,7 @@ function HomeContent() {
 
       {/* menu */}
       <section id="menu" className="bg-primary2 text-accent1 py-24 px-4">
-        <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">
+        <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12 text-accent2">
           Signature Menus
         </TextMarquee>
         <div className="max-w-6xl mx-auto grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -297,11 +306,11 @@ function HomeContent() {
   xmlns="http://www.w3.org/2000/svg"
   viewBox="0 0 1440 320"
   preserveAspectRatio="none"
-  className="block w-full"
+  className="block w-full h-20 -mt-px z-10"
 >
   {/* filled wave */}
   <path
-    className="fill-primary3"
+    className="fill-primary3 px-4"
     d="M0,128L34.3,149.3C68.6,171,137,213,206,240C274.3,267,343,277,411,234.7C480,192,549,96,617,85.3C685.7,75,754,149,823,160C891.4,171,960,117,1029,128C1097.1,139,1166,213,1234,213.3C1302.9,213,1371,139,1406,101.3L1440,64L1440,320L1405.7,320C1371.4,320,1303,320,1234,320C1165.7,320,1097,320,1029,320C960,320,891,320,823,320C754.3,320,686,320,617,320C548.6,320,480,320,411,320C342.9,320,274,320,206,320C137.1,320,69,320,34,320L0,320Z"
   />
 
@@ -309,20 +318,12 @@ function HomeContent() {
 </svg>
 
       {/* gallery */}
-<section id="gallery" className="bg-primary3 text-accent2 py-24 px-4">
-    <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">
-    Event Highlights
-  </TextMarquee>
-
-  <div className="max-w-6xl mx-auto grid sm:grid-cols-2 lg:grid-cols-3 gap-6 opacity-80">
-    <img src="/images/optimized/IMG_8262.webp" className="w-full h-80 object-cover rounded-md" style={{ outline: '4px solid var(--color-stroke)', outlineOffset: '-2px', boxShadow: '8px 8px 0 var(--color-accent2)' }} alt="Intimate dining event with guests enjoying conversation" />
-    <img src="/images/optimized/IMG_8301.webp" className="w-full h-80 object-cover rounded-md" style={{ outline: '4px solid var(--color-stroke)', outlineOffset: '-2px', boxShadow: '8px 8px 0 var(--color-accent2)' }} alt="Elegantly plated dish with artistic presentation" />
-    <img src="/images/optimized/IMG_8355.webp" className="w-full h-80 object-cover rounded-md" style={{ outline: '4px solid var(--color-stroke)', outlineOffset: '-2px', boxShadow: '8px 8px 0 var(--color-accent2)' }} alt="Gourmet dish with green sauce in artisan bowl" />
-    <img src="/images/optimized/IMG_8386.webp" className="w-full h-80 object-cover rounded-md" style={{ outline: '4px solid var(--color-stroke)', outlineOffset: '-2px', boxShadow: '8px 8px 0 var(--color-accent2)' }} alt="Artistic plated dish with creative garnish" />
-    <img src="/images/optimized/IMG_8436-Edit.webp" className="w-full h-80 object-cover rounded-md" style={{ outline: '4px solid var(--color-stroke)', outlineOffset: '-2px', boxShadow: '8px 8px 0 var(--color-accent2)' }} alt="Premium meat dish with colorful vegetable garnish" />
-    <img src="/images/optimized/IMG_8223.webp" className="w-full h-80 object-cover rounded-md" style={{ outline: '4px solid var(--color-stroke)', outlineOffset: '-2px', boxShadow: '8px 8px 0 var(--color-accent2)' }} alt="Additional culinary creation" />
-  </div>
-</section>
+      <section id="gallery" className="bg-primary3 text-accent2 py-24 px-10">
+        <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12 text-accent2">
+          Event Highlights
+        </TextMarquee>
+        <EventHighlights />
+      </section>
 
 
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
@@ -337,8 +338,8 @@ function HomeContent() {
 </svg>
 
       {/* testimonials */}
-      <section id="testimonials" className="relative bg-primary2 text-center px-4 py-24">
-        <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">
+      <section id="testimonials" className="relative bg-primary2 text-center text-accent1 px-4 py-24">
+        <TextMarquee className="text-center font-display text-3xl text-accent1 sm:text-5xl uppercase mb-12 text-accent2">
           Testimonials
         </TextMarquee>
         <VerticalMarquee 
@@ -363,7 +364,7 @@ function HomeContent() {
 
       {/* booking */}
       <section id="booking" className="bg-primary3 text-accent2 py-24 px-8">
-        <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">
+        <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12 text-accent2">
           Let&apos;s Craft Your Event
         </TextMarquee>
         <div className="max-w-xl mx-auto">
