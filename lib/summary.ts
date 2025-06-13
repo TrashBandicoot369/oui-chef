@@ -1,8 +1,7 @@
 import Groq from 'groq-sdk';
 
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY!,
-});
+const apiKey = process.env.GROQ_API_KEY;
+const groq = apiKey ? new Groq({ apiKey }) : null;
 
 interface Message {
   role: "user" | "assistant";
@@ -33,19 +32,23 @@ Keep it professional and under 200 words.
 Chat conversation:
 ${conversationText}`;
 
-    const completion = await groq.chat.completions.create({
-      model: "gemma2-9b-it",
-      messages: [
-        {
-          role: "user",
-          content: summaryPrompt
-        }
-      ],
-      temperature: 0.3,
-      max_tokens: 300,
-    });
+    if (groq) {
+      const completion = await groq.chat.completions.create({
+        model: "gemma2-9b-it",
+        messages: [
+          {
+            role: "user",
+            content: summaryPrompt
+          }
+        ],
+        temperature: 0.3,
+        max_tokens: 300,
+      });
 
-    return completion.choices[0]?.message?.content || createFallbackSummary(messages);
+      return completion.choices[0]?.message?.content || createFallbackSummary(messages);
+    }
+
+    return createFallbackSummary(messages);
   } catch (error) {
     console.error('Summary generation failed:', error);
     return createFallbackSummary(messages);

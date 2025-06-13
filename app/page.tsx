@@ -6,6 +6,7 @@ import QuoteChat from './components/QuoteChat'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import TestimonialCarousel from './components/TestimonialCarousel';
+import TextMarquee from './components/TextMarquee'
 
 
 
