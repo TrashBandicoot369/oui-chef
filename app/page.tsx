@@ -11,6 +11,7 @@ import TextMarquee from './components/TextMarquee';
 
 function HomeContent() {
   const [scrolled, setScrolled] = useState(false);
+  const [parallaxOffset, setParallaxOffset] = useState({ x: 0, y: 0 });
   const { scrollY } = useScroll();
 
   useEffect(() => {
@@ -19,6 +20,17 @@ function HomeContent() {
     });
     return () => unsubscribe();
   }, [scrollY]);
+
+  const handleMouseMove = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 20;
+    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 20;
+    setParallaxOffset({ x, y });
+  };
+
+  const handleMouseLeave = () => setParallaxOffset({ x: 0, y: 0 });
 
   return (
     <>
@@ -102,11 +114,16 @@ function HomeContent() {
       </nav>
 
 {/* hero - now goes to top of page */}
-<header className="relative min-h-[100vh] flex items-center justify-center overflow-hidden bg-[#ffe4d6] pt-0">
+<header
+  className="relative min-h-[100vh] flex items-center justify-center overflow-hidden bg-[#ffe4d6] pt-0"
+  onMouseMove={handleMouseMove}
+  onMouseLeave={handleMouseLeave}
+>
   
   <img
     src="/images/optimized/IMG_6969.webp"
     className="absolute inset-0 w-full h-full object-cover opacity-50"
+    style={{ transform: `translate(${parallaxOffset.x}px, ${parallaxOffset.y}px)` }}
     alt="Chef cooking in kitchen"
   />
 
