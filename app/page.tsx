@@ -5,7 +5,8 @@ import ColorManager from './components/ColorManager'
 import QuoteChat from './components/QuoteChat'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useState, useEffect } from 'react'
-import TextMarquee from './components/TextMarquee';
+import TextMarquee from './components/TextMarquee'
+import EventHighlights from './components/EventHighlights'
 
 
 
@@ -249,68 +250,7 @@ function HomeContent() {
       {/* gallery */}
 <section id="gallery" className="bg-primary3 text-accent2 py-24 px-4">
   <h2 className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">Event Highlights</h2>
-  <div className="max-w-6xl mx-auto grid sm:grid-cols-2 lg:grid-cols-3 gap-6 opacity-80">
-    <img
-      src="/images/optimized/IMG_8262.webp"
-      className="w-full h-80 object-cover rounded-md"
-      style={{
-        outline: '4px solid var(--color-stroke)',
-        outlineOffset: '-2px',
-        boxShadow: '8px 8px 0 var(--color-accent2)'
-      }}
-      alt="Intimate dining event with guests enjoying conversation"
-    />
-    <img
-      src="/images/optimized/IMG_8301.webp"
-      className="w-full h-80 object-cover rounded-md"
-      style={{
-        outline: '4px solid var(--color-stroke)',
-        outlineOffset: '-2px',
-        boxShadow: '8px 8px 0 var(--color-accent2)'
-      }}
-      alt="Elegantly plated dish with artistic presentation"
-    />
-    <img
-      src="/images/optimized/IMG_8355.webp"
-      className="w-full h-80 object-cover rounded-md"
-      style={{
-        outline: '4px solid var(--color-stroke)',
-        outlineOffset: '-2px',
-        boxShadow: '8px 8px 0 var(--color-accent2)'
-      }}
-      alt="Gourmet dish with green sauce in artisan bowl"
-    />
-    <img
-      src="/images/optimized/IMG_8386.webp"
-      className="w-full h-80 object-cover rounded-md"
-      style={{
-        outline: '4px solid var(--color-stroke)',
-        outlineOffset: '-2px',
-        boxShadow: '8px 8px 0 var(--color-accent2)'
-      }}
-      alt="Artistic plated dish with creative garnish"
-    />
-    <img
-      src="/images/optimized/IMG_8436-Edit.webp"
-      className="w-full h-80 object-cover rounded-md"
-      style={{
-        outline: '4px solid var(--color-stroke)',
-        outlineOffset: '-2px',
-        boxShadow: '8px 8px 0 var(--color-accent2)'
-      }}
-      alt="Premium meat dish with colorful vegetable garnish"
-    />
-    <img
-      src="/images/optimized/IMG_8223.webp"
-      className="w-full h-80 object-cover rounded-md"
-      style={{
-        outline: '4px solid var(--color-stroke)',
-        outlineOffset: '-2px',
-        boxShadow: '8px 8px 0 var(--color-accent2)'
-      }}
-      alt="Additional culinary creation"
-    />
-  </div>
+  <EventHighlights />
 </section>
 
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
