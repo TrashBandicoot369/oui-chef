@@ -5,8 +5,11 @@ import ColorManager from './components/ColorManager'
 import QuoteChat from './components/QuoteChat'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useState, useEffect } from 'react'
+import TextMarquee from './components/TextMarquee'
+import EventHighlights from './components/EventHighlights'
 import TestimonialCarousel from './components/TestimonialCarousel';
 import TextMarquee from './components/TextMarquee'
+
 
 
 
@@ -268,6 +271,8 @@ function HomeContent() {
 
       {/* gallery */}
 <section id="gallery" className="bg-primary3 text-accent2 py-24 px-4">
+  <h2 className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">Event Highlights</h2>
+  <EventHighlights />
   <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">
     Event Highlights
   </TextMarquee>
