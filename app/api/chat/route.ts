@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Groq from 'groq-sdk';
 
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
+const apiKey = process.env.GROQ_API_KEY;
+const groq = apiKey ? new Groq({ apiKey }) : null;
 
 interface Message {
   role: "user" | "assistant";
@@ -95,14 +94,17 @@ export async function POST(request: NextRequest) {
 
     const messages = [contextMessage, ...history];
 
-    const completion = await groq.chat.completions.create({
-      model: "llama-3.1-8b-instant",
-      messages: messages,
-      temperature: 0.7,
-      max_tokens: 500,
-    });
+    let reply = "Sorry, I couldn't process that request.";
+    if (groq) {
+      const completion = await groq.chat.completions.create({
+        model: "llama-3.1-8b-instant",
+        messages: messages,
+        temperature: 0.7,
+        max_tokens: 500,
+      });
 
-    const reply = completion.choices[0]?.message?.content || "Sorry, I couldn't process that request.";
+      reply = completion.choices[0]?.message?.content || reply;
+    }
     
     // Extract quote from the response using multiple patterns
     let quote: number | null = null;
