@@ -167,9 +167,9 @@ function HomeContent() {
 
 
 <div>
-  <h3 className="font-display text-accent2 text-4xl sm:text-5xl mb-4">
+  <TextMarquee className="font-display text-accent2 text-4xl sm:text-5xl mb-4">
     Meet Chef Alex J
-  </h3>
+  </TextMarquee>
 
   <p className="text-accent2 mb-4">
     Raised in bustling family kitchens in Montréal and Toronto, Alex learned
@@ -210,7 +210,9 @@ function HomeContent() {
 
       {/* menu */}
       <section id="menu" className="bg-primary2 text-accent1 py-24 px-4">
-        <h2 className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">Signature Menus</h2>
+        <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">
+          Signature Menus
+        </TextMarquee>
         <div className="max-w-6xl mx-auto grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
           <article className="bg-white p-6 rounded-xl shadow-lg hover:scale-105 transition">
             <h3 className="font-bold mb-2">Seasonal Tasting</h3>
@@ -248,7 +250,9 @@ function HomeContent() {
 
       {/* gallery */}
 <section id="gallery" className="bg-primary3 text-accent2 py-24 px-4">
-  <h2 className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">Event Highlights</h2>
+  <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">
+    Event Highlights
+  </TextMarquee>
   <div className="max-w-6xl mx-auto grid sm:grid-cols-2 lg:grid-cols-3 gap-6 opacity-80">
     <img
       src="/images/optimized/IMG_8262.webp"
@@ -353,7 +357,9 @@ function HomeContent() {
 
       {/* booking */}
       <section id="booking" className="bg-primary3 text-accent2 py-24 px-8">
-        <h2 className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">Let&apos;s Craft Your Event</h2>
+        <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12">
+          Let&apos;s Craft Your Event
+        </TextMarquee>
         <div className="max-w-xl mx-auto">
           <QuoteChat />
         </div>
