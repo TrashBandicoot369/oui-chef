@@ -15,16 +15,16 @@ interface Message {
 function getBusinessData() {
   return {
     baseRates: {
-      minimumCharge: 500, // Minimum event charge
-      chefHourlyRate: 80, // Per hour for chef service
-      assistantRate: 40, // Per hour for additional staff
+      minimumCharge: 800, // Minimum event charge
+      chefHourlyRate: 50, // Per hour for chef service
+      assistantRate: 25, // Per hour for additional staff
     },
     menuPricing: {
-      casualDining: { min: 35, max: 55 }, // Per person
-      corporateLunch: { min: 25, max: 40 }, // Per person
-      formalDinner: { min: 65, max: 120 }, // Per person
-      familyStyle: { min: 30, max: 50 }, // Per person
-      cocktailParty: { min: 18, max: 35 }, // Per person
+      casualDining: { min: 50, max: 100 }, // Buffet style
+      corporateLunch: { min: 40, max: 75 }, // Includes staff/rentals
+      formalDinner: { min: 80, max: 150 }, // Plated, premium
+      familyStyle: { min: 60, max: 120 }, // Shared dishes
+      cocktailParty: { min: 40, max: 90 }, // Passed hors d'oeuvres
     },
     serviceTypes: {
       dropOff: "Delivery only - prepared food dropped off",
@@ -75,7 +75,7 @@ QUOTE EXAMPLES:
 - Corporate lunch (20 people): "QUOTE: $800-1200"
 - Wedding reception (50 people, formal): "QUOTE: $4000-6500"
 
-Remember: These are ROUGH estimates. Complex events, special dietary needs, or premium ingredients may affect final pricing. Always encourage booking a consultation for detailed planning.`
+Remember: These are ROUGH estimates. Complex events, special dietary needs, or premium ingredients may affect final pricing. Always encourage booking a consultation for detailed planning.`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -145,4 +145,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

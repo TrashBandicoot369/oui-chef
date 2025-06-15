@@ -7,7 +7,7 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import TextMarquee from './components/TextMarquee'
 import EventHighlights from './components/EventHighlights'
-import VerticalMarquee from './components/VerticalMarquee';
+import VerticalMarquee from './components/VerticalMarquee'
 
 
 function HomeContent() {
@@ -173,6 +173,7 @@ function HomeContent() {
       // Easing: ease-out = smooth deceleration, ease-in-out = smooth both ways
       transition: 'transform 0.3s ease-out',
       transformStyle: 'preserve-3d',
+      filter: 'blur(2px) saturate(1.5)',
       willChange: 'transform' // Optimize performance
     }}
     alt="Chef cooking in kitchen"
@@ -278,7 +279,7 @@ function HomeContent() {
 </svg>
 
       {/* menu */}
-      <section id="menu" className="bg-primary2 text-accent1 py-24 px-4">
+      <section id="menu" className="bg-primary2 text-accent2 py-24 px-4">
         <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12 text-accent2">
           Signature Menus
         </TextMarquee>

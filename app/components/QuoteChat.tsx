@@ -19,10 +19,10 @@ const shouldShowForm = (msg: Message): boolean => {
   if (msg.role !== "assistant") return false;
   return !!(
     msg.quoted ||
-    /\$/.test(msg.content) ||
-    /QUOTE:/i.test(msg.content)
+    /estimated quote.*\$[\d,]+/i.test(msg.content)
   );
 };
+
 
 const QuoteChat: React.FC = () => {
   /* ──────────────────────────────── state */
@@ -35,10 +35,14 @@ const QuoteChat: React.FC = () => {
 
   /* ──────────────────────────────── refs */
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const messagesContainerRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const scrollToBottom = () =>
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  const scrollToBottom = () => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
+  };
 
   useEffect(() => {
     if (messages.length > 1) scrollToBottom();
@@ -147,7 +151,7 @@ const QuoteChat: React.FC = () => {
         </header>
 
         {/* 🎨 MESSAGES AREA - Chat conversation background */}
-        <div className="flex-grow p-4 overflow-y-auto space-y-4 bg-primary2/20">
+        <div ref={messagesContainerRef} className="flex-grow p-4 overflow-y-auto space-y-4 bg-primary2/20">
           {messages.map((msg, index) => (
             <div
               key={index}
@@ -173,7 +177,7 @@ const QuoteChat: React.FC = () => {
                 {msg.content}
                 {/* 🎨 QUOTE DISPLAY - Shows estimated price in message */}
                 {msg.quoted && msg.quote != null && (
-                  <p className="text-xs mt-1 pt-1 border-t border-accent1/20">
+                  <p className="text-xs mt-1 pt-1 border-t border-stroke">
                     <span className="font-semibold">Estimated Quote:</span> $
                     {msg.quote} CAD
                   </p>
@@ -187,7 +191,7 @@ const QuoteChat: React.FC = () => {
             <div className="flex justify-start">
               <div className="max-w-[70%] p-3 rounded-xl shadow bg-primary3/50 text-accent1 rounded-bl-none flex items-center">
                 <Loader2 className="w-5 h-5 inline mr-2 animate-spin text-accent1/70" />
-                Preparing your quote...
+                Typing...
               </div>
             </div>
           )}
@@ -203,7 +207,7 @@ const QuoteChat: React.FC = () => {
         )}
 
         {/* 🎨 INPUT AREA - Bottom section with text input and send button */}
-        <div className="p-4 border-t border-accent1/30 bg-accent2 rounded-b-lg">
+        <div className="p-4 border-t border-stroke bg-stroke rounded-b-lg">
           <div className="flex items-center space-x-2">
             {/* 🎨 TEXT INPUT FIELD - Where users type messages */}
             <Input
@@ -213,7 +217,7 @@ const QuoteChat: React.FC = () => {
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Tell me about your event..."
-              className="flex-grow focus-visible:ring-accent1 border-accent1/50"
+              className="flex-grow focus-visible:ring-stroke text-stroke border-accent1/50"
               disabled={isLoading}
             />
             {/* 🎨 SEND BUTTON - Button to send messages */}
