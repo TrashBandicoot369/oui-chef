@@ -143,15 +143,13 @@ function HomeContent() {
     <>
 
 
-      {/* Floating logo that appears at top center on load */}
-      <div
-  className={`fixed top-72 left-1/2 z-40 transition-all duration-300 ease-in-out pointer-events-none ${
-    !scrolled ? 'floating-logo' : ''
-  }`}
+     {/* Floating logo that appears at top center on load */}
+<div
+  className="fixed top-0 left-1/2 z-40 transition-all duration-200 ease-in-out pointer-events-none"
   style={{
     transform: scrolled
-      ? 'translate(calc(-50% + 6px), -150px) scale(0.6)'
-      : 'translate(calc(-50% + 6px), 0) scale(5)',
+      ? 'translate(calc(-50% + 6px), -250px) scale(0.6)'
+      : 'translate(calc(-50% + 6px), 288px) scale(5)', // 72 * 4 = 288px (simulates top-72 offset)
     opacity: scrolled ? 0 : 1
   }}
 >
@@ -161,6 +159,7 @@ function HomeContent() {
     aria-label="Chef Alex J Logo"
   />
 </div>
+
 
       {/* Navigation bar */}
       <nav
@@ -175,12 +174,20 @@ function HomeContent() {
           {/* Left navigation items */}
           <ul className="hidden md:flex space-x-8 uppercase text-lg tracking-wide">
             <li>
-              <a href="#about" className="hover:text-primary1 transition-colors duration-200">
+              <a 
+                href="#about" 
+                className="hover:text-primary1 transition-colors duration-200"
+                style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)' }}
+              >
                 About
               </a>
             </li>
             <li>
-              <a href="#menu" className="hover:text-primary1 transition-colors duration-200">
+              <a 
+                href="#menu" 
+                className="hover:text-primary1 transition-colors duration-200"
+                style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)' }}
+              >
                 Menu
               </a>
             </li>
@@ -188,7 +195,7 @@ function HomeContent() {
 
           {/* Centered logo */}
           <div
-  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-in-out"
+  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ease-in-out"
   style={{
     opacity: scrolled ? 1 : 0,
     transform: scrolled
@@ -206,12 +213,20 @@ function HomeContent() {
           {/* Right navigation items */}
           <ul className="hidden md:flex space-x-8 uppercase text-lg tracking-wide">
             <li>
-              <a href="#gallery" className="hover:text-primary1 transition-colors duration-200">
+              <a 
+                href="#gallery" 
+                className="hover:text-primary1 transition-colors duration-200"
+                style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)' }}
+              >
                 Gallery
               </a>
             </li>
             <li>
-              <a href="#booking" className="hover:text-primary1 transition-colors duration-200">
+              <a 
+                href="#booking" 
+                className="hover:text-primary1 transition-colors duration-200"
+                style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)' }}
+              >
                 Book Event
               </a>
             </li>
@@ -242,7 +257,7 @@ function HomeContent() {
       // Easing: ease-out = smooth deceleration, ease-in-out = smooth both ways
       transition: 'transform 0.3s ease-out',
       transformStyle: 'preserve-3d',
-      filter: 'brightness(0.8) blur(2px) saturate(1.5)',
+      filter: 'brightness(0.5) contrast(1.2) blur(2px) saturate(1.2)',
       willChange: 'transform' // Optimize performance
     }}
     alt="Chef cooking in kitchen"
