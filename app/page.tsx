@@ -3,16 +3,24 @@
 
 import QuoteChat from './components/QuoteChat'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import TextMarquee from './components/TextMarquee'
 import EventHighlights from './components/EventHighlights'
 import VerticalMarquee from './components/VerticalMarquee'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
+// Register GSAP plugins
+gsap.registerPlugin(ScrollTrigger)
 
 function HomeContent() {
   const [scrolled, setScrolled] = useState(false);
   const [parallaxOffset, setParallaxOffset] = useState({ x: 0, y: 0, tiltX: 0, tiltY: 0 });
   const { scrollY } = useScroll();
+  
+  // Refs for hero text animation
+  const heroTitleRef = useRef<HTMLHeadingElement>(null);
+  const heroSubtitleRef = useRef<HTMLParagraphElement>(null);
 
   // Logo Color - uses exact accent1 color by masking
   const logoStyle = {
@@ -54,10 +62,43 @@ function HomeContent() {
     loadFont('Bitter');
     loadFont('Oswald');
 
+    // Set initial hidden state for hero text immediately
+    if (heroTitleRef.current && heroSubtitleRef.current) {
+      gsap.set(heroTitleRef.current, { y: 60, opacity: 0 });
+      gsap.set(heroSubtitleRef.current, { y: 40, opacity: 0 });
+    }
+
     const unsubscribe = scrollY.on('change', (y) => {
       setScrolled(y > 30);
     });
-    return () => unsubscribe();
+
+    const unsubscribeScroll = scrollY.on('change', (y) => {
+      setScrolled(y > 30)
+
+      if (heroTitleRef.current && heroSubtitleRef.current) {
+        const isVisible = y > 5
+
+        gsap.to(heroTitleRef.current, {
+          y: isVisible ? 0 : 60,
+          opacity: isVisible ? 1 : 0,
+          duration: .5,
+          ease: 'power3.inOut',
+        })
+
+        gsap.to(heroSubtitleRef.current, {
+          y: isVisible ? 0 : 40,
+          opacity: isVisible ? 1 : 0,
+          duration: .5,
+          ease: 'power3.inOut',
+          delay: isVisible ? -0.6 : 0,
+        })
+      }
+    })
+
+    return () => {
+      unsubscribeScroll();
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    };
   }, [scrollY]);
 
   const handleMouseMove = (
@@ -104,13 +145,13 @@ function HomeContent() {
 
       {/* Floating logo that appears at top center on load */}
       <div
-  className={`fixed top-32 left-1/2 z-40 transition-all duration-300 ease-in-out pointer-events-none ${
+  className={`fixed top-72 left-1/2 z-40 transition-all duration-300 ease-in-out pointer-events-none ${
     !scrolled ? 'floating-logo' : ''
   }`}
   style={{
     transform: scrolled
       ? 'translate(calc(-50% + 6px), -150px) scale(0.6)'
-      : 'translate(calc(-50% + 6px), 0) scale(3.5)',
+      : 'translate(calc(-50% + 6px), 0) scale(5)',
     opacity: scrolled ? 0 : 1
   }}
 >
@@ -201,17 +242,23 @@ function HomeContent() {
       // Easing: ease-out = smooth deceleration, ease-in-out = smooth both ways
       transition: 'transform 0.3s ease-out',
       transformStyle: 'preserve-3d',
-      filter: 'blur(2px) saturate(1.5)',
+      filter: 'brightness(0.8) blur(2px) saturate(1.5)',
       willChange: 'transform' // Optimize performance
     }}
     alt="Chef cooking in kitchen"
   />
 
   <div className="relative z-10 text-center px-4">
-    <h1 className="font-display tracking-tight leading-tight text-5xl sm:text-7xl md:text-8xl uppercase">
+    <h1 
+      ref={heroTitleRef}
+      className="font-display tracking-tight leading-tight text-5xl sm:text-7xl md:text-8xl uppercase"
+    >
       restaurant-quality<br />private dining
     </h1>
-    <p className="mt-6 max-w-xl mx-auto text-lg">
+    <p 
+      ref={heroSubtitleRef}
+      className="mt-6 max-w-xl mx-auto text-lg"
+    >
       From intimate dinners to large galas, Chef Alex J crafts unforgettable culinary experiences wherever you
       celebrate.
     </p>
