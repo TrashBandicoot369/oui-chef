@@ -9,6 +9,9 @@ import EventHighlights from './components/EventHighlights'
 import VerticalMarquee from './components/VerticalMarquee'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import dynamic from 'next/dynamic'
+const BounceArrow = dynamic(() => import('./components/BounceArrow'), { ssr: false })
+
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger)
@@ -145,11 +148,11 @@ function HomeContent() {
 
      {/* Floating logo that appears at top center on load */}
 <div
-  className="fixed top-0 left-1/2 z-40 transition-all duration-200 ease-in-out pointer-events-none"
+  className="fixed top-0 left-1/2 z-40 transition-all duration-500 ease-in-out pointer-events-none"
   style={{
     transform: scrolled
-      ? 'translate(calc(-50% + 6px), -250px) scale(0.6)'
-      : 'translate(calc(-50% + 6px), 288px) scale(5)', // 72 * 4 = 288px (simulates top-72 offset)
+      ? 'translate(calc(-50% + 6px), -300px) scale(0.6)'
+      : 'translate(calc(-50% + 6px), 350px) scale(5)', // 72 * 4 = 288px (simulates top-72 offset)
     opacity: scrolled ? 0 : 1
   }}
 >
@@ -245,7 +248,7 @@ function HomeContent() {
   onMouseLeave={handleMouseLeave}
 >
   
-<img
+{/*<img
     src="/images/optimized/IMG_6969.webp"
     className="absolute inset-0 w-full h-full object-cover opacity-50"
     style={{ 
@@ -262,6 +265,25 @@ function HomeContent() {
     }}
     alt="Chef cooking in kitchen"
   />
+  */}
+
+<video
+  src="/images/dinnervid.mp4"
+  className="absolute inset-0 w-full h-full object-cover opacity-50"
+  style={{
+    transform: `translate(${parallaxOffset.x}px, ${parallaxOffset.y}px) scale(1.1) rotateX(${parallaxOffset.tiltX}deg) rotateY(${parallaxOffset.tiltY}deg)`,
+    transformOrigin: 'center center',
+    transition: 'transform 0.3s ease-out',
+    transformStyle: 'preserve-3d',
+    filter: 'brightness(0.5) contrast(1.2) blur(2px) saturate(1.2)',
+    willChange: 'transform'
+  }}
+  autoPlay
+  muted
+  loop
+  playsInline
+/>
+
 
   <div className="relative z-10 text-center px-4">
     <h1 
@@ -283,6 +305,10 @@ function HomeContent() {
       className="inline-block mt-8 bg-accent1 text-white px-6 py-2 text-xs uppercase tracking-wider hover:bg-white hover:text-accent1 transition font-button"
     >
       Start Your Booking
+
+     
+
+
     </a>
   </div>
 
@@ -295,6 +321,9 @@ function HomeContent() {
   preserveAspectRatio="none"
   className="absolute bottom-0 w-full h-20 z-10"
 >
+
+
+  
   {/* filled wave */}
   <path
     className="fill-primary3"
@@ -306,6 +335,7 @@ function HomeContent() {
 
 </header>
 
+<BounceArrow />
 
 
 
