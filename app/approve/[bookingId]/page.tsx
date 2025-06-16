@@ -8,17 +8,30 @@ export default function ApprovePage({ params }: { params: { bookingId: string } 
 
   const handleAction = async (action: 'accept' | 'reject' | 'suggest') => {
     setLoading(true);
-    await fetch(`/api/booking/${action}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ bookingId: params.bookingId }),
-    });
-    if (action === 'suggest') {
-      router.push(`/suggest/${params.bookingId}`);
-    } else {
-      router.push('/');
+    try {
+      const response = await fetch(`/api/booking/${action}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ bookingId: params.bookingId }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to ${action} booking`);
+      }
+
+      if (action === 'suggest') {
+        router.push(`/suggest/${params.bookingId}`);
+      } else {
+        // Show success message and redirect to admin dashboard
+        router.push('/admin');
+      }
+    } catch (error) {
+      console.error(`Error ${action}ing booking:`, error);
+      alert(`Failed to ${action} booking. Please try again.`);
+    } finally {
+      setLoading(false);
     }
   };
 

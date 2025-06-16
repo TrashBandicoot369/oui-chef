@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { db } from '@/lib/firebase-admin';
 
 export async function POST(request: NextRequest) {
   console.log('❌ REJECT WORKFLOW: Starting booking rejection process');
   
   try {
     console.log('❌ STEP 1: Parsing request data...');
-    const { bookingId } = await request.json();
+    const { bookingId, reason } = await request.json();
     console.log('❌ STEP 1: Received booking ID:', bookingId);
     
     if (!bookingId) {
@@ -14,16 +15,40 @@ export async function POST(request: NextRequest) {
     }
     console.log('❌ STEP 1: ✅ Booking ID validated');
 
-    // TODO: Implement booking rejection logic
-    // This would typically involve:
-    // 1. Update booking status in database
-    // 2. Send rejection email to client with explanation
+    console.log('❌ STEP 2: Updating booking status in database...');
+    const bookingRef = db.collection('bookings').doc(bookingId);
     
-    console.log('❌ STEP 2: Processing booking rejection...');
-    console.log(`❌ STEP 2: Booking ${bookingId} rejected (placeholder logic)`);
+    // Check if booking exists
+    const bookingDoc = await bookingRef.get();
+    if (!bookingDoc.exists) {
+      console.error('❌ STEP 2: ❌ Booking not found');
+      return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
+    }
+
+    // Update booking status to rejected
+    await bookingRef.update({
+      status: 'rejected',
+      updatedAt: new Date().toISOString(),
+      rejectedAt: new Date().toISOString(),
+      rejectionReason: reason || 'No reason provided',
+      lastUpdatedBy: 'chef_approval'
+    });
+    
+    console.log(`❌ STEP 2: ✅ Booking ${bookingId} status updated to rejected`);
+
+    // TODO: Future enhancements could include:
+    // - Send rejection email to client with explanation
+    // - Log rejection for analytics
+    // - Trigger any post-rejection workflows
+    
     console.log('❌ REJECT WORKFLOW: ✅ Booking rejection completed successfully');
     
-    return NextResponse.json({ success: true, message: 'Booking rejected successfully' });
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Booking rejected successfully',
+      bookingId,
+      status: 'rejected'
+    });
   } catch (error) {
     console.error('❌ REJECT WORKFLOW: ❌ CRITICAL ERROR - Booking rejection failed');
     console.error('❌ ERROR DETAILS:', error);

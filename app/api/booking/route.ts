@@ -73,7 +73,17 @@ export async function POST(request: NextRequest) {
     // 1. Send confirmation email to client
     console.log('🚀 STEP E: Sending confirmation email to client...');
     try {
-      await sendBookingConfirmation(email, fullName);
+      await sendBookingConfirmation({
+        email,
+        fullName,
+        phone,
+        eventDate,
+        eventTime: bookingData.eventTime,
+        location,
+        guestCount,
+        quote,
+        additionalNotes: bookingData.additionalNotes,
+      });
       console.log('🚀 STEP E: ✅ Client confirmation email sent successfully');
     } catch (error) {
       console.error('🚀 STEP E: ❌ Failed to send client confirmation email:', error);

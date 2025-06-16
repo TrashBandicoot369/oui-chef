@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { db } from '@/lib/firebase-admin';
 
 export async function POST(request: NextRequest) {
   console.log('✅ ACCEPT WORKFLOW: Starting booking acceptance process');
@@ -14,17 +15,39 @@ export async function POST(request: NextRequest) {
     }
     console.log('✅ STEP 1: ✅ Booking ID validated');
 
-    // TODO: Implement booking acceptance logic
-    // This would typically involve:
-    // 1. Update booking status in database
-    // 2. Send confirmation email to client
-    // 3. Add event to calendar
+    console.log('✅ STEP 2: Updating booking status in database...');
+    const bookingRef = db.collection('bookings').doc(bookingId);
     
-    console.log('✅ STEP 2: Processing booking acceptance...');
-    console.log(`✅ STEP 2: Booking ${bookingId} accepted (placeholder logic)`);
+    // Check if booking exists
+    const bookingDoc = await bookingRef.get();
+    if (!bookingDoc.exists) {
+      console.error('✅ STEP 2: ❌ Booking not found');
+      return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
+    }
+
+    // Update booking status to approved
+    await bookingRef.update({
+      status: 'approved',
+      updatedAt: new Date().toISOString(),
+      approvedAt: new Date().toISOString(),
+      lastUpdatedBy: 'chef_approval'
+    });
+    
+    console.log(`✅ STEP 2: ✅ Booking ${bookingId} status updated to approved`);
+
+    // TODO: Future enhancements could include:
+    // - Send confirmation email to client
+    // - Add final details to calendar event
+    // - Trigger any post-approval workflows
+    
     console.log('✅ ACCEPT WORKFLOW: ✅ Booking acceptance completed successfully');
     
-    return NextResponse.json({ success: true, message: 'Booking accepted successfully' });
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Booking accepted successfully',
+      bookingId,
+      status: 'approved'
+    });
   } catch (error) {
     console.error('✅ ACCEPT WORKFLOW: ❌ CRITICAL ERROR - Booking acceptance failed');
     console.error('✅ ERROR DETAILS:', error);

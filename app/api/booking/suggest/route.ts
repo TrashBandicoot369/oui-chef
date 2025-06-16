@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { db } from '@/lib/firebase-admin';
+import { sendSuggestedTimesToClient } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   console.log('💡 SUGGEST WORKFLOW: Starting booking suggestion process');
@@ -19,20 +21,60 @@ export async function POST(request: NextRequest) {
       console.log('💡 STEP 2: Processing suggestion submission...');
       console.log('💡 STEP 2: Suggested times received:', options);
       
-      // TODO: Implement suggestion submission logic
-      // This would typically involve:
-      // 1. Save suggested times to database
-      // 2. Send email to client with suggested times and confirmation links
-      // 3. Update booking status to "pending client response"
-      
-      console.log(`💡 STEP 2: Booking ${bookingId} - suggested times processed (placeholder logic)`);
-      console.log('💡 SUGGEST WORKFLOW: ✅ Suggestion submission completed successfully');
-      
-      return NextResponse.json({ 
-        success: true, 
-        message: 'Suggestions sent to client',
-        suggestedTimes: options 
-      });
+      try {
+        // Get booking data from Firebase
+        console.log('💡 STEP 3: Fetching booking data from database...');
+        const bookingDoc = await db.collection('bookings').doc(bookingId).get();
+        
+        if (!bookingDoc.exists) {
+          console.error('💡 STEP 3: ❌ Booking not found in database');
+          return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
+        }
+        
+        const bookingData = bookingDoc.data();
+        
+        if (!bookingData) {
+          console.error('💡 STEP 3: ❌ Booking data is empty');
+          return NextResponse.json({ error: 'Booking data not found' }, { status: 404 });
+        }
+        
+        console.log('💡 STEP 3: ✅ Booking data retrieved from database');
+        
+        // Save suggested times to database
+        console.log('💡 STEP 4: Saving suggested times to database...');
+        await db.collection('bookings').doc(bookingId).update({
+          suggestedTimes: options,
+          status: 'suggested_alternative',
+          suggestedAt: new Date().toISOString()
+        });
+        console.log('💡 STEP 4: ✅ Suggested times saved to database');
+        
+        // Send email to client with suggested times
+        console.log('💡 STEP 5: Sending suggested times email to client...');
+        await sendSuggestedTimesToClient({
+          bookingId,
+          clientEmail: bookingData.client.email,
+          clientName: bookingData.client.name,
+          suggestedTimes: options,
+          originalEventDate: bookingData.event.date,
+          location: bookingData.event.location,
+          guestCount: bookingData.event.guestCount
+        });
+        console.log('💡 STEP 5: ✅ Suggested times email sent to client');
+        
+        console.log('💡 SUGGEST WORKFLOW: ✅ Suggestion submission completed successfully');
+        
+        return NextResponse.json({ 
+          success: true, 
+          message: 'Suggestions sent to client',
+          suggestedTimes: options,
+          clientEmail: bookingData.client.email
+        });
+        
+      } catch (error) {
+        console.error('💡 STEP 2-5: ❌ Error processing suggestion submission:', error);
+        throw error; // Re-throw to be caught by outer try-catch
+      }
     }
 
     // If no options, this is the initial suggestion preparation

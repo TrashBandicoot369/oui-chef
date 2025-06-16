@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.2",
     "@headlessui/react": "^2.2.4",
     "@heroicons/react": "^2.2.0",
     "@radix-ui/react-slot": "^1.2.3",
@@ -26,6 +27,7 @@
     "googleapis": "^150.0.1",
     "graceful-fs": "^4.2.11",
     "groq-sdk": "^0.24.0",
+    "gsap": "^3.13.0",
     "lucide-react": "^0.514.0",
     "nanoid": "^5.1.5",
     "next": "14.0.0",

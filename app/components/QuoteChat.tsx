@@ -144,14 +144,14 @@ const QuoteChat: React.FC = () => {
 >
 
         {/* 🎨 CHAT HEADER - Top bar with title */}
-        <header className="bg-accent2 text-white p-4 rounded-t-lg">
-          <h3 className="text-lg font-semibold text-center text-stroke">
+        <header className="text-white p-4 rounded-t-lg">
+          <h3 className="text-lg font-semibold text-center text-accent2">
             Chef Alex J - Event Planner
           </h3>
         </header>
 
         {/* 🎨 MESSAGES AREA - Chat conversation background */}
-        <div ref={messagesContainerRef} className="flex-grow p-4 overflow-y-auto space-y-4 bg-primary2/20">
+        <div ref={messagesContainerRef} className="flex-grow p-4 overflow-y-auto space-y-4 bg-primary2">
           {messages.map((msg, index) => (
             <div
               key={index}
@@ -207,7 +207,7 @@ const QuoteChat: React.FC = () => {
         )}
 
         {/* 🎨 INPUT AREA - Bottom section with text input and send button */}
-        <div className="p-4 border-t border-stroke bg-stroke rounded-b-lg">
+        <div className="p-4 border-t border-stroke  rounded-b-lg">
           <div className="flex items-center space-x-2">
             {/* 🎨 TEXT INPUT FIELD - Where users type messages */}
             <Input

@@ -6,7 +6,7 @@
 
 /* Set default font CSS variables */
 :root {
-  --font-display: 'Chango', cursive;
+  --font-display: 'Alpha Slab One', sans-serif;
   --font-sans: 'Roboto', sans-serif;
   --font-button: 'Oswald', sans-serif;
   --color-stroke: #F13F27;

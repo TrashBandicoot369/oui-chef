@@ -1,7 +1,6 @@
 'use client';
 
-import FontSwitcher from './components/FontSwitcher'
-import ColorManager from './components/ColorManager'
+
 import QuoteChat from './components/QuoteChat'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useState, useEffect } from 'react'
@@ -25,6 +24,36 @@ function HomeContent() {
   };
 
   useEffect(() => {
+    // Lock in current colors and fonts
+    const root = document.documentElement;
+    
+    // Set locked colors (current values with -72% brightness on primaries)
+    root.style.setProperty('--color-primary1', '#1c1b20');
+    root.style.setProperty('--color-primary2', '#383234');
+    root.style.setProperty('--color-primary3', '#3f393c');
+    root.style.setProperty('--color-accent1', '#e3973b');
+    root.style.setProperty('--color-accent2', '#ee962b');
+    root.style.setProperty('--color-stroke', '#532030');
+    
+    // Set locked fonts (current values from your font picker)
+    root.style.setProperty('--font-display', '"Anton", cursive');
+    root.style.setProperty('--font-sans', '"Bitter", sans-serif');
+    root.style.setProperty('--font-button', '"Oswald", sans-serif');
+    
+    // Load Google Fonts
+    const loadFont = (fontName: string) => {
+      if (!document.querySelector(`link[href*="${encodeURIComponent(fontName)}"]`)) {
+        const link = document.createElement('link');
+        link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontName)}:wght@300;400;500;600;700&display=swap`;
+        link.rel = 'stylesheet';
+        document.head.appendChild(link);
+      }
+    };
+    
+    loadFont('Anton');
+    loadFont('Bitter');
+    loadFont('Oswald');
+
     const unsubscribe = scrollY.on('change', (y) => {
       setScrolled(y > 30);
     });
@@ -71,8 +100,7 @@ function HomeContent() {
 
   return (
     <>
-      <FontSwitcher />
-      <ColorManager />
+
 
       {/* Floating logo that appears at top center on load */}
       <div
@@ -224,7 +252,7 @@ function HomeContent() {
 <section id="about" className="-mt-1 bg-primary3 text-accent1 py-20 px-4">
   <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
   <img
-  src="/images/optimized/IMG_6253.webp"
+  src="/images/optimized/IMG_6353.webp"
   className="w-full h-full object-cover rounded-lg opacity-80"
   style={{
     outline: '4px solid var(--color-stroke)',
@@ -319,7 +347,7 @@ function HomeContent() {
 </svg>
 
       {/* gallery */}
-      <section id="gallery" className="bg-primary3 text-accent2 py-24 px-10">
+      <section id="gallery" className="bg-primary3 text-accent2 py-16  px-10">
         <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12 text-accent2">
           Event Highlights
         </TextMarquee>
@@ -339,7 +367,7 @@ function HomeContent() {
 </svg>
 
       {/* testimonials */}
-      <section id="testimonials" className="relative bg-primary2 text-center text-accent1 px-4 py-24">
+      <section id="testimonials" className="relative bg-primary2 text-center text-accent1 px-4 py-18">
         <TextMarquee className="text-center font-display text-3xl text-accent1 sm:text-5xl uppercase mb-12 text-accent2">
           Testimonials
         </TextMarquee>
