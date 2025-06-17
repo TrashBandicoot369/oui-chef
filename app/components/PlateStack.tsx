@@ -177,7 +177,7 @@ export default function PlateStack() {
       const idx = Math.floor(x / strip)
       if (idx !== active && idx >= 0 && idx < plates.length) {
         if (active !== null) {
-          gsap.to(plates[active], { scale: 1, zIndex: active + 1, duration: 0.3, ease: 'power2.out' })
+          gsap.to(plates[active], { scale: 1, zIndex: active + 1, duration: 0.5, ease: 'power2.out' })
         }
         gsap.to(plates[idx], { scale: 3, zIndex: plates.length + 5, duration: 0.3, ease: 'power2.out' })
         active = idx
@@ -230,7 +230,7 @@ export default function PlateStack() {
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <div className="w-[50%] h-[50%] rounded-full overflow-hidden flex items-center justify-center p-2">
                     <span
-                      className="font-sans text-[10px] whitespace-pre-line text-center leading-[1.1] text-black break-words overflow-hidden"
+                      className="font-display text-stroke text-[10px] whitespace-pre-line text-center leading-[1.1] text-black break-words overflow-hidden"
                       style={{ 
                         textShadow: '0 0 4px rgba(255,255,255,0.8)',
                         display: '-webkit-box',
