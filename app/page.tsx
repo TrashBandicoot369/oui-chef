@@ -384,7 +384,7 @@ function HomeContent() {
   xmlns="http://www.w3.org/2000/svg"
   viewBox="0 0 1440 320"
   preserveAspectRatio="none"
-  className="absolute bottom-0 w-full h-20 z-10"
+  className="absolute -bottom-1 w-full h-24 z-10"
 >
 
 
@@ -408,7 +408,7 @@ function HomeContent() {
 
 
 {/* about */}
-<section id="about" ref={aboutRef} className="-mt-1 bg-primary3 text-accent1 py-20 px-4">
+<section id="about" ref={aboutRef} className="-mt-1 bg-primary3 text-accent1 py-40 px-4">
   <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
   <img
   ref={imageRef}
@@ -455,42 +455,46 @@ function HomeContent() {
 
 
 
-<section
-  id="menu"
-  className="relative overflow-hidden w-screen px-4 sm:px-8"
->
-  {/* blurred BG */}
-  <div
-    className="absolute inset-0 bg-cover bg-center filter blur-[2px]"
-    style={{
-      backgroundImage: "url('/images/Image_fx (10).jpg')",
-    }}
-  />
-
-  {/* Top wave overlay */}
-  <svg
-    className="absolute top-0 left-0 w-full h-20 z-20"
-    viewBox="0 0 1440 320"
-    preserveAspectRatio="none"
-    xmlns="http://www.w3.org/2000/svg"
+  <section
+    id="menu"
+    className="relative"
   >
-    <path
-      className="fill-primary3"
-      d="M0,128L34.3,149.3C68.6,171,137,213,206,240C274.3,267,343,277,411,234.7C480,192,549,96,617,85.3C685.7,75,754,149,823,160C891.4,171,960,117,1029,128C1097.1,139,1166,213,1234,213.3C1302.9,213,1371,139,1406,101.3L1440,64L1440,0L0,0Z"
+    {/* blurred BG */}
+    <div
+      className="absolute inset-0 bg-cover bg-center filter blur-[2px]"
+      style={{
+        backgroundImage: "url('/images/Image_fx (10).jpg')",
+      }}
     />
-  </svg>
 
-  {/* Content (now padded by px-4 sm:px-8) */}
-  <div className="relative z-10 pt-36 pb-0">
-    <TextMarquee className="w-full text-center font-display text-3xl sm:text-5xl uppercase mb-12 text-accent2">
-      Signature Menu Items
-    </TextMarquee>
-    <PlateStack />
-  </div>
+    {/* Top wave overlay */}
+    <svg
+      className="absolute -top-1 left-0 w-full h-24 z-20"
+      viewBox="0 0 1440 320"
+      preserveAspectRatio="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        className="fill-primary3"
+        d="M0,128L34.3,149.3C68.6,171,137,213,206,240C274.3,267,343,277,411,234.7C480,192,549,96,617,85.3C685.7,75,754,149,823,160C891.4,171,960,117,1029,128C1097.1,139,1166,213,1234,213.3C1302.9,213,1371,139,1406,101.3L1440,64L1440,0L0,0Z"
+      />
+    </svg>
+
+    {/* Content with TextMarquee and PlateStack */}
+    <div className="relative z-50 py-32">
+      <div className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+        <TextMarquee className="w-full text-center font-display text-3xl sm:text-5xl uppercase mb-12 text-accent2">
+          Signature Menu Items
+        </TextMarquee>
+      </div>
+      <div className="px-4 sm:px-8 h-full flex items-center justify-center relative z-50">
+        <PlateStack />
+      </div>
+    </div>
 
   {/* Bottom wave overlay */}
   <svg
-    className="absolute bottom-0 left-0 w-full h-20 z-20"
+    className="absolute -bottom-1 left-0 w-full h-24 z-20"
     viewBox="0 0 1440 320"
     preserveAspectRatio="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -509,15 +513,19 @@ function HomeContent() {
 
 
       {/* gallery */}
-      <section id="gallery" className="bg-primary3 text-accent2 py-16  px-10">
-        <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12 text-accent2">
-          Event Highlights
-        </TextMarquee>
-        <EventHighlights />
+      <section id="gallery" className="bg-primary3 z-10 text-accent2 py-32">
+        <div className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+          <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12 text-accent2">
+            Event Highlights
+          </TextMarquee>
+        </div>
+        <div className="px-10">
+          <EventHighlights />
+        </div>
       </section>
 
 
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" className="block -mb-1">
   {/* Filled base wave */}
   <path
     className="fill-primary3"
@@ -529,25 +537,29 @@ function HomeContent() {
 </svg>
 
       {/* testimonials */}
-      <section id="testimonials" className="relative bg-primary2 text-center text-accent1 px-4 py-18">
-        <TextMarquee className="text-center font-display text-3xl text-accent1 sm:text-5xl uppercase mb-12 text-accent2">
-          Testimonials
-        </TextMarquee>
-        <VerticalMarquee 
-          items={[
-            "Chef Alex transformed our backyard into a Michelin-starred experience. Every dish was a masterpiece!",
-            "The attention to detail was incredible. From the menu planning to the final presentation, everything was perfect.",
-            "Our corporate event was a huge success thanks to Chef Alex's innovative menu and professional service.",
-            "The seasonal tasting menu was a journey through local flavors. Each course told a story.",
-            "What impressed me most was how Chef Alex made everyone feel like family while maintaining professional excellence.",
-            "The family-style feast was perfect for our large gathering. Everyone raved about the food!",
-            "Chef Alex's passion for local ingredients shines through in every dish. Truly exceptional dining.",
-            "The wine pairings were spot on, and the service was impeccable. A memorable evening!",
-            "From intimate dinners to large events, Chef Alex delivers consistently outstanding experiences."
-          ]}
-          speed={30} // Slightly slower speed for better readability
-          className="max-w-6xl mx-auto"
-        />
+      <section id="testimonials" className="relative bg-primary2 text-center text-accent1 py-32">
+        <div className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+          <TextMarquee className="text-center font-display text-3xl text-accent1 sm:text-5xl uppercase mb-12 text-accent2">
+            Testimonials
+          </TextMarquee>
+        </div>
+        <div className="px-4">
+          <VerticalMarquee 
+            items={[
+              "Chef Alex transformed our backyard into a Michelin-starred experience. Every dish was a masterpiece!",
+              "The attention to detail was incredible. From the menu planning to the final presentation, everything was perfect.",
+              "Our corporate event was a huge success thanks to Chef Alex's innovative menu and professional service.",
+              "The seasonal tasting menu was a journey through local flavors. Each course told a story.",
+              "What impressed me most was how Chef Alex made everyone feel like family while maintaining professional excellence.",
+              "The family-style feast was perfect for our large gathering. Everyone raved about the food!",
+              "Chef Alex's passion for local ingredients shines through in every dish. Truly exceptional dining.",
+              "The wine pairings were spot on, and the service was impeccable. A memorable evening!",
+              "From intimate dinners to large events, Chef Alex delivers consistently outstanding experiences."
+            ]}
+            speed={30} // Slightly slower speed for better readability
+            className="max-w-6xl mx-auto"
+          />
+        </div>
       </section>
 
      
@@ -556,7 +568,7 @@ function HomeContent() {
       {/* booking */}
 <section
   id="booking"
-  className="relative bg-primary3 text-accent2 py-24 px-8 overflow-hidden"
+  className="relative bg-primary3 text-accent2 py-32 overflow-hidden"
   style={{
     backgroundImage: bookingBgImage ? `url('${bookingBgImage}')` : undefined,
     backgroundSize: 'cover',
@@ -569,10 +581,12 @@ function HomeContent() {
 
   {/* Content */}
   <div className="relative z-10">
-    <TextMarquee className="text-center opacity-80 font-display text-3xl sm:text-5xl uppercase mb-12 text-accent2 drop-shadow-lg">
-      Let&apos;s Craft Your Event
-    </TextMarquee>
-    <div className="max-w-xl mx-auto">
+    <div className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+      <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12 text-accent2 drop-shadow-lg">
+        Let&apos;s Craft Your Event
+      </TextMarquee>
+    </div>
+    <div className="max-w-xl mx-auto px-8">
       <QuoteChat />
     </div>
   </div>
@@ -583,7 +597,7 @@ function HomeContent() {
 
 
       {/* footer */}
-      <footer className="bg-primary1 text-accent1 py-16 px-8">
+      <footer className="bg-primary1 text-accent1 py-32 px-8">
         <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-12">
           <div>
             <h4 className="font-bold uppercase mb-4">Explore</h4>

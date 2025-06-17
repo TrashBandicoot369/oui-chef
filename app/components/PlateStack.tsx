@@ -2,6 +2,10 @@
 
 import { useRef, useLayoutEffect, useState } from 'react'
 import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+// Register ScrollTrigger plugin
+gsap.registerPlugin(ScrollTrigger)
 
 export default function PlateStack() {
   const stackRef = useRef<HTMLDivElement>(null)
@@ -129,12 +133,33 @@ export default function PlateStack() {
       const gap = availableWidth / (plates.length - 1)
 
       plates.forEach((el, idx) => {
+        const finalX = Math.round(padding + (idx * gap))
+        const finalY = Math.round((container.offsetHeight - img.offsetHeight) / 2)
+        const finalRotation = Math.round((Math.random() - 0.5) * 8)
+        
+        // Set initial position (off-screen to the right) and final position for scroll animation
         gsap.set(el, {
-          x: Math.round(padding + (idx * gap)),
-          y: Math.round((Math.random() - 0.5) * 30),
-          rotation: Math.round((Math.random() - 0.5) * 8),
+          x: finalX + 400, // Start 400px to the right
+          y: finalY,
+          rotation: finalRotation,
           zIndex: idx + 1,
           scale: 1,
+          opacity: 0.3
+        })
+
+        // Create scroll-triggered animation for each plate
+        gsap.to(el, {
+          x: finalX,
+          opacity: 1,
+          duration: 0.8,
+          delay: idx * 0.1, // Stagger the animations
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: container,
+            start: 'top 80%',
+            end: 'bottom 20%',
+            toggleActions: 'play none none reverse',
+          }
         })
       })
     }
@@ -154,7 +179,7 @@ export default function PlateStack() {
         if (active !== null) {
           gsap.to(plates[active], { scale: 1, zIndex: active + 1, duration: 0.3, ease: 'power2.out' })
         }
-        gsap.to(plates[idx], { scale: 2, zIndex: plates.length + 5, duration: 0.3, ease: 'power2.out' })
+        gsap.to(plates[idx], { scale: 3, zIndex: plates.length + 5, duration: 0.3, ease: 'power2.out' })
         active = idx
       }
     }
@@ -172,11 +197,17 @@ export default function PlateStack() {
       window.removeEventListener('resize', doLayout)
       container.removeEventListener('pointermove', onMove)
       container.removeEventListener('pointerleave', onLeave)
+      // Clean up ScrollTrigger instances
+      ScrollTrigger.getAll().forEach(trigger => {
+        if (trigger.trigger === container) {
+          trigger.kill()
+        }
+      })
     }
   }, [shuffledPlates.length])
 
   return (
-    <section className="w-full overflow-visible p-0 m-0">
+    <section className="w-full overflow-visible p-0 m-0 relative z-50">
       <div
         ref={stackRef}
         className="relative w-full h-[500px] overflow-visible p-0 m-0"
