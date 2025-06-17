@@ -24,6 +24,11 @@ function HomeContent() {
   // Refs for hero text animation
   const heroTitleRef = useRef<HTMLHeadingElement>(null);
   const heroSubtitleRef = useRef<HTMLParagraphElement>(null);
+  
+  // Refs for about section animation
+  const aboutRef = useRef<HTMLElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
 
   // Logo Color - uses exact accent1 color by masking
   const logoStyle = {
@@ -104,6 +109,38 @@ function HomeContent() {
     };
   }, [scrollY]);
 
+  // About section animation
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.from(imageRef.current, {
+        x: -100,
+        opacity: 0,
+        scale: 0.9,
+        duration: 1,
+        delay: .5,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: aboutRef.current,
+          start: 'top 80%',
+        },
+      })
+
+      gsap.from(textRef.current, {
+        y: 50,
+        opacity: 0,
+        duration: 1,
+        ease: 'power3.out',
+        delay: .5,
+        scrollTrigger: {
+          trigger: aboutRef.current,
+          start: 'top 80%',
+        },
+      })
+    }, aboutRef)
+
+    return () => ctx.revert()
+  }, [])
+
   const handleMouseMove = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
@@ -148,20 +185,32 @@ function HomeContent() {
 
      {/* Floating logo that appears at top center on load */}
 <div
-  className="fixed top-0 left-1/2 z-40 transition-all duration-500 ease-in-out pointer-events-none"
+  className="fixed inset-0 z-40 flex items-center justify-center pointer-events-none transition-all duration-500 ease-in-out"
   style={{
     transform: scrolled
-      ? 'translate(calc(-50% + 6px), -300px) scale(0.6)'
-      : 'translate(calc(-50% + 6px), 350px) scale(5)', // 72 * 4 = 288px (simulates top-72 offset)
-    opacity: scrolled ? 0 : 1
+      ? 'translateY(-1200px) scale(0.6)'
+      : 'translateY(0) scale(7)',
+    opacity: scrolled ? 0 : 1,
   }}
 >
   <div
     className="w-[80px] sm:w-[100px] h-[80px] sm:h-[100px]"
-    style={logoStyle}
+    style={{
+      backgroundColor: 'var(--color-accent1)',
+      WebkitMask: 'url("/images/logo-white.png") no-repeat center',
+      WebkitMaskSize: 'contain',
+      mask: 'url("/images/logo-white.png") no-repeat center',
+      maskSize: 'contain',
+    }}
     aria-label="Chef Alex J Logo"
   />
 </div>
+
+
+
+
+
+
 
 
       {/* Navigation bar */}
@@ -275,7 +324,7 @@ function HomeContent() {
     transformOrigin: 'center center',
     transition: 'transform 0.3s ease-out',
     transformStyle: 'preserve-3d',
-    filter: 'brightness(0.5) contrast(1.2) blur(2px) saturate(1.2)',
+    filter: 'brightness(0.5) contrast(1.2)  saturate(1.2)',
     willChange: 'transform'
   }}
   autoPlay
@@ -288,13 +337,13 @@ function HomeContent() {
   <div className="relative z-10 text-center px-4">
     <h1 
       ref={heroTitleRef}
-      className="font-display tracking-tight leading-tight text-5xl sm:text-7xl md:text-8xl uppercase"
+      className="font-display tracking-tight leading-tight text-5xl sm:text-7xl md:text-8xl uppercase drop-shadow-lg"
     >
       restaurant-quality<br />private dining
     </h1>
     <p 
       ref={heroSubtitleRef}
-      className="mt-6 max-w-xl mx-auto text-lg"
+      className="mt-6 max-w-xl mx-auto text-lg drop-shadow-lg"
     >
       From intimate dinners to large galas, Chef Alex J crafts unforgettable culinary experiences wherever you
       celebrate.
@@ -302,7 +351,7 @@ function HomeContent() {
     
       <a
       href="#booking"
-      className="inline-block mt-8 bg-accent1 text-white px-6 py-2 text-xs uppercase tracking-wider hover:bg-white hover:text-accent1 transition font-button"
+      className="inline-block mt-8 bg-accent1 text-white px-6 py-2 text-xs uppercase tracking-wider hover:bg-white hover:text-accent1 transition font-button drop-shadow-lg"
     >
       Start Your Booking
 
@@ -333,6 +382,8 @@ function HomeContent() {
 
 </svg>
 
+
+
 </header>
 
 <BounceArrow />
@@ -341,9 +392,10 @@ function HomeContent() {
 
 
 {/* about */}
-<section id="about" className="-mt-1 bg-primary3 text-accent1 py-20 px-4">
+<section id="about" ref={aboutRef} className="-mt-1 bg-primary3 text-accent1 py-20 px-4">
   <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
   <img
+  ref={imageRef}
   src="/images/optimized/IMG_6353.webp"
   className="w-full h-full object-cover rounded-lg opacity-80"
   style={{
@@ -356,7 +408,7 @@ function HomeContent() {
 
 
 
-<div>
+<div ref={textRef}>
 <h2 className="font-display text-accent2 text-4xl sm:text-5xl mb-4">
     Meet Chef Alex J
   </h2>
@@ -382,6 +434,8 @@ function HomeContent() {
     </div>
   </div>
 </section>
+
+
 
 <svg
   xmlns="http://www.w3.org/2000/svg"

@@ -189,7 +189,7 @@ export default function EventHighlights() {
       </button>
 
       {/* Image container */}
-      <div ref={containerRef} className="grid grid-cols-2 gap-6 mx-12">
+      <div ref={containerRef} className="grid grid-cols-2 gap-24 mx-12">
         {currentPair.map((event, index) => (
           <div
             key={`${event.id}-${currentIndex}`}
