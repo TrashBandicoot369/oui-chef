@@ -138,7 +138,7 @@ const QuoteChat: React.FC = () => {
 <div
   className={`flex flex-col h-[calc(100vh-100px)] md:h-[600px]
     ${showBookingForm ? 'lg:w-2/3 lg:min-w-[500px] ' : 'max-w-lg lg:translate-x-0'}
-    bg-primary2 rounded-lg shadow-xl
+    bg-primary2 rounded-lg opacity-90 shadow-xl
     transition-transform duration-300 ease-in-out   /* ⬅︎ keep transition on every state */
   `}
 >

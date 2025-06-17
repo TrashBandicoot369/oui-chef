@@ -7,6 +7,7 @@ import { useState, useEffect, useRef } from 'react'
 import TextMarquee from './components/TextMarquee'
 import EventHighlights from './components/EventHighlights'
 import VerticalMarquee from './components/VerticalMarquee'
+import PlateStack from './components/PlateStack'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import dynamic from 'next/dynamic'
@@ -19,6 +20,7 @@ gsap.registerPlugin(ScrollTrigger)
 function HomeContent() {
   const [scrolled, setScrolled] = useState(false);
   const [parallaxOffset, setParallaxOffset] = useState({ x: 0, y: 0, tiltX: 0, tiltY: 0 });
+  const [bookingBgImage, setBookingBgImage] = useState('');
   const { scrollY } = useScroll();
   
   // Refs for hero text animation
@@ -69,6 +71,20 @@ function HomeContent() {
     loadFont('Anton');
     loadFont('Bitter');
     loadFont('Oswald');
+
+    // Set random background image for booking section
+    const backgroundImages = [
+      '/images/plates-bg/Image_fx (8).jpg',
+      '/images/plates-bg/Image_fx (9).jpg',
+      '/images/plates-bg/Image_fx (10).jpg',
+      '/images/plates-bg/Image_fx (11).jpg',
+      '/images/plates-bg/asdf.jpg',
+      '/images/plates-bg/sdf.jpg',
+      '/images/plates-bg/sdfa.jpg'
+    ];
+    
+    const randomImage = backgroundImages[Math.floor(Math.random() * backgroundImages.length)];
+    setBookingBgImage(randomImage);
 
     // Set initial hidden state for hero text immediately
     if (heroTitleRef.current && heroSubtitleRef.current) {
@@ -318,7 +334,7 @@ function HomeContent() {
 
 <video
   src="/images/dinnervid.mp4"
-  className="absolute inset-0 w-full h-full object-cover opacity-50"
+  className="absolute inset-0 w-full h-full object-cover opacity-70"
   style={{
     transform: `translate(${parallaxOffset.x}px, ${parallaxOffset.y}px) scale(1.1) rotateX(${parallaxOffset.tiltX}deg) rotateY(${parallaxOffset.tiltY}deg)`,
     transformOrigin: 'center center',
@@ -437,60 +453,60 @@ function HomeContent() {
 
 
 
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  viewBox="0 0 1440 320"
-  preserveAspectRatio="none"
-  className="block w-full h-20 -mt-px"
+
+
+<section
+  id="menu"
+  className="relative overflow-hidden w-screen px-4 sm:px-8"
 >
-  {/* Fill shape */}
-  <path
-    className="fill-primary3"
-    d="M0,288L26.7,288C53.3,288,107,288,160,282.7C213.3,277,267,267,320,256C373.3,245,427,235,480,229.3C533.3,224,587,224,640,229.3C693.3,235,747,245,800,213.3C853.3,181,907,107,960,112C1013.3,117,1067,203,1120,202.7C1173.3,203,1227,117,1280,90.7C1333.3,64,1387,96,1413,112L1440,128L1440,0L0,0Z"
+  {/* blurred BG */}
+  <div
+    className="absolute inset-0 bg-cover bg-center filter blur-[2px]"
+    style={{
+      backgroundImage: "url('/images/Image_fx (10).jpg')",
+    }}
   />
 
- 
-</svg>
+  {/* Top wave overlay */}
+  <svg
+    className="absolute top-0 left-0 w-full h-20 z-20"
+    viewBox="0 0 1440 320"
+    preserveAspectRatio="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      className="fill-primary3"
+      d="M0,128L34.3,149.3C68.6,171,137,213,206,240C274.3,267,343,277,411,234.7C480,192,549,96,617,85.3C685.7,75,754,149,823,160C891.4,171,960,117,1029,128C1097.1,139,1166,213,1234,213.3C1302.9,213,1371,139,1406,101.3L1440,64L1440,0L0,0Z"
+    />
+  </svg>
 
-      {/* menu */}
-      <section id="menu" className="bg-primary2 text-accent2 py-24 px-4">
-        <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12 text-accent2">
-          Signature Menus
-        </TextMarquee>
-        <div className="max-w-6xl mx-auto grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
-          <article className="bg-primary1 p-6 rounded-xl shadow-lg hover:scale-105 transition">
-            <h3 className="font-bold mb-2">Seasonal Tasting</h3>
-            <p className="text-sm mb-4">Five courses celebrating Ontario&apos;s freshest produce.</p>
-            <span className="text-xs uppercase tracking-widest">ideal for weddings</span>
-          </article>
-          <article className="bg-primary1 p-6 rounded-xl shadow-lg hover:scale-105 transition">
-            <h3 className="font-bold mb-2">Family-Style Feast</h3>
-            <p className="text-sm mb-4">Abundant platters designed for sharing and conversation.</p>
-            <span className="text-xs uppercase tracking-widest">perfect for festivals</span>
-          </article>
-          <article className="bg-primary1 p-6 rounded-xl shadow-lg hover:scale-105 transition">
-            <h3 className="font-bold mb-2">Corporate Luncheon</h3>
-            <p className="text-sm mb-4">Elegant three-course menu delivered to your boardroom.</p>
-            <span className="text-xs uppercase tracking-widest">ideal for business</span>
-          </article>
-        </div>
-      </section>
+  {/* Content (now padded by px-4 sm:px-8) */}
+  <div className="relative z-10 pt-36 pb-0">
+    <TextMarquee className="w-full text-center font-display text-3xl sm:text-5xl uppercase mb-12 text-accent2">
+      Signature Menu Items
+    </TextMarquee>
+    <PlateStack />
+  </div>
 
-      {/* Top wave separator */}
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  viewBox="0 0 1440 320"
-  preserveAspectRatio="none"
-  className="block w-full h-20 -mt-px z-10"
->
-  {/* filled wave */}
-  <path
-    className="fill-primary3 px-4"
-    d="M0,128L34.3,149.3C68.6,171,137,213,206,240C274.3,267,343,277,411,234.7C480,192,549,96,617,85.3C685.7,75,754,149,823,160C891.4,171,960,117,1029,128C1097.1,139,1166,213,1234,213.3C1302.9,213,1371,139,1406,101.3L1440,64L1440,320L1405.7,320C1371.4,320,1303,320,1234,320C1165.7,320,1097,320,1029,320C960,320,891,320,823,320C754.3,320,686,320,617,320C548.6,320,480,320,411,320C342.9,320,274,320,206,320C137.1,320,69,320,34,320L0,320Z"
-  />
+  {/* Bottom wave overlay */}
+  <svg
+    className="absolute bottom-0 left-0 w-full h-20 z-20"
+    viewBox="0 0 1440 320"
+    preserveAspectRatio="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      className="fill-primary3"
+      d="M0,288L26.7,288C53.3,288,107,288,160,282.7C213.3,277,267,267,320,256C373.3,245,427,235,480,229.3C533.3,224,587,224,640,229.3C693.3,235,747,245,800,213.3C853.3,181,907,107,960,112C1013.3,117,1067,203,1120,202.7C1173.3,203,1227,117,1280,90.7C1333.3,64,1387,96,1413,112L1440,128L1440,320L0,320Z"
+    />
+  </svg>
+</section>
 
- 
-</svg>
+
+
+
+
+
 
       {/* gallery */}
       <section id="gallery" className="bg-primary3 text-accent2 py-16  px-10">
@@ -538,14 +554,30 @@ function HomeContent() {
 
 
       {/* booking */}
-      <section id="booking" className="bg-primary3 text-accent2 py-24 px-8">
-        <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12 text-accent2">
-          Let&apos;s Craft Your Event
-        </TextMarquee>
-        <div className="max-w-xl mx-auto">
-          <QuoteChat />
-        </div>
-      </section>
+<section
+  id="booking"
+  className="relative bg-primary3 text-accent2 py-24 px-8 overflow-hidden"
+  style={{
+    backgroundImage: bookingBgImage ? `url('${bookingBgImage}')` : undefined,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+  }}
+>
+  {/* Dark, blurred overlay for text readability */}
+  <div className="absolute inset-0 bg-black/10 backdrop-blur-[2px] z-0"></div>
+
+  {/* Content */}
+  <div className="relative z-10">
+    <TextMarquee className="text-center opacity-80 font-display text-3xl sm:text-5xl uppercase mb-12 text-accent2 drop-shadow-lg">
+      Let&apos;s Craft Your Event
+    </TextMarquee>
+    <div className="max-w-xl mx-auto">
+      <QuoteChat />
+    </div>
+  </div>
+</section>
+
 
   
 
