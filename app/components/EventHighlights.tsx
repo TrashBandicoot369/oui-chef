@@ -170,7 +170,7 @@ export default function EventHighlights() {
       {/* Navigation arrows */}
       <button
         onClick={prevSlide}
-        className="absolute left-10 top-1/2 -translate-y-1/2 z-20 bg-accent2 hover:bg-accent1 text-primary3 p-3 py rounded-full transition-colors duration-300 shadow-lg hover:shadow-xl"
+        className="absolute left-4 sm:left-10 top-1/2 -translate-y-1/2 z-20 bg-accent2 hover:bg-accent1 text-primary3 p-3 py rounded-full transition-colors duration-300 shadow-lg hover:shadow-xl"
         aria-label="Previous images"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -180,7 +180,7 @@ export default function EventHighlights() {
 
       <button
         onClick={nextSlide}
-        className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-accent2 hover:bg-accent1 text-primary3 p-3 rounded-full transition-colors duration-300 shadow-lg hover:shadow-xl"
+        className="absolute right-4 sm:right-0 top-1/2 -translate-y-1/2 z-20 bg-accent2 hover:bg-accent1 text-primary3 p-3 rounded-full transition-colors duration-300 shadow-lg hover:shadow-xl"
         aria-label="Next images"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -189,7 +189,7 @@ export default function EventHighlights() {
       </button>
 
       {/* Image container */}
-      <div ref={containerRef} className="grid grid-cols-2 gap-24 mx-12">
+      <div ref={containerRef} className="grid grid-cols-1 sm:grid-cols-2 gap-4 mx-12">
         {currentPair.map((event, index) => (
           <div
             key={`${event.id}-${currentIndex}`}

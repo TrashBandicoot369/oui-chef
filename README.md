@@ -3,10 +3,10 @@
 A modern, responsive website built with Next.js 14, TypeScript, and Tailwind CSS showcasing Chef Alex J's private dining and catering services with AI-powered quote generation and advanced design customization tools.
 
 ## 🚀 Quick Start
-
+NEVER INSTALL NPM ONLY PNPM
 ```bash
 # Install dependencies
-npm install
+pnpm install
 
 # Set up environment variables
 cp .env.example .env.local

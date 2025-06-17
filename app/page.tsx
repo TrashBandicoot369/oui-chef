@@ -8,9 +8,11 @@ import TextMarquee from './components/TextMarquee'
 import EventHighlights from './components/EventHighlights'
 import VerticalMarquee from './components/VerticalMarquee'
 import PlateStack from './components/PlateStack'
+import MobilePlateCarousel from './components/MobilePlateCarousel'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import dynamic from 'next/dynamic'
+import { Dialog } from '@headlessui/react'
 const BounceArrow = dynamic(() => import('./components/BounceArrow'), { ssr: false })
 
 
@@ -21,6 +23,7 @@ function HomeContent() {
   const [scrolled, setScrolled] = useState(false);
   const [parallaxOffset, setParallaxOffset] = useState({ x: 0, y: 0, tiltX: 0, tiltY: 0 });
   const [bookingBgImage, setBookingBgImage] = useState('');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { scrollY } = useScroll();
   
   // Refs for hero text animation
@@ -201,13 +204,11 @@ function HomeContent() {
 
      {/* Floating logo that appears at top center on load */}
 <div
-  className="fixed inset-0 z-40 flex items-center justify-center pointer-events-none transition-all duration-500 ease-in-out"
-  style={{
-    transform: scrolled
-      ? 'translateY(-1200px) scale(0.6)'
-      : 'translateY(0) scale(7)',
-    opacity: scrolled ? 0 : 1,
-  }}
+  className={`fixed inset-0 z-40 flex items-center justify-center pointer-events-none transition-all duration-500 ease-in-out ${
+    scrolled 
+      ? 'transform -translate-y-[1200px] scale-[0.6] opacity-0' 
+      : 'transform translate-y-0 scale-[3] sm:scale-[5] md:scale-[7] opacity-100'
+  }`}
 >
   <div
     className="w-[80px] sm:w-[100px] h-[80px] sm:h-[100px]"
@@ -239,6 +240,81 @@ function HomeContent() {
         }}
       >
         <div className="max-w-7xl mx-auto relative flex h-full items-center justify-between px-4 md:px-8">
+          {/* Mobile hamburger menu button */}
+          <button
+            className="flex md:hidden items-center p-2"
+            aria-label="Open menu"
+            onClick={() => setIsMobileMenuOpen(true)}
+          >
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+
+          {/* Mobile menu dialog */}
+          <Dialog
+            open={isMobileMenuOpen}
+            onClose={() => setIsMobileMenuOpen(false)}
+            className="fixed inset-0 z-50 flex md:hidden"
+          >
+            <Dialog.Panel className="w-3/4 bg-primary1 p-6 shadow-xl">
+              <div className="flex justify-between items-center mb-8">
+                <h2 className="text-accent1 font-display text-xl uppercase tracking-wide">Menu</h2>
+                <button
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-accent1 p-2"
+                  aria-label="Close menu"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <nav>
+                <ul className="space-y-6 uppercase text-lg tracking-wide text-accent1">
+                  <li>
+                    <a 
+                      href="#about" 
+                      className="block hover:text-accent2 transition-colors duration-200"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      About
+                    </a>
+                  </li>
+                  <li>
+                    <a 
+                      href="#menu" 
+                      className="block hover:text-accent2 transition-colors duration-200"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Menu
+                    </a>
+                  </li>
+                  <li>
+                    <a 
+                      href="#gallery" 
+                      className="block hover:text-accent2 transition-colors duration-200"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Gallery
+                    </a>
+                  </li>
+                  <li>
+                    <a 
+                      href="#booking" 
+                      className="block hover:text-accent2 transition-colors duration-200"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Book Event
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            </Dialog.Panel>
+            {/* Backdrop */}
+            <div className="w-1/4 bg-black/50" onClick={() => setIsMobileMenuOpen(false)} />
+          </Dialog>
+
           {/* Left navigation items */}
           <ul className="hidden md:flex space-x-8 uppercase text-lg tracking-wide">
             <li>
@@ -353,7 +429,7 @@ function HomeContent() {
   <div className="relative z-10 text-center px-4">
     <h1 
       ref={heroTitleRef}
-      className="font-display tracking-tight leading-tight text-5xl sm:text-7xl md:text-8xl uppercase drop-shadow-lg"
+      className="font-display tracking-tight text-3xl sm:text-5xl md:text-7xl leading-snug sm:leading-tight uppercase drop-shadow-lg"
     >
       restaurant-quality<br />private dining
     </h1>
@@ -408,7 +484,7 @@ function HomeContent() {
 
 
 {/* about */}
-<section id="about" ref={aboutRef} className="-mt-1 bg-primary3 text-accent1 py-40 px-4">
+<section id="about" ref={aboutRef} className="-mt-1 bg-primary3 text-accent1 py-40 px-4 sm:px-6 lg:px-8">
   <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
   <img
   ref={imageRef}
@@ -488,7 +564,14 @@ function HomeContent() {
         </TextMarquee>
       </div>
       <div className="px-4 sm:px-8 h-full flex items-center justify-center relative z-50">
-        <PlateStack />
+        {/* Mobile carousel */}
+        <div className="block sm:hidden w-full">
+          <MobilePlateCarousel />
+        </div>
+        {/* Desktop plate stack */}
+        <div className="hidden sm:block w-full">
+          <PlateStack />
+        </div>
       </div>
     </div>
 
@@ -519,7 +602,7 @@ function HomeContent() {
             Event Highlights
           </TextMarquee>
         </div>
-        <div className="px-10">
+        <div className="px-4 sm:px-6 lg:px-10">
           <EventHighlights />
         </div>
       </section>
@@ -586,7 +669,7 @@ function HomeContent() {
         Let&apos;s Craft Your Event
       </TextMarquee>
     </div>
-    <div className="max-w-xl mx-auto px-8">
+    <div className="px-4 sm:px-6 lg:px-8 max-w-xl mx-auto">
       <QuoteChat />
     </div>
   </div>
@@ -597,8 +680,8 @@ function HomeContent() {
 
 
       {/* footer */}
-      <footer className="bg-primary1 text-accent1 py-32 px-8">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-12">
+      <footer className="bg-primary1 text-accent1 py-32 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-4 gap-12">
           <div>
             <h4 className="font-bold uppercase mb-4">Explore</h4>
             <ul className="space-y-1 text-sm">
@@ -610,7 +693,7 @@ function HomeContent() {
           <div>
             <h4 className="font-bold uppercase mb-4">Join the Mailing List</h4>
             <p className="text-sm mb-4">Seasonal menus, pop-ups & chef&apos;s secrets—straight to your inbox.</p>
-            <form className="flex gap-2 max-w-xs">
+            <form className="flex gap-2 w-full sm:w-auto sm:max-w-xs">
               <input type="email" placeholder="Email Address" className="flex-1 px-3 py-2 text-xs text-black placeholder:text-gray-400" />
               <button className="bg-primary1 px-4 py-2 text-xs text-accent1 uppercase tracking-wider hover:bg-white hover:text-accent1 transition font-button">
                 Sign Up
