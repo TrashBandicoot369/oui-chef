@@ -1,7 +1,14 @@
+// components/EventHighlights.tsx
 'use client'
 
-import { useRef, useEffect, useState } from 'react'
-import { gsap } from 'gsap'
+import { useState, useRef, useLayoutEffect } from 'react'
+import gsap from 'gsap'
+import { Power2 } from 'gsap'
+import { MorphSVGPlugin } from 'gsap/MorphSVGPlugin'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+
+// Register the MorphSVG plugin
+gsap.registerPlugin(MorphSVGPlugin)
 
 type Event = {
   id: number
@@ -10,245 +17,188 @@ type Event = {
   description: string
 }
 
+// ── EVENTS DATA ────────────────────────────────────────────────────────────────
 const events: Event[] = [
   {
     id: 1,
-    image: '/images/optimized/IMG_8262.webp',
-    alt: 'Intimate dining event with guests enjoying conversation',
-    description: 'A cozy gathering featuring warm hospitality and seasonal flavors.'
+    image: '/images/events/dinnerparty (1).jpg',
+    alt: 'Dinner in a contemporary art gallery',
+    description:
+      'A quiet, thoughtful evening where every plate felt like part of the exhibit. The space was clean and bright, the food minimal but intentional. Each course landed with a sense of purpose—no showboating, no filler. Just great pacing, warm lighting, and a menu built to reflect the art on the walls.',
   },
   {
     id: 2,
-    image: '/images/optimized/IMG_8301.webp',
-    alt: 'Elegantly plated dish with artistic presentation',
-    description: 'Guests enjoyed an artistic menu inspired by the best local farms.'
+    image: '/images/events/dinnerparty (4).jpg',
+    alt: 'Loft dinner filled with candles, plants, and soft light',
+    description:
+      'This felt like spring indoors—fresh herbs on the table, linen napkins just barely wrinkled, and dishes that tasted like someone cared. Served family-style, the menu moved from light and bright to deeply comforting. Everything smelled like lemon zest, olive oil, and trust.',
   },
   {
     id: 3,
-    image: '/images/optimized/IMG_8355.webp',
-    alt: 'Gourmet dish with green sauce in artisan bowl',
-    description: 'Our team served a vibrant tasting menu bursting with fresh herbs.'
+    image: '/images/events/dinnerparty (5).jpg',
+    alt: 'Late-night dinner thrown in a brick-and-beam loft downtown',
+    description:
+      'Held in a raw industrial space with long tables and loose rules, this dinner ditched formalities in favour of good wine and better pacing. Dishes came out slow and generous—built to anchor conversation, not interrupt it. A full-bodied, brick-walled kind of night that hit its stride after the second bottle.',
   },
   {
     id: 4,
-    image: '/images/optimized/IMG_8386.webp',
-    alt: 'Artistic plated dish with creative garnish',
-    description: 'An intimate supper club highlighted playful plating and bold colors.'
+    image: '/images/events/dinnerparty (7).jpg',
+    alt: 'A private dinner hosted aboard a wood-paneled boat',
+    description:
+      'Waves tapping at the hull, glasses clinking on wood—this was one of those "how is this real?" dinners. The courses felt coastal and precise, plated between portside views and clean ocean air. It moved like a tide: calm, then surprising. You left feeling lighter.',
   },
   {
     id: 5,
-    image: '/images/optimized/IMG_8436-Edit.webp',
-    alt: 'Premium meat dish with colorful vegetable garnish',
-    description: 'Slow-cooked meats stole the show at this rustic celebration.'
+    image: '/images/events/dinnerparty (8).jpg',
+    alt: 'Dinner in a winery hall overlooking rows of vines',
+    description:
+      'Set against a backdrop of late-summer vineyards, this dinner leaned into the earthy and elemental. Stoneware plates, wood-fired mains, and wine poured with zero ceremony. The kind of evening that starts golden and ends with sweaters over shoulders and forks chasing the last bite of something warm.',
   },
   {
     id: 6,
-    image: '/images/optimized/IMG_8223.webp',
-    alt: 'Additional culinary creation',
-    description: 'The evening closed with comfort classics reinvented for the crowd.'
+    image: '/images/events/dinnerparty (9).jpg',
+    alt: 'Rooftop dinner framed by city skylines and patio plants',
+    description:
+      'Equal parts dinner and hang, this rooftop gathering delivered that perfect balance of casual and magic. Music low, wine cold, and food that arrived when it was ready. Nothing rushed, everything easy. If you\'ve ever wanted a dinner to feel like a soft landing, this was it.',
+  },
+  {
+    id: 7,
+    image: '/images/events/dinnerparty (10).jpg',
+    alt: 'Minimalist dinner inside a concrete-walled private room',
+    description:
+      'This one played with restraint. The setting was clean and architectural, the menu stripped of anything unnecessary. No centerpieces, no noise—just elegant plates arriving in rhythm and disappearing just as quietly. Precision without pretense.',
+  },
+  {
+    id: 8,
+    image: '/images/events/dinnerparty (11).jpg',
+    alt: 'Tightly lit dinner in a tucked-away private space',
+    description:
+      'Tucked behind a nondescript door and down a quiet hallway, this dinner had that rare "you had to be there" feel. The food was vibrant and unexpected, the mood a little rowdy, but always intentional. Designed to feel like a secret—one you\'re glad got out.',
   }
 ]
 
+// ── SVG CLIP SHAPES ────────────────────────────────────────────────────────────
+// 📝 CUSTOMIZATION NOTES:
+// - These are compact organic shapes optimized for horizontal scaling
+// - All shapes must have the SAME NUMBER of path commands for smooth morphing
+// - To create new shapes: use tools like https://www.blobmaker.app/ or similar
+// - Keep coordinates roughly between -80 and +80 for best results with current viewBox
+// - More dramatic coordinate differences = more dramatic morphing animations
+const shapes = [
+  'M37.3,-54.3C52.4,-48.3,71.4,-44.8,80.1,-34.1C88.7,-23.4,87,-5.6,80.4,8.7C73.8,22.9,62.4,33.6,50.9,40.6C39.3,47.6,27.6,50.9,15,57.5C2.4,64.1,-11.1,74,-22.4,72.4C-33.6,70.8,-42.5,57.7,-46.8,44.9C-51,32.1,-50.5,19.7,-52.8,7.3C-55.1,-5.1,-60.1,-17.4,-58.5,-29.1C-56.9,-40.9,-48.8,-52,-37.9,-59.9C-27.1,-67.8,-13.5,-72.5,-1.2,-70.6C11.1,-68.7,22.2,-60.3,37.3,-54.3Z',
+  'M30.4,-45.5C42.4,-39.6,57.4,-36.3,65.9,-27.3C74.4,-18.2,76.6,-3.5,75.3,11.3C73.9,26.1,69.1,40.9,58.5,47.8C48,54.7,31.8,53.9,16.8,59.2C1.8,64.5,-12,76,-20.1,72C-28.2,68,-30.8,48.4,-35.8,35.2C-40.9,21.9,-48.4,15,-49.5,7.1C-50.5,-0.7,-45.2,-9.4,-41.6,-19.7C-38,-29.9,-36.1,-41.6,-29.5,-50C-22.8,-58.4,-11.4,-63.5,-1.1,-61.7C9.2,-60,18.4,-51.4,30.4,-45.5Z',
+  'M29.7,-48C41.6,-38.6,56.6,-35.6,60.7,-27.5C64.8,-19.3,58,-6,54.9,7.1C51.7,20.1,52.2,32.9,47.6,45.1C43,57.4,33.4,69.1,21.7,71.4C10,73.7,-3.8,66.6,-15.3,59.8C-26.9,52.9,-36.2,46.2,-44.9,38C-53.6,29.7,-61.5,19.8,-64.9,8.2C-68.4,-3.4,-67.4,-16.9,-60.4,-25.7C-53.5,-34.6,-40.6,-38.9,-29.6,-48.8C-18.5,-58.6,-9.3,-73.9,-0.2,-73.6C8.9,-73.3,17.8,-57.4,29.7,-48Z',
+  'M30.8,-49.9C41.5,-41.1,52.8,-35.2,59.7,-25.7C66.5,-16.1,68.8,-2.9,65.1,7.9C61.3,18.8,51.4,27.4,43.8,40.1C36.1,52.7,30.7,69.5,21.6,70.9C12.5,72.3,-0.2,58.3,-13.6,51.8C-26.9,45.3,-40.7,46.3,-49.7,40.5C-58.8,34.7,-63,22.2,-61.9,10.7C-60.8,-0.9,-54.3,-11.4,-51.8,-26.5C-49.3,-41.6,-50.6,-61.2,-42.7,-71.3C-34.7,-81.4,-17.3,-82,-3.6,-76.3C10.1,-70.6,20.1,-58.8,30.8,-49.9Z',
+  'M32.4,-53.7C38.4,-46.5,37.4,-31.5,44,-19.4C50.6,-7.3,64.9,2.1,69,13.7C73.2,25.3,67.2,39.2,57.2,48.2C47.2,57.2,33.2,61.3,18.9,66.5C4.5,71.8,-10.1,78.1,-22.6,75.3C-35.1,72.4,-45.4,60.3,-52.9,47.9C-60.4,35.5,-65,22.8,-64.7,10.7C-64.3,-1.4,-58.8,-12.9,-53.6,-24.6C-48.4,-36.2,-43.4,-48,-34.6,-54C-25.7,-59.9,-12.8,-59.9,0.2,-60.2C13.2,-60.4,26.3,-60.9,32.4,-53.7Z',
+  'M48.3,-68.1C61.8,-66.6,71.2,-51.7,72.1,-36.7C73.1,-21.7,65.6,-6.7,63.8,9.5C62,25.7,65.9,43.1,59.4,52.4C52.8,61.7,35.8,62.9,19.7,67.9C3.7,72.8,-11.4,81.7,-25.1,80.1C-38.8,78.6,-51.1,66.7,-56.5,53.1C-62,39.4,-60.7,24,-63.4,8.8C-66.1,-6.4,-72.8,-21.4,-69.4,-32.8C-65.9,-44.2,-52.2,-52,-38.9,-53.6C-25.7,-55.1,-12.8,-50.3,2.3,-53.9C17.5,-57.5,34.9,-69.5,48.3,-68.1Z'
+]
+
+// ── COMPONENT ─────────────────────────────────────────────────────────────────
 export default function EventHighlights() {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const imagesRef = useRef<(HTMLDivElement | null)[]>([])
-  const overlaysRef = useRef<(HTMLDivElement | null)[]>([])
-  const descriptionsRef = useRef<(HTMLDivElement | null)[]>([])
+  // 🎯 EASY SCALING CONTROL - CHANGE THIS NUMBER:
+  // 1.0 = normal, 1.5 = 50% bigger, 2.0 = double size, 0.8 = smaller
+  const SCALE = 1.8
+  
+  const [index, setIndex] = useState(0)
+  const pathRef = useRef<SVGPathElement>(null)
+  const imgRef = useRef<SVGImageElement>(null)
+  const count = events.length
 
-  const getCurrentPair = () => {
-    return [
-      events[currentIndex],
-      events[(currentIndex + 1) % events.length]
-    ]
-  }
+  const next = () => setIndex((i) => (i + 1) % count)
+  const prev = () => setIndex((i) => (i - 1 + count) % count)
 
-  const nextSlide = () => {
-    const newIndex = (currentIndex + 2) % events.length
-    setCurrentIndex(newIndex)
-  }
-
-  const prevSlide = () => {
-    const newIndex = (currentIndex - 2 + events.length) % events.length
-    setCurrentIndex(newIndex)
-  }
-
-  const handleMouseEnter = (index: number) => {
-    const imageEl = imagesRef.current[index]
-    const overlayEl = overlaysRef.current[index]
-    const descriptionEl = descriptionsRef.current[index]
-
-    if (imageEl && overlayEl && descriptionEl) {
-      // Image expand and blur
-      gsap.to(imageEl, {
-        scale: 1.1,
-        filter: 'blur(2px)',
-        duration: 0.4,
-        ease: 'power2.out'
-      })
-
-      // Overlay fade in
-      gsap.to(overlayEl, {
-        opacity: 1,
-        duration: 0.3,
-        ease: 'power2.out'
-      })
-
-      // Description slide up
-      gsap.fromTo(descriptionEl, 
-        { 
-          y: 30,
-          opacity: 0 
-        },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.4,
-          delay: 0.1,
-          ease: 'power2.out'
-        }
-      )
+  useLayoutEffect(() => {
+    if (imgRef.current) {
+      imgRef.current.setAttribute('href', events[index].image)
     }
-  }
-
-  const handleMouseLeave = (index: number) => {
-    const imageEl = imagesRef.current[index]
-    const overlayEl = overlaysRef.current[index]
-    const descriptionEl = descriptionsRef.current[index]
-
-    if (imageEl && overlayEl && descriptionEl) {
-      // Image return to normal
-      gsap.to(imageEl, {
-        scale: 1,
-        filter: 'blur(0px)',
-        duration: 0.4,
-        ease: 'power2.out'
-      })
-
-      // Overlay fade out
-      gsap.to(overlayEl, {
-        opacity: 0,
-        duration: 0.3,
-        ease: 'power2.out'
-      })
-
-      // Description fade out
-      gsap.to(descriptionEl, {
-        y: 30,
-        opacity: 0,
-        duration: 0.3,
-        ease: 'power2.out'
+    if (pathRef.current) {
+      // 📝 ANIMATION CUSTOMIZATION:
+      // - duration: speed of morph (0.3 = fast, 1.0 = slow)
+      // - ease: animation curve (try: Power2.easeOut, Power3.easeInOut, etc.)
+      // - Add delay: 0.1 for staggered effects
+      gsap.to(pathRef.current, {
+        duration: 0.5,
+        ease: Power2.easeInOut,
+        morphSVG: shapes[index % shapes.length],
       })
     }
-  }
-
-  // Slide transition animation
-  useEffect(() => {
-    const container = containerRef.current
-    if (container) {
-      gsap.fromTo(container.children,
-        { 
-          opacity: 0,
-          x: 50
-        },
-        {
-          opacity: 1,
-          x: 0,
-          duration: 0.6,
-          stagger: 0.1,
-          ease: 'power3.out'
-        }
-      )
-    }
-  }, [currentIndex])
-
-  const currentPair = getCurrentPair()
+  }, [index])
 
   return (
-    <div className="relative py-8">
-  <div className="max-w-6xl mx-auto">
-      {/* Navigation arrows */}
-      <button
-        onClick={prevSlide}
-        className="absolute left-4 sm:left-10 top-1/2 -translate-y-1/2 z-20 bg-accent2 hover:bg-accent1 text-primary3 p-3 py rounded-full transition-colors duration-300 shadow-lg hover:shadow-xl"
-        aria-label="Previous images"
-      >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </button>
-
-      <button
-        onClick={nextSlide}
-        className="absolute right-4 sm:right-0 top-1/2 -translate-y-1/2 z-20 bg-accent2 hover:bg-accent1 text-primary3 p-3 rounded-full transition-colors duration-300 shadow-lg hover:shadow-xl"
-        aria-label="Next images"
-      >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </button>
-
-      {/* Image container */}
-      <div ref={containerRef} className="grid grid-cols-1 sm:grid-cols-2 gap-4 mx-12">
-        {currentPair.map((event, index) => (
-          <div
-            key={`${event.id}-${currentIndex}`}
-            className="relative rounded-lg overflow-hidden cursor-pointer"
-            style={{
-              outline: '4px solid var(--color-stroke)',
-              outlineOffset: '-2px',
-              boxShadow: '8px 8px 0 var(--color-accent2)'
-            }}
-            onMouseEnter={() => handleMouseEnter(index)}
-            onMouseLeave={() => handleMouseLeave(index)}
-          >
-            {/* Image */}
-            <div
-              ref={(el) => { imagesRef.current[index] = el }}
-              className="w-full h-80 overflow-hidden"
-            >
-              <img
-                src={event.image}
-                alt={event.alt}
-                className="w-full h-full object-cover"
-              />
-            </div>
-
-            {/* Overlay */}
-            <div
-              ref={(el) => { overlaysRef.current[index] = el }}
-              className="absolute inset-0 bg-black bg-opacity-60 opacity-0 flex items-end justify-center p-6"
-            >
-              <div
-                ref={(el) => { descriptionsRef.current[index] = el }}
-                className="text-white text-center opacity-0"
-              >
-                <p className="text-lg font-medium leading-relaxed">
-                  {event.description}
-                </p>
-              </div>
-            </div>
-          </div>
-        ))}
+    <div className="flex flex-col md:flex-row items-center px-8">
+      {/* TEXT COLUMN */}
+      {/* 📝 LAYOUT CUSTOMIZATION: Change w-1/3 to w-1/2 for more text space, w-1/4 for less */}
+      <div className="w-full md:w-1/3 mb-8 md:mb-0">
+        <h2 className="text-4xl font-bold uppercase mb-6">{events[index].alt}</h2>
+        <p className="text-lg leading-relaxed">{events[index].description}</p>
       </div>
 
-      {/* Indicators */}
-      <div className="flex justify-center mt-8 space-x-2">
-        {Array.from({ length: Math.ceil(events.length / 2) }).map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentIndex(index * 2)}
-            className={`w-3 h-3 rounded-full transition-all duration-300 ${
-              Math.floor(currentIndex / 2) === index
-                ? 'bg-accent2 scale-125'
-                : 'bg-accent2 opacity-50 hover:opacity-75'
-            }`}
-            aria-label={`Go to slide ${index + 1}`}
+      {/* MORPHING IMAGE */}
+      {/* 📝 LAYOUT CUSTOMIZATION: Change w-2/3 to match text column ratio */}
+      <div className="relative w-full md:w-/3 flex justify-center items-center">
+        <button
+          onClick={prev}
+          aria-label="Previous"
+          className="
+            absolute left-4 top-1/2 transform -translate-y-1/2
+            z-20 p-4 
+            bg-white bg-opacity-10 backdrop-blur-sm
+            hover:bg-opacity-20
+            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-400
+            rounded-full
+            transition
+          "
+        >
+          <ChevronLeft className="w-6 h-6 text-white" />
+        </button>
+
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="-100 -100 200 200"
+          className="w-full max-w-[600px] h-[400px]"
+          clipPathUnits="userSpaceOnUse"
+          // 🎯 CSS SCALING - RESPONSIVE AND CONTAINED:
+          style={{ 
+            transform: `scale(${Math.min(SCALE, 1.8)})`, // Limit scale to prevent overflow
+            transformOrigin: 'center'
+          }}
+        >
+          <defs>
+            <clipPath id="clip">
+              <path ref={pathRef} d={shapes[0]} fill="#fff" />
+            </clipPath>
+          </defs>
+
+          <image
+            ref={imgRef}
+            href={events[0].image}
+            x={-100}
+            y={-100}
+            width={200}
+            height={200}
+            preserveAspectRatio="xMidYMid slice"
+            clipPath="url(#clip)"
+            aria-label={events[index].alt}
+            style={{ pointerEvents: 'none' }}
           />
-        ))}
+        </svg>
+
+        <button
+          onClick={next}
+          aria-label="Next"
+          className="
+            absolute right-4 top-1/2 transform -translate-y-1/2
+            z-20 p-4
+            bg-white bg-opacity-10 backdrop-blur-sm
+            hover:bg-opacity-20
+            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-400
+            rounded-full
+            transition
+          "
+        >
+          <ChevronRight className="w-6 h-6 text-white" />
+        </button>
       </div>
-    </div>
     </div>
   )
-
 }

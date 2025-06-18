@@ -137,20 +137,21 @@ export default function PlateStack() {
         const finalY = Math.round((container.offsetHeight - img.offsetHeight) / 2)
         const finalRotation = Math.round((Math.random() - 0.5) * 8)
         
-        // Set initial position (off-screen to the right) and final position for scroll animation
+        // Set initial position (start from left side within container) and final position for scroll animation
         gsap.set(el, {
-          x: finalX + 400, // Start 400px to the right
+          x: padding, // Start from left edge of container
           y: finalY,
           rotation: finalRotation,
           zIndex: idx + 1,
-          scale: 1,
-          opacity: 0.3
+          scale: 0.8,
+          opacity: 0
         })
 
         // Create scroll-triggered animation for each plate
         gsap.to(el, {
           x: finalX,
           opacity: 1,
+          scale: 1,
           duration: 0.8,
           delay: idx * 0.1, // Stagger the animations
           ease: 'power2.out',
@@ -179,14 +180,14 @@ export default function PlateStack() {
         if (active !== null) {
           gsap.to(plates[active], { scale: 1, zIndex: active + 1, duration: 0.5, ease: 'power2.out' })
         }
-        gsap.to(plates[idx], { scale: 3, zIndex: plates.length + 5, duration: 0.3, ease: 'power2.out' })
+        gsap.to(plates[idx], { scale: Math.min(2.2, window.innerWidth / 500), zIndex: plates.length + 5, duration: 0.5, ease: 'power2.out' })
         active = idx
       }
     }
 
     const onLeave = () => {
       if (active !== null) {
-        gsap.to(plates[active], { scale: 1, zIndex: active + 1, duration: 0.3, ease: 'power2.out' })
+        gsap.to(plates[active], { scale: 1, zIndex: active + 1, duration: 0.5, ease: 'power2.out' })
         active = null
       }
     }
@@ -207,7 +208,7 @@ export default function PlateStack() {
   }, [shuffledPlates.length])
 
   return (
-    <section className="w-full overflow-visible p-0 m-0 relative z-50">
+    <section className="w-full overflow-visible p-0 m-0 relative z-20">
       <div
         ref={stackRef}
         className="relative w-full h-[500px] overflow-visible p-0 m-0"
@@ -222,7 +223,7 @@ export default function PlateStack() {
               <img
                 src={src}
                 alt={`Plate ${idx + 1}`}
-                className="w-[300px] pointer-events-none select-none"
+                className="w-[400px] max-w-[80vw] pointer-events-none select-none"
                 draggable={false}
                 style={{ display: 'block', margin: 0, padding: 0 }}
               />

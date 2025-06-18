@@ -558,7 +558,7 @@ function HomeContent() {
 
     {/* Content with TextMarquee and PlateStack */}
     <div className="relative z-50 py-32">
-      <div className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+      <div className="w-full max-w-none">
         <TextMarquee className="w-full text-center font-display text-3xl sm:text-5xl uppercase mb-12 text-accent2">
           Signature Menu Items
         </TextMarquee>
@@ -596,8 +596,8 @@ function HomeContent() {
 
 
       {/* gallery */}
-      <section id="gallery" className="bg-primary3 z-10 text-accent2 py-32">
-        <div className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+      <section id="gallery" className="bg-primary3 z-10 text-accent2 py-16">
+        <div className="w-full max-w-none">
           <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12 text-accent2">
             Event Highlights
           </TextMarquee>
@@ -621,7 +621,7 @@ function HomeContent() {
 
       {/* testimonials */}
       <section id="testimonials" className="relative bg-primary2 text-center text-accent1 py-32">
-        <div className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+        <div className="w-full max-w-none">
           <TextMarquee className="text-center font-display text-3xl text-accent1 sm:text-5xl uppercase mb-12 text-accent2">
             Testimonials
           </TextMarquee>
@@ -664,7 +664,7 @@ function HomeContent() {
 
   {/* Content */}
   <div className="relative z-10">
-    <div className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+    <div className="w-full max-w-none">
       <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12 text-accent2 drop-shadow-lg">
         Let&apos;s Craft Your Event
       </TextMarquee>

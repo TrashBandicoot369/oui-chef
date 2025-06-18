@@ -71,7 +71,7 @@ export default function VerticalMarquee({
             {doubledItems.map((text, j) => (
               <div
                 key={`${i}-${j}`}
-                className="w-64 bg-primary1 text-accent2 p-4 rounded-xl shadow-xl my-4 text-sm"
+                className="w-full max-w-64 bg-accent1 text-primary2 p-4 rounded-xl border-2 border-stroke shadow-xl my-4 text-sm"
               >
                 {text}
               </div>

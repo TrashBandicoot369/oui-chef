@@ -17,8 +17,8 @@ const loadGoogleFont = (fontName: string) => {
 const quickPresets = [
   {
     name: 'Default',
-    display: 'Chango',
-    sans: 'Roboto',
+    display: 'Anton',
+    sans: 'Bitter',
     button: 'Oswald'
   },
   {
@@ -44,8 +44,8 @@ const quickPresets = [
 export default function FontSwitcher() {
   const [isOpen, setIsOpen] = useState(false)
   const [currentFonts, setCurrentFonts] = useState({
-    display: 'Chango',
-    sans: 'Roboto',
+    display: 'Anton',
+    sans: 'Bitter',
     button: 'Oswald'
   })
 
@@ -104,7 +104,7 @@ export default function FontSwitcher() {
     <div className="fixed bottom-6 right-6 z-50">
       {/* Main Font Picker Panel */}
       {isOpen && (
-        <div className="mb-4 bg-white rounded-lg shadow-lg border p-4 w-80 max-h-96 overflow-y-auto">
+        <div className="mb-4 bg-white rounded-lg shadow-lg border p-4 w-80 max-w-[calc(100vw-3rem)] max-h-96 overflow-y-auto">
           <div className="flex justify-between items-center mb-3">
             <h3 className="font-medium text-sm">Font Picker</h3>
             <button 
