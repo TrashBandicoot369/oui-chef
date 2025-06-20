@@ -1,6 +1,7 @@
 'use client';
 
 
+import React from 'react'
 import QuoteChat from './components/QuoteChat'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useState, useEffect, useRef } from 'react'
@@ -13,6 +14,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import dynamic from 'next/dynamic'
 import { Dialog } from '@headlessui/react'
+import { useSiteData } from './context/SiteDataContext'
 const BounceArrow = dynamic(() => import('./components/BounceArrow'), { ssr: false })
 
 
@@ -25,6 +27,7 @@ function HomeContent() {
   const [bookingBgImage, setBookingBgImage] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { scrollY } = useScroll();
+  const { copy, testimonials, menu, gallery, theme } = useSiteData();
   
   // Refs for hero text animation
   const heroTitleRef = useRef<HTMLHeadingElement>(null);
@@ -48,18 +51,24 @@ function HomeContent() {
     // Lock in current colors and fonts
     const root = document.documentElement;
     
-    // Set locked colors (current values with -72% brightness on primaries)
-    root.style.setProperty('--color-primary1', '#1c1b20');
-    root.style.setProperty('--color-primary2', '#383234');
-    root.style.setProperty('--color-primary3', '#3f393c');
-    root.style.setProperty('--color-accent1', '#e3973b');
-    root.style.setProperty('--color-accent2', '#ee962b');
-    root.style.setProperty('--color-stroke', '#532030');
-    
-    // Set locked fonts (current values from your font picker)
-    root.style.setProperty('--font-display', '"Anton", cursive');
-    root.style.setProperty('--font-sans', '"Bitter", sans-serif');
-    root.style.setProperty('--font-button', '"Oswald", sans-serif');
+    if (theme?.[0]) {
+      const t = theme[0]
+      Object.entries(t.colors).forEach(([k, v]) => {
+        root.style.setProperty(`--color-${k}`, v as string)
+      })
+      Object.entries(t.fonts).forEach(([k, v]) => {
+        root.style.setProperty(`--font-${k}`, v as string)
+      })
+      ;['display', 'sans', 'button'].forEach(font => {
+        const name = t.fonts[font as keyof typeof t.fonts]
+        if (name && !document.querySelector(`link[href*="${encodeURIComponent(name.split(',')[0].replace(/'/g,''))}"]`)) {
+          const link = document.createElement('link')
+          link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(name.split(',')[0].replace(/'/g,''))}:wght@300;400;500;600;700&display=swap`
+          link.rel = 'stylesheet'
+          document.head.appendChild(link)
+        }
+      })
+    }
     
     // Load Google Fonts
     const loadFont = (fontName: string) => {
@@ -427,25 +436,26 @@ function HomeContent() {
 
 
   <div className="relative z-10 text-center px-4">
-    <h1 
+    <h1
       ref={heroTitleRef}
       className="font-display tracking-tight text-3xl sm:text-5xl md:text-7xl leading-snug sm:leading-tight uppercase drop-shadow-lg"
     >
-      restaurant-quality<br />private dining
+      {copy?.[0]?.heroTitle?.split('\\n').map((t: string, i: number) => (
+        <React.Fragment key={i}>{i > 0 && <br />}{t}</React.Fragment>
+      ))}
     </h1>
-    <p 
+    <p
       ref={heroSubtitleRef}
       className="mt-6 max-w-xl mx-auto text-lg drop-shadow-lg"
     >
-      From intimate dinners to large galas, Chef Alex J crafts unforgettable culinary experiences wherever you
-      celebrate.
+      {copy?.[0]?.heroSubtitle}
     </p>
     
       <a
       href="#booking"
       className="inline-block mt-8 bg-accent1 text-white px-6 py-2 text-xs uppercase tracking-wider hover:bg-white hover:text-accent1 transition font-button drop-shadow-lg"
     >
-      Start Your Booking
+      {copy?.[0]?.heroButton}
 
      
 
@@ -501,28 +511,20 @@ function HomeContent() {
 
 
 <div ref={textRef}>
-<h2 className="font-display text-accent2 text-4xl sm:text-5xl mb-4">
-    Meet Chef Alex J
+  <h2 className="font-display text-accent2 text-4xl sm:text-5xl mb-4">
+    {copy?.[0]?.aboutTitle}
   </h2>
 
-  <p className="text-accent2 mb-4">
-    Raised in bustling family kitchens in Montréal and Toronto, Alex learned
-    early on that the best way to care for people is through food. Eighteen
-    years later, that passion still drives him. From intimate dinners to large
-    festivals, he brings the flavours and techniques he grew up loving to every
-    plate he serves.
-  </p>
-
-  <p className="text-accent2 mb-4">
-    Every event is tailored to your unique tastes and needs—because when you
-    dine with us, you're family.
-  </p>
-
-  <p className="text-accent2 mb-4">
-    Welcome to the family,
-    <br />
-    Alex
-  </p>
+  {copy?.[0]?.aboutDescription?.map((p: string, i: number) => (
+    <p key={i} className="text-accent2 mb-4">
+      {p.split('\n').map((line, j) => (
+        <React.Fragment key={j}>
+          {line}
+          {j < p.split('\n').length - 1 && <br />}
+        </React.Fragment>
+      ))}
+    </p>
+  ))}
     </div>
   </div>
 </section>
@@ -551,10 +553,10 @@ d="M0,224L34.3,240C68.6,256,137,288,206,282.7C274.3,277,343,235,
       <section id="gallery" className="bg-primary2 z-10 text-accent2 py-4">
   <div className="text-center mb-2">
     <TextMarquee className="font-display text-3xl sm:text-5xl uppercase text-accent2">
-      Event Highlights
+      {copy?.[0]?.galleryTitle}
     </TextMarquee>
   </div>
-  <EventHighlights />
+  <EventHighlights events={gallery ?? []} />
 </section>
 
 
@@ -592,17 +594,17 @@ d="M0,224L34.3,240C68.6,256,137,288,206,282.7C274.3,277,343,235,
     <div className="relative z-50 py-32">
       <div className="w-full max-w-none">
         <TextMarquee className="w-full text-center font-display text-3xl sm:text-5xl uppercase mb-12 text-accent2">
-          Signature Menu Items
+          {copy?.[0]?.menuTitle}
         </TextMarquee>
       </div>
       <div className="px-4 sm:px-8 h-full flex items-center justify-center relative z-50">
         {/* Mobile carousel */}
         <div className="block sm:hidden w-full">
-          <MobilePlateCarousel />
+          <MobilePlateCarousel items={menu?.map((m: any) => m.text) ?? []} />
         </div>
         {/* Desktop plate stack */}
         <div className="hidden sm:block w-full">
-          <PlateStack />
+          <PlateStack items={menu?.map((m: any) => m.text) ?? []} />
         </div>
       </div>
     </div>
@@ -633,22 +635,12 @@ d="M0,224L34.3,240C68.6,256,137,288,206,282.7C274.3,277,343,235,
       <section id="testimonials" className="relative bg-primary2 text-center text-accent1 py-32">
         <div className="w-full max-w-none">
           <TextMarquee className="text-center font-display text-3xl text-accent1 sm:text-5xl uppercase mb-12 text-accent2">
-            Testimonials
+            {copy?.[0]?.testimonialsTitle}
           </TextMarquee>
         </div>
         <div className="px-4">
-          <VerticalMarquee 
-            items={[
-              "Chef Alex transformed our backyard into a Michelin-starred experience. Every dish was a masterpiece!",
-              "The attention to detail was incredible. From the menu planning to the final presentation, everything was perfect.",
-              "Our corporate event was a huge success thanks to Chef Alex's innovative menu and professional service.",
-              "The seasonal tasting menu was a journey through local flavors. Each course told a story.",
-              "What impressed me most was how Chef Alex made everyone feel like family while maintaining professional excellence.",
-              "The family-style feast was perfect for our large gathering. Everyone raved about the food!",
-              "Chef Alex's passion for local ingredients shines through in every dish. Truly exceptional dining.",
-              "The wine pairings were spot on, and the service was impeccable. A memorable evening!",
-              "From intimate dinners to large events, Chef Alex delivers consistently outstanding experiences."
-            ]}
+          <VerticalMarquee
+            items={testimonials?.map((t: any) => t.text) ?? []}
             speed={30} // Slightly slower speed for better readability
             className="max-w-6xl mx-auto"
           />
@@ -676,7 +668,7 @@ d="M0,224L34.3,240C68.6,256,137,288,206,282.7C274.3,277,343,235,
   <div className="relative z-10">
     <div className="w-full max-w-none">
       <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12 text-accent2 drop-shadow-lg">
-        Let&apos;s Craft Your Event
+        {copy?.[0]?.bookingTitle}
       </TextMarquee>
     </div>
     <div className="px-4 sm:px-6 lg:px-8 max-w-xl mx-auto">
@@ -702,7 +694,7 @@ d="M0,224L34.3,240C68.6,256,137,288,206,282.7C274.3,277,343,235,
           </div>
           <div>
             <h4 className="font-bold uppercase mb-4">Join the Mailing List</h4>
-            <p className="text-sm mb-4">Seasonal menus, pop-ups & chef&apos;s secrets—straight to your inbox.</p>
+            <p className="text-sm mb-4">{copy?.[0]?.footerBlurb}</p>
             <form className="flex gap-2 w-full sm:w-auto sm:max-w-xs">
               <input type="email" placeholder="Email Address" className="flex-1 px-3 py-2 text-xs text-black placeholder:text-gray-400" />
               <button className="bg-primary1 px-4 py-2 text-xs text-accent1 uppercase tracking-wider hover:bg-white hover:text-accent1 transition font-button">
@@ -723,7 +715,7 @@ d="M0,224L34.3,240C68.6,256,137,288,206,282.7C274.3,277,343,235,
             </div>
           </div>
         </div>
-        <p className="text-center text-xs mt-12 opacity-70">&copy; 2025 Chef Alex J. All rights reserved.</p>
+        <p className="text-center text-xs mt-12 opacity-70">{copy?.[0]?.footerCopyright}</p>
       </footer>
     </>
   );
