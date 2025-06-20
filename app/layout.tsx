@@ -1,10 +1,16 @@
 import type { Metadata } from 'next'
 import React from 'react'
 import './globals.css'
+import { SiteDataProvider } from './context/SiteDataContext'
+import { db } from '@/lib/firebase-admin'
 
-export const metadata: Metadata = {
-  title: 'Chef Alex J — Private Dining & Events',
-  description: 'From intimate dinners to large galas, Chef Alex J crafts unforgettable culinary experiences wherever you celebrate.',
+export async function generateMetadata(): Promise<Metadata> {
+  const snapshot = await db.collection('siteCopy').get()
+  const copy = snapshot.docs[0]?.data() as any || {}
+  return {
+    title: copy.seoTitle,
+    description: copy.seoDescription,
+  }
 }
 
 export default function RootLayout({
@@ -24,7 +30,9 @@ export default function RootLayout({
         />
       </head>
       <body>
-        {children}
+        <SiteDataProvider>
+          {children}
+        </SiteDataProvider>
       </body>
     </html>
   )

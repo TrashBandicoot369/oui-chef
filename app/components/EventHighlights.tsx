@@ -1,71 +1,12 @@
 import { useState, useRef, useLayoutEffect } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
-type Event = {
+export type Event = {
   id: number
   image: string
   alt: string
   description: string
 }
-
-const events: Event[] = [
-  {
-    id: 1,
-    image: '/images/events/dinnerparty (1).jpg',
-    alt: 'Dinner in a contemporary art gallery',
-    description:
-      'A quiet, thoughtful evening where every plate felt like part of the exhibit. The space was clean and bright, the food minimal but intentional. Each course landed with a sense of purpose—no showboating, no filler. Just great pacing, warm lighting, and a menu built to reflect the art on the walls.',
-  },
-  {
-    id: 2,
-    image: '/images/events/dinnerparty (4).jpg',
-    alt: 'Loft dinner filled with candles, plants, and soft light',
-    description:
-      'This felt like spring indoors—fresh herbs on the table, linen napkins just barely wrinkled, and dishes that tasted like someone cared. Served family-style, the menu moved from light and bright to deeply comforting. Everything smelled like lemon zest, olive oil, and trust.',
-  },
-  {
-    id: 3,
-    image: '/images/events/dinnerparty (5).jpg',
-    alt: 'Late-night dinner thrown in a brick-and-beam loft downtown',
-    description:
-      'Held in a raw industrial space with long tables and loose rules, this dinner ditched formalities in favour of good wine and better pacing. Dishes came out slow and generous—built to anchor conversation, not interrupt it. A full-bodied, brick-walled kind of night that hit its stride after the second bottle.',
-  },
-  {
-    id: 4,
-    image: '/images/events/dinnerparty (7).jpg',
-    alt: 'A private dinner hosted aboard a wood-paneled boat',
-    description:
-      'Waves tapping at the hull, glasses clinking on wood—this was one of those "how is this real?" dinners. The courses felt coastal and precise, plated between portside views and clean ocean air. It moved like a tide: calm, then surprising. You left feeling lighter.',
-  },
-  {
-    id: 5,
-    image: '/images/events/dinnerparty (8).jpg',
-    alt: 'Dinner in a winery hall overlooking rows of vines',
-    description:
-      'Set against a backdrop of late-summer vineyards, this dinner leaned into the earthy and elemental. Stoneware plates, wood-fired mains, and wine poured with zero ceremony. The kind of evening that starts golden and ends with sweaters over shoulders and forks chasing the last bite of something warm.',
-  },
-  {
-    id: 6,
-    image: '/images/events/dinnerparty (9).jpg',
-    alt: 'Rooftop dinner framed by city skylines and patio plants',
-    description:
-      'Equal parts dinner and hang, this rooftop gathering delivered that perfect balance of casual and magic. Music low, wine cold, and food that arrived when it was ready. Nothing rushed, everything easy. If you\'ve ever wanted a dinner to feel like a soft landing, this was it.',
-  },
-  {
-    id: 7,
-    image: '/images/events/dinnerparty (10).jpg',
-    alt: 'Minimalist dinner inside a concrete-walled private room',
-    description:
-      'This one played with restraint. The setting was clean and architectural, the menu stripped of anything unnecessary. No centerpieces, no noise—just elegant plates arriving in rhythm and disappearing just as quietly. Precision without pretense.',
-  },
-  {
-    id: 8,
-    image: '/images/events/dinnerparty (11).jpg',
-    alt: 'Tightly lit dinner in a tucked-away private space',
-    description:
-      'Tucked behind a nondescript door and down a quiet hallway, this dinner had that rare "you had to be there" feel. The food was vibrant and unexpected, the mood a little rowdy, but always intentional. Designed to feel like a secret—one you\'re glad got out.',
-  }
-]
 
 // SVG clip shapes for morphing animation
 const shapes = [
@@ -77,7 +18,7 @@ const shapes = [
   'M48.3,-68.1C61.8,-66.6,71.2,-51.7,72.1,-36.7C73.1,-21.7,65.6,-6.7,63.8,9.5C62,25.7,65.9,43.1,59.4,52.4C52.8,61.7,35.8,62.9,19.7,67.9C3.7,72.8,-11.4,81.7,-25.1,80.1C-38.8,78.6,-51.1,66.7,-56.5,53.1C-62,39.4,-60.7,24,-63.4,8.8C-66.1,-6.4,-72.8,-21.4,-69.4,-32.8C-65.9,-44.2,-52.2,-52,-38.9,-53.6C-25.7,-55.1,-12.8,-50.3,2.3,-53.9C17.5,-57.5,34.9,-69.5,48.3,-68.1Z'
 ]
 
-export default function EventHighlights() {
+export default function EventHighlights({ events }: { events: Event[] }) {
   const [index, setIndex] = useState(0)
   const pathRef = useRef<SVGPathElement>(null)
   const count = events.length
