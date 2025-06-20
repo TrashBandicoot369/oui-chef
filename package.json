@@ -46,6 +46,7 @@
     "react-fast-marquee": "^1.6.5",
     "sharp": "^0.34.2",
     "source-map-js": "^1.2.1",
+    "swr": "^2.3.3",
     "tailwind-merge": "^3.3.1",
     "tailwindcss-animate": "^1.0.7",
     "watchpack": "^2.4.4",

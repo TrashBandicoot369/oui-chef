@@ -13,6 +13,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import dynamic from 'next/dynamic'
 import { Dialog } from '@headlessui/react'
+import { useSiteData } from './context/SiteDataContext'
 const BounceArrow = dynamic(() => import('./components/BounceArrow'), { ssr: false })
 
 
@@ -25,6 +26,8 @@ function HomeContent() {
   const [bookingBgImage, setBookingBgImage] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { scrollY } = useScroll();
+  const { copy, menu: menuItems, testimonials: testimonialItems, gallery, theme } = useSiteData();
+  const getCopy = (section: string) => copy.find(c => c.id === section)?.content || '';
   
   // Refs for hero text animation
   const heroTitleRef = useRef<HTMLHeadingElement>(null);
@@ -49,17 +52,17 @@ function HomeContent() {
     const root = document.documentElement;
     
     // Set locked colors (current values with -72% brightness on primaries)
-    root.style.setProperty('--color-primary1', '#1c1b20');
-    root.style.setProperty('--color-primary2', '#383234');
-    root.style.setProperty('--color-primary3', '#3f393c');
-    root.style.setProperty('--color-accent1', '#e3973b');
-    root.style.setProperty('--color-accent2', '#ee962b');
-    root.style.setProperty('--color-stroke', '#532030');
+    root.style.setProperty('--color-primary1', theme.colors.primary1);
+    root.style.setProperty('--color-primary2', theme.colors.primary2);
+    root.style.setProperty('--color-primary3', theme.colors.primary3);
+    root.style.setProperty('--color-accent1', theme.colors.accent1);
+    root.style.setProperty('--color-accent2', theme.colors.accent2);
+    root.style.setProperty('--color-stroke', theme.colors.stroke);
     
     // Set locked fonts (current values from your font picker)
-    root.style.setProperty('--font-display', '"Anton", cursive');
-    root.style.setProperty('--font-sans', '"Bitter", sans-serif');
-    root.style.setProperty('--font-button', '"Oswald", sans-serif');
+    root.style.setProperty('--font-display', `"${theme.fonts.display}"`);
+    root.style.setProperty('--font-sans', `"${theme.fonts.sans}"`);
+    root.style.setProperty('--font-button', `"${theme.fonts.button}"`);
     
     // Load Google Fonts
     const loadFont = (fontName: string) => {
@@ -71,9 +74,9 @@ function HomeContent() {
       }
     };
     
-    loadFont('Anton');
-    loadFont('Bitter');
-    loadFont('Oswald');
+    loadFont(theme.fonts.display.split(',')[0]);
+    loadFont(theme.fonts.sans.split(',')[0]);
+    loadFont(theme.fonts.button.split(',')[0]);
 
     // Set random background image for booking section
     const backgroundImages = [
@@ -427,25 +430,23 @@ function HomeContent() {
 
 
   <div className="relative z-10 text-center px-4">
-    <h1 
+    <h1
       ref={heroTitleRef}
       className="font-display tracking-tight text-3xl sm:text-5xl md:text-7xl leading-snug sm:leading-tight uppercase drop-shadow-lg"
-    >
-      restaurant-quality<br />private dining
-    </h1>
+      dangerouslySetInnerHTML={{ __html: getCopy('hero-title') }}
+    />
     <p 
       ref={heroSubtitleRef}
       className="mt-6 max-w-xl mx-auto text-lg drop-shadow-lg"
     >
-      From intimate dinners to large galas, Chef Alex J crafts unforgettable culinary experiences wherever you
-      celebrate.
+      {getCopy('hero-subtitle')}
     </p>
     
       <a
       href="#booking"
       className="inline-block mt-8 bg-accent1 text-white px-6 py-2 text-xs uppercase tracking-wider hover:bg-white hover:text-accent1 transition font-button drop-shadow-lg"
     >
-      Start Your Booking
+      {getCopy('hero-button')}
 
      
 
@@ -488,41 +489,28 @@ function HomeContent() {
   <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
   <img
   ref={imageRef}
-  src="/images/optimized/IMG_6353.webp"
+  src={getCopy('about-image-url')}
   className="w-full h-full object-cover rounded-lg opacity-80"
   style={{
     outline: '4px solid var(--color-stroke)',
     outlineOffset: '-2px',
     boxShadow: '8px 8px 0 var(--color-accent2)'
   }}
-  alt="Chef Alex J at work"
+  alt={getCopy('about-image-alt')}
 />
 
 
 
 <div ref={textRef}>
 <h2 className="font-display text-accent2 text-4xl sm:text-5xl mb-4">
-    Meet Chef Alex J
+    {getCopy('about-title')}
   </h2>
 
-  <p className="text-accent2 mb-4">
-    Raised in bustling family kitchens in Montréal and Toronto, Alex learned
-    early on that the best way to care for people is through food. Eighteen
-    years later, that passion still drives him. From intimate dinners to large
-    festivals, he brings the flavours and techniques he grew up loving to every
-    plate he serves.
-  </p>
+  <p className="text-accent2 mb-4">{getCopy('about-paragraph-1')}</p>
 
-  <p className="text-accent2 mb-4">
-    Every event is tailored to your unique tastes and needs—because when you
-    dine with us, you're family.
-  </p>
+  <p className="text-accent2 mb-4">{getCopy('about-paragraph-2')}</p>
 
-  <p className="text-accent2 mb-4">
-    Welcome to the family,
-    <br />
-    Alex
-  </p>
+  <p className="text-accent2 mb-4" dangerouslySetInnerHTML={{ __html: getCopy('about-paragraph-3') }} />
     </div>
   </div>
 </section>
@@ -551,7 +539,7 @@ d="M0,224L34.3,240C68.6,256,137,288,206,282.7C274.3,277,343,235,
       <section id="gallery" className="bg-primary2 z-10 text-accent2 py-4">
   <div className="text-center mb-2">
     <TextMarquee className="font-display text-3xl sm:text-5xl uppercase text-accent2">
-      Event Highlights
+      {getCopy('gallery-title')}
     </TextMarquee>
   </div>
   <EventHighlights />
@@ -592,7 +580,7 @@ d="M0,224L34.3,240C68.6,256,137,288,206,282.7C274.3,277,343,235,
     <div className="relative z-50 py-32">
       <div className="w-full max-w-none">
         <TextMarquee className="w-full text-center font-display text-3xl sm:text-5xl uppercase mb-12 text-accent2">
-          Signature Menu Items
+          {getCopy('menu-title')}
         </TextMarquee>
       </div>
       <div className="px-4 sm:px-8 h-full flex items-center justify-center relative z-50">
@@ -633,23 +621,13 @@ d="M0,224L34.3,240C68.6,256,137,288,206,282.7C274.3,277,343,235,
       <section id="testimonials" className="relative bg-primary2 text-center text-accent1 py-32">
         <div className="w-full max-w-none">
           <TextMarquee className="text-center font-display text-3xl text-accent1 sm:text-5xl uppercase mb-12 text-accent2">
-            Testimonials
+            {getCopy('testimonials-title')}
           </TextMarquee>
         </div>
         <div className="px-4">
-          <VerticalMarquee 
-            items={[
-              "Chef Alex transformed our backyard into a Michelin-starred experience. Every dish was a masterpiece!",
-              "The attention to detail was incredible. From the menu planning to the final presentation, everything was perfect.",
-              "Our corporate event was a huge success thanks to Chef Alex's innovative menu and professional service.",
-              "The seasonal tasting menu was a journey through local flavors. Each course told a story.",
-              "What impressed me most was how Chef Alex made everyone feel like family while maintaining professional excellence.",
-              "The family-style feast was perfect for our large gathering. Everyone raved about the food!",
-              "Chef Alex's passion for local ingredients shines through in every dish. Truly exceptional dining.",
-              "The wine pairings were spot on, and the service was impeccable. A memorable evening!",
-              "From intimate dinners to large events, Chef Alex delivers consistently outstanding experiences."
-            ]}
-            speed={30} // Slightly slower speed for better readability
+          <VerticalMarquee
+            items={testimonialItems as string[]}
+            speed={30}
             className="max-w-6xl mx-auto"
           />
         </div>
@@ -676,7 +654,7 @@ d="M0,224L34.3,240C68.6,256,137,288,206,282.7C274.3,277,343,235,
   <div className="relative z-10">
     <div className="w-full max-w-none">
       <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12 text-accent2 drop-shadow-lg">
-        Let&apos;s Craft Your Event
+        {getCopy('booking-title')}
       </TextMarquee>
     </div>
     <div className="px-4 sm:px-6 lg:px-8 max-w-xl mx-auto">
@@ -702,7 +680,7 @@ d="M0,224L34.3,240C68.6,256,137,288,206,282.7C274.3,277,343,235,
           </div>
           <div>
             <h4 className="font-bold uppercase mb-4">Join the Mailing List</h4>
-            <p className="text-sm mb-4">Seasonal menus, pop-ups & chef&apos;s secrets—straight to your inbox.</p>
+            <p className="text-sm mb-4">{getCopy('mailinglist-blurb')}</p>
             <form className="flex gap-2 w-full sm:w-auto sm:max-w-xs">
               <input type="email" placeholder="Email Address" className="flex-1 px-3 py-2 text-xs text-black placeholder:text-gray-400" />
               <button className="bg-primary1 px-4 py-2 text-xs text-accent1 uppercase tracking-wider hover:bg-white hover:text-accent1 transition font-button">
@@ -713,9 +691,9 @@ d="M0,224L34.3,240C68.6,256,137,288,206,282.7C274.3,277,343,235,
           <div>
             <h4 className="font-bold uppercase mb-4">Contact</h4>
             <p className="text-xs leading-6">
-              Toronto, ON<br />
-              info@chefalexj.com<br />
-              416-555-0123
+              {getCopy('contact-address')}<br />
+              {getCopy('contact-email')}<br />
+              {getCopy('contact-phone')}
             </p>
             <h4 className="font-bold uppercase mt-6 mb-2">Follow</h4>
             <div className="flex space-x-4 text-xl">
@@ -723,7 +701,7 @@ d="M0,224L34.3,240C68.6,256,137,288,206,282.7C274.3,277,343,235,
             </div>
           </div>
         </div>
-        <p className="text-center text-xs mt-12 opacity-70">&copy; 2025 Chef Alex J. All rights reserved.</p>
+        <p className="text-center text-xs mt-12 opacity-70">{getCopy('footer-copy')}</p>
       </footer>
     </>
   );

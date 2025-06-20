@@ -1,73 +1,7 @@
 import { useState, useRef, useLayoutEffect } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useSiteData } from '../context/SiteDataContext'
 
-type Event = {
-  id: number
-  image: string
-  alt: string
-  description: string
-}
-
-const events: Event[] = [
-  {
-    id: 1,
-    image: '/images/events/dinnerparty (1).jpg',
-    alt: 'Dinner in a contemporary art gallery',
-    description:
-      'A quiet, thoughtful evening where every plate felt like part of the exhibit. The space was clean and bright, the food minimal but intentional. Each course landed with a sense of purpose—no showboating, no filler. Just great pacing, warm lighting, and a menu built to reflect the art on the walls.',
-  },
-  {
-    id: 2,
-    image: '/images/events/dinnerparty (4).jpg',
-    alt: 'Loft dinner filled with candles, plants, and soft light',
-    description:
-      'This felt like spring indoors—fresh herbs on the table, linen napkins just barely wrinkled, and dishes that tasted like someone cared. Served family-style, the menu moved from light and bright to deeply comforting. Everything smelled like lemon zest, olive oil, and trust.',
-  },
-  {
-    id: 3,
-    image: '/images/events/dinnerparty (5).jpg',
-    alt: 'Late-night dinner thrown in a brick-and-beam loft downtown',
-    description:
-      'Held in a raw industrial space with long tables and loose rules, this dinner ditched formalities in favour of good wine and better pacing. Dishes came out slow and generous—built to anchor conversation, not interrupt it. A full-bodied, brick-walled kind of night that hit its stride after the second bottle.',
-  },
-  {
-    id: 4,
-    image: '/images/events/dinnerparty (7).jpg',
-    alt: 'A private dinner hosted aboard a wood-paneled boat',
-    description:
-      'Waves tapping at the hull, glasses clinking on wood—this was one of those "how is this real?" dinners. The courses felt coastal and precise, plated between portside views and clean ocean air. It moved like a tide: calm, then surprising. You left feeling lighter.',
-  },
-  {
-    id: 5,
-    image: '/images/events/dinnerparty (8).jpg',
-    alt: 'Dinner in a winery hall overlooking rows of vines',
-    description:
-      'Set against a backdrop of late-summer vineyards, this dinner leaned into the earthy and elemental. Stoneware plates, wood-fired mains, and wine poured with zero ceremony. The kind of evening that starts golden and ends with sweaters over shoulders and forks chasing the last bite of something warm.',
-  },
-  {
-    id: 6,
-    image: '/images/events/dinnerparty (9).jpg',
-    alt: 'Rooftop dinner framed by city skylines and patio plants',
-    description:
-      'Equal parts dinner and hang, this rooftop gathering delivered that perfect balance of casual and magic. Music low, wine cold, and food that arrived when it was ready. Nothing rushed, everything easy. If you\'ve ever wanted a dinner to feel like a soft landing, this was it.',
-  },
-  {
-    id: 7,
-    image: '/images/events/dinnerparty (10).jpg',
-    alt: 'Minimalist dinner inside a concrete-walled private room',
-    description:
-      'This one played with restraint. The setting was clean and architectural, the menu stripped of anything unnecessary. No centerpieces, no noise—just elegant plates arriving in rhythm and disappearing just as quietly. Precision without pretense.',
-  },
-  {
-    id: 8,
-    image: '/images/events/dinnerparty (11).jpg',
-    alt: 'Tightly lit dinner in a tucked-away private space',
-    description:
-      'Tucked behind a nondescript door and down a quiet hallway, this dinner had that rare "you had to be there" feel. The food was vibrant and unexpected, the mood a little rowdy, but always intentional. Designed to feel like a secret—one you\'re glad got out.',
-  }
-]
-
-// SVG clip shapes for morphing animation
 const shapes = [
   'M37.3,-54.3C52.4,-48.3,71.4,-44.8,80.1,-34.1C88.7,-23.4,87,-5.6,80.4,8.7C73.8,22.9,62.4,33.6,50.9,40.6C39.3,47.6,27.6,50.9,15,57.5C2.4,64.1,-11.1,74,-22.4,72.4C-33.6,70.8,-42.5,57.7,-46.8,44.9C-51,32.1,-50.5,19.7,-52.8,7.3C-55.1,-5.1,-60.1,-17.4,-58.5,-29.1C-56.9,-40.9,-48.8,-52,-37.9,-59.9C-27.1,-67.8,-13.5,-72.5,-1.2,-70.6C11.1,-68.7,22.2,-60.3,37.3,-54.3Z',
   'M30.4,-45.5C42.4,-39.6,57.4,-36.3,65.9,-27.3C74.4,-18.2,76.6,-3.5,75.3,11.3C73.9,26.1,69.1,40.9,58.5,47.8C48,54.7,31.8,53.9,16.8,59.2C1.8,64.5,-12,76,-20.1,72C-28.2,68,-30.8,48.4,-35.8,35.2C-40.9,21.9,-48.4,15,-49.5,7.1C-50.5,-0.7,-45.2,-9.4,-41.6,-19.7C-38,-29.9,-36.1,-41.6,-29.5,-50C-22.8,-58.4,-11.4,-63.5,-1.1,-61.7C9.2,-60,18.4,-51.4,30.4,-45.5Z',
@@ -78,9 +12,10 @@ const shapes = [
 ]
 
 export default function EventHighlights() {
+  const { gallery } = useSiteData()
   const [index, setIndex] = useState(0)
   const pathRef = useRef<SVGPathElement>(null)
-  const count = events.length
+  const count = gallery.length
 
   const next = () => setIndex((i) => (i + 1) % count)
   const prev = () => setIndex((i) => (i - 1 + count) % count)
@@ -91,79 +26,40 @@ export default function EventHighlights() {
     }
   }, [index])
 
+  const current = gallery[index] || { image: '', alt: '', description: '' }
+
   return (
     <div className="w-full min-h-[800px] flex items-center justify-center relative overflow-hidden -translate-y-[100px]">
       <div className="relative z-10 w-full max-w-7xl mx-auto px-16 flex items-center justify-between h-full translate-y-28">
-        <button
-          onClick={prev}
-          aria-label="Previous"
-          className="flex-shrink-0 p-2 bg-white bg-opacity-20 rounded-full"
-        >
+        <button onClick={prev} aria-label="Previous" className="flex-shrink-0 p-2 bg-white bg-opacity-20 rounded-full">
           <ChevronLeft className="w-4 h-4 text-white" />
         </button>
-
         <div className="flex-1 mx-12 flex items-center justify-center gap-16">
           <div className="flex-1 max-w-lg">
-            <h2 className="text-3xl font-bold uppercase mb-4 text-accent2">
-              {events[index].alt}
-            </h2>
-            <p className="text-base leading-relaxed text-accent2">
-              {events[index].description}
-            </p>
+            <h2 className="text-3xl font-bold uppercase mb-4 text-accent2">{current.alt}</h2>
+            <p className="text-base leading-relaxed text-accent2">{current.description}</p>
           </div>
-          
           <div className="flex-shrink-0 relative z-0 overflow-visible -my-[200px]">
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="-100 -100 200 200"
-    className="w-full max-w-[800px] h-[800px] pointer-events-none"
-    clipPathUnits="userSpaceOnUse"
-  >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="-100 -100 200 200" className="w-full max-w-[800px] h-[800px] pointer-events-none" clipPathUnits="userSpaceOnUse">
               <defs>
                 <clipPath id="morphClip">
-                  <path 
-                    ref={pathRef} 
-                    d={shapes[0]} 
-                    fill="#fff"
-                    style={{
-                      transition: 'd 0.6s ease-in-out'
-                    }}
-                  />
+                  <path ref={pathRef} d={shapes[0]} fill="#fff" style={{ transition: 'd 0.6s ease-in-out' }} />
                 </clipPath>
               </defs>
-              <image
-                href={events[index].image}
-                x={-150}
-                y={-150}
-                width={300}
-                height={300}
-                preserveAspectRatio="xMidYMid slice"
-                clipPath="url(#morphClip)"
-                aria-label={events[index].alt}
-              />
+              <image href={current.image} x={-150} y={-150} width={300} height={300} preserveAspectRatio="xMidYMid slice" clipPath="url(#morphClip)" aria-label={current.alt} />
             </svg>
           </div>
         </div>
-
-        <button
-          onClick={next}
-          aria-label="Next"
-          className="flex-shrink-0 p-2 bg-white bg-opacity-20 rounded-full"
-        >
+        <button onClick={next} aria-label="Next" className="flex-shrink-0 p-2 bg-white bg-opacity-20 rounded-full">
           <ChevronRight className="w-4 h-4 text-white" />
         </button>
       </div>
-
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
-        {events.map((_, i) => (
+        {gallery.map((_, i) => (
           <button
             key={i}
             onClick={() => setIndex(i)}
-            className={`w-2 h-2 rounded-full transition-all duration-200 ${
-              i === index 
-                ? 'bg-white scale-125' 
-                : 'bg-white bg-opacity-40 hover:bg-opacity-60'
-            }`}
+            className={`w-2 h-2 rounded-full transition-all duration-200 ${i === index ? 'bg-white scale-125' : 'bg-white bg-opacity-40 hover:bg-opacity-60'}`}
             aria-label={`Go to event ${i + 1}`}
           />
         ))}
