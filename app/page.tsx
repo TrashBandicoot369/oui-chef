@@ -24,6 +24,10 @@ function HomeContent() {
   const [parallaxOffset, setParallaxOffset] = useState({ x: 0, y: 0, tiltX: 0, tiltY: 0 });
   const [bookingBgImage, setBookingBgImage] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [copy, setCopy] = useState<Record<string, string>>({});
+  const [menuItems, setMenuItems] = useState<string[]>([]);
+  const [testimonials, setTestimonials] = useState<string[]>([]);
+  const [galleryEvents, setGalleryEvents] = useState<any[]>([]);
   const { scrollY } = useScroll();
   
   // Refs for hero text animation
@@ -74,6 +78,39 @@ function HomeContent() {
     loadFont('Anton');
     loadFont('Bitter');
     loadFont('Oswald');
+
+    // Fetch dynamic data
+    const fetchData = async () => {
+      const copyRes = await fetch('/api/admin/content');
+      if (copyRes.ok) {
+        const data = await copyRes.json();
+        const map: Record<string, string> = {};
+        data.forEach((item: any) => {
+          map[item.section] = item.content;
+        });
+        setCopy(map);
+      }
+
+      const menuRes = await fetch('/api/admin/menu');
+      if (menuRes.ok) {
+        const m = await menuRes.json();
+        setMenuItems(m.map((i: any) => i.name));
+      }
+
+      const tRes = await fetch('/api/admin/testimonials');
+      if (tRes.ok) {
+        const t = await tRes.json();
+        setTestimonials(t.map((x: any) => x.quote || x.content));
+      }
+
+      const gRes = await fetch('/api/admin/gallery');
+      if (gRes.ok) {
+        const g = await gRes.json();
+        setGalleryEvents(g);
+      }
+    };
+
+    fetchData();
 
     // Set random background image for booking section
     const backgroundImages = [
@@ -427,19 +464,16 @@ function HomeContent() {
 
 
   <div className="relative z-10 text-center px-4">
-    <h1 
+    <h1
       ref={heroTitleRef}
       className="font-display tracking-tight text-3xl sm:text-5xl md:text-7xl leading-snug sm:leading-tight uppercase drop-shadow-lg"
-    >
-      restaurant-quality<br />private dining
-    </h1>
-    <p 
+      dangerouslySetInnerHTML={{ __html: copy['hero_title'] || '' }}
+    />
+    <p
       ref={heroSubtitleRef}
       className="mt-6 max-w-xl mx-auto text-lg drop-shadow-lg"
-    >
-      From intimate dinners to large galas, Chef Alex J crafts unforgettable culinary experiences wherever you
-      celebrate.
-    </p>
+      dangerouslySetInnerHTML={{ __html: copy['hero_subtitle'] || '' }}
+    />
     
       <a
       href="#booking"
@@ -501,28 +535,25 @@ function HomeContent() {
 
 
 <div ref={textRef}>
-<h2 className="font-display text-accent2 text-4xl sm:text-5xl mb-4">
-    Meet Chef Alex J
-  </h2>
+<h2
+    className="font-display text-accent2 text-4xl sm:text-5xl mb-4"
+    dangerouslySetInnerHTML={{ __html: copy['about_heading'] || '' }}
+  />
 
-  <p className="text-accent2 mb-4">
-    Raised in bustling family kitchens in Montréal and Toronto, Alex learned
-    early on that the best way to care for people is through food. Eighteen
-    years later, that passion still drives him. From intimate dinners to large
-    festivals, he brings the flavours and techniques he grew up loving to every
-    plate he serves.
-  </p>
+  <p
+    className="text-accent2 mb-4"
+    dangerouslySetInnerHTML={{ __html: copy['about_p1'] || '' }}
+  />
 
-  <p className="text-accent2 mb-4">
-    Every event is tailored to your unique tastes and needs—because when you
-    dine with us, you're family.
-  </p>
+  <p
+    className="text-accent2 mb-4"
+    dangerouslySetInnerHTML={{ __html: copy['about_p2'] || '' }}
+  />
 
-  <p className="text-accent2 mb-4">
-    Welcome to the family,
-    <br />
-    Alex
-  </p>
+  <p
+    className="text-accent2 mb-4"
+    dangerouslySetInnerHTML={{ __html: copy['about_p3'] || '' }}
+  />
     </div>
   </div>
 </section>
@@ -554,7 +585,7 @@ d="M0,224L34.3,240C68.6,256,137,288,206,282.7C274.3,277,343,235,
       Event Highlights
     </TextMarquee>
   </div>
-  <EventHighlights />
+  <EventHighlights events={galleryEvents} />
 </section>
 
 
@@ -598,11 +629,11 @@ d="M0,224L34.3,240C68.6,256,137,288,206,282.7C274.3,277,343,235,
       <div className="px-4 sm:px-8 h-full flex items-center justify-center relative z-50">
         {/* Mobile carousel */}
         <div className="block sm:hidden w-full">
-          <MobilePlateCarousel />
+          <MobilePlateCarousel items={menuItems} />
         </div>
         {/* Desktop plate stack */}
         <div className="hidden sm:block w-full">
-          <PlateStack />
+          <PlateStack items={menuItems} />
         </div>
       </div>
     </div>
@@ -637,19 +668,9 @@ d="M0,224L34.3,240C68.6,256,137,288,206,282.7C274.3,277,343,235,
           </TextMarquee>
         </div>
         <div className="px-4">
-          <VerticalMarquee 
-            items={[
-              "Chef Alex transformed our backyard into a Michelin-starred experience. Every dish was a masterpiece!",
-              "The attention to detail was incredible. From the menu planning to the final presentation, everything was perfect.",
-              "Our corporate event was a huge success thanks to Chef Alex's innovative menu and professional service.",
-              "The seasonal tasting menu was a journey through local flavors. Each course told a story.",
-              "What impressed me most was how Chef Alex made everyone feel like family while maintaining professional excellence.",
-              "The family-style feast was perfect for our large gathering. Everyone raved about the food!",
-              "Chef Alex's passion for local ingredients shines through in every dish. Truly exceptional dining.",
-              "The wine pairings were spot on, and the service was impeccable. A memorable evening!",
-              "From intimate dinners to large events, Chef Alex delivers consistently outstanding experiences."
-            ]}
-            speed={30} // Slightly slower speed for better readability
+          <VerticalMarquee
+            items={testimonials}
+            speed={30}
             className="max-w-6xl mx-auto"
           />
         </div>
@@ -676,7 +697,7 @@ d="M0,224L34.3,240C68.6,256,137,288,206,282.7C274.3,277,343,235,
   <div className="relative z-10">
     <div className="w-full max-w-none">
       <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12 text-accent2 drop-shadow-lg">
-        Let&apos;s Craft Your Event
+        {copy['booking_heading'] || ''}
       </TextMarquee>
     </div>
     <div className="px-4 sm:px-6 lg:px-8 max-w-xl mx-auto">
