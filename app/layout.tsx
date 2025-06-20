@@ -1,10 +1,16 @@
 import type { Metadata } from 'next'
 import React from 'react'
 import './globals.css'
+import { SiteDataProvider } from './context/SiteDataContext'
 
-export const metadata: Metadata = {
-  title: 'Chef Alex J — Private Dining & Events',
-  description: 'From intimate dinners to large galas, Chef Alex J crafts unforgettable culinary experiences wherever you celebrate.',
+export async function generateMetadata(): Promise<Metadata> {
+  const base = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  const res = await fetch(`${base}/api/public/copy`)
+  const data = await res.json()
+  return {
+    title: data.seoTitle,
+    description: data.seoDescription,
+  }
 }
 
 export default function RootLayout({
@@ -24,7 +30,9 @@ export default function RootLayout({
         />
       </head>
       <body>
-        {children}
+        <SiteDataProvider>
+          {children}
+        </SiteDataProvider>
       </body>
     </html>
   )

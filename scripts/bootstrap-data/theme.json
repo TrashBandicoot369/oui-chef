@@ -1,0 +1,15 @@
+{
+  "colors": {
+    "primary1": "#1c1b20",
+    "primary2": "#383234",
+    "primary3": "#3f393c",
+    "accent1": "#e3973b",
+    "accent2": "#ee962b",
+    "stroke": "#532030"
+  },
+  "fonts": {
+    "display": "Anton",
+    "sans": "Bitter",
+    "button": "Oswald"
+  }
+}
