@@ -8,7 +8,7 @@ type Event = {
   description: string
 }
 
-const events: Event[] = [
+const defaultEvents: Event[] = [
   {
     id: 1,
     image: '/images/events/dinnerparty (1).jpg',
@@ -77,10 +77,14 @@ const shapes = [
   'M48.3,-68.1C61.8,-66.6,71.2,-51.7,72.1,-36.7C73.1,-21.7,65.6,-6.7,63.8,9.5C62,25.7,65.9,43.1,59.4,52.4C52.8,61.7,35.8,62.9,19.7,67.9C3.7,72.8,-11.4,81.7,-25.1,80.1C-38.8,78.6,-51.1,66.7,-56.5,53.1C-62,39.4,-60.7,24,-63.4,8.8C-66.1,-6.4,-72.8,-21.4,-69.4,-32.8C-65.9,-44.2,-52.2,-52,-38.9,-53.6C-25.7,-55.1,-12.8,-50.3,2.3,-53.9C17.5,-57.5,34.9,-69.5,48.3,-68.1Z'
 ]
 
-export default function EventHighlights() {
+export default function EventHighlights({ events = defaultEvents }: { events?: Event[] }) {
+  const validEvents = events.filter((e) => e?.image && e?.alt)
+  if (validEvents.length < events.length && process.env.NODE_ENV !== 'production') {
+    console.warn(`EventHighlights: skipped ${events.length - validEvents.length} invalid event(s)`)
+  }
   const [index, setIndex] = useState(0)
   const pathRef = useRef<SVGPathElement>(null)
-  const count = events.length
+  const count = validEvents.length
 
   const next = () => setIndex((i) => (i + 1) % count)
   const prev = () => setIndex((i) => (i - 1 + count) % count)
@@ -105,10 +109,10 @@ export default function EventHighlights() {
         <div className="flex-1 mx-12 flex items-center justify-center gap-16">
           <div className="flex-1 max-w-lg">
             <h2 className="text-3xl font-bold uppercase mb-4 text-accent2">
-              {events[index].alt}
+              {validEvents[index].alt ?? 'Event image'}
             </h2>
             <p className="text-base leading-relaxed text-accent2">
-              {events[index].description}
+              {validEvents[index].description}
             </p>
           </div>
           
@@ -132,14 +136,14 @@ export default function EventHighlights() {
                 </clipPath>
               </defs>
               <image
-                href={events[index].image}
+                href={validEvents[index].image}
                 x={-150}
                 y={-150}
                 width={300}
                 height={300}
                 preserveAspectRatio="xMidYMid slice"
                 clipPath="url(#morphClip)"
-                aria-label={events[index].alt}
+                aria-label={validEvents[index].alt ?? 'Event image'}
               />
             </svg>
           </div>
@@ -155,7 +159,7 @@ export default function EventHighlights() {
       </div>
 
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
-        {events.map((_, i) => (
+        {validEvents.map((_, i) => (
           <button
             key={i}
             onClick={() => setIndex(i)}
