@@ -1,6 +1,6 @@
 # Chef Alex J — Private Dining & Events Website
 
-A modern, responsive website built with Next.js 14, TypeScript, and Tailwind CSS showcasing Chef Alex J's private dining and catering services with AI-powered quote generation and advanced design customization tools.
+A modern, responsive website built with Next.js 14, TypeScript, and Tailwind CSS showcasing Chef Alex J's private dining and catering services with AI-powered quote generation, advanced design customization tools, and comprehensive admin dashboard.
 
 ## 🚀 Quick Start
 NEVER INSTALL NPM ONLY PNPM
@@ -71,11 +71,18 @@ npm start
 - **Responsive Behavior**: Adapts to different screen sizes and touch devices
 - **Performance Optimized**: Uses `willChange` and `transform3d` for smooth rendering
 
+#### GSAP-Powered Animations
+- **Scroll-Triggered Animations**: Hero title/subtitle animations on page load
+- **Plate Stack Animations**: Interactive plate hover effects with GSAP ScrollTrigger
+- **Staggered Entrance Effects**: Sequential animations for visual hierarchy
+- **Performance Optimized**: Hardware-accelerated transforms
+
 #### Text & Content Animations
 - **Horizontal Text Marquee**: Smooth scrolling text with customizable speed
 - **Vertical Testimonial Marquee**: Multi-column scrolling testimonials with hover pause
 - **Event Gallery Animations**: Framer Motion powered image gallery with expandable descriptions
 - **Scroll-Triggered Animations**: Navbar and logo animations based on scroll position
+- **Bounce Arrow Indicator**: Animated scroll indicator that fades on scroll
 
 ### 🏗️ Modern UI Components
 
@@ -90,6 +97,18 @@ npm start
 - **Wave SVG Separators**: Custom organic section dividers
 - **Floating Action Buttons**: Fixed-position design tool toggles
 - **Smooth Scroll Navigation**: Anchor-based navigation with scroll offset
+- **Plate Stack Component**: Desktop interactive menu display with hover effects
+- **Mobile Plate Carousel**: Touch-enabled swipeable menu carousel for mobile devices
+- **Dialog/Modal System**: Headless UI powered modals for chat interface
+
+### 👨‍💼 Admin Dashboard
+- **Comprehensive Booking Management**: View and manage all booking requests
+- **Real-time Status Updates**: Update booking status (pending, approved, rejected, suggested alternative)
+- **Booking Statistics**: Dashboard cards showing total bookings, pending reviews, approved, and rejected
+- **Filter System**: Tab-based filtering for different booking statuses
+- **Detailed Booking View**: Complete booking information including client details, event info, and chat summary
+- **Action Buttons**: Quick actions for approve, reject, or suggest alternative times
+- **Responsive Design**: Mobile-friendly admin interface
 
 ## 📧 Booking Approval Workflow
 
@@ -128,6 +147,7 @@ The system includes comprehensive logging with emoji-coded workflows:
 - ❌ **Reject Workflow**: Booking rejection process tracking  
 - 💡 **Suggest Workflow**: Alternative time suggestion handling
 - 🎉 **Confirm Workflow**: Client confirmation process tracking
+- 📊 **Admin API**: Admin dashboard data fetching and updates
 
 Each step logs success/failure with detailed error information for easy debugging.
 
@@ -148,6 +168,12 @@ Handles both suggestion preparation and time submission from Chef Alex.
 #### POST `/api/booking/confirm`
 Handles final booking confirmation from client.
 
+#### GET `/api/admin/bookings`
+Fetches all bookings for admin dashboard with sorting and filtering.
+
+#### POST `/api/admin/bookings/update-status`
+Updates booking status from admin dashboard with validation.
+
 ## 🔧 System Architecture
 
 ### Frontend Components
@@ -158,21 +184,30 @@ app/
 │   │   ├── button.tsx         # Accessible button variants
 │   │   ├── input.tsx          # Form input component
 │   │   └── alert.tsx          # Alert/notification system
-│   ├── QuoteChat.tsx          # AI chat interface
+│   ├── QuoteChat.tsx          # AI chat interface with Dialog modal
 │   ├── BookingForm.tsx        # Consultation booking form
 │   ├── FontSwitcher.tsx       # Live font customization
-│   ├── ColorManager.tsx       # Color palette editor
+│   ├── ColorManager.tsx       # Color palette editor with schemes
 │   ├── EventHighlights.tsx    # Interactive image gallery
 │   ├── TextMarquee.tsx        # Horizontal scrolling text
-│   └── VerticalMarquee.tsx    # Vertical scrolling testimonials
+│   ├── VerticalMarquee.tsx    # Vertical scrolling testimonials
+│   ├── PlateStack.tsx         # Desktop interactive menu display
+│   ├── MobilePlateCarousel.tsx # Mobile swipeable menu carousel
+│   └── BounceArrow.tsx        # Animated scroll indicator
 ├── api/
 │   ├── chat/                  # AI quote generation endpoint
+│   ├── admin/                 # Admin API endpoints
+│   │   └── bookings/          # Booking management APIs
+│   │       ├── route.ts       # GET all bookings
+│   │       └── update-status/ # POST status updates
 │   └── booking/               # Complete booking workflow
 │       ├── route.ts           # Main booking submission handler
 │       ├── accept/            # Booking acceptance API
 │       ├── reject/            # Booking rejection API
 │       ├── suggest/           # Alternative time suggestions API
 │       └── confirm/           # Client confirmation API
+├── admin/                     # Admin dashboard page
+│   └── page.tsx              # Admin interface with booking management
 ├── approve/[bookingId]/       # Admin approval interface
 ├── suggest/[bookingId]/       # Time suggestion interface  
 ├── confirm/[bookingId]/       # Client confirmation interface
@@ -189,7 +224,12 @@ lib/
 │   └── sendBookingNotificationToAlex() # Approval workflow emails
 ├── calendar.ts                # Google Calendar integration
 ├── summary.ts                 # AI conversation summarization
-└── utils.ts                   # Utility functions
+└── utils.ts                   # Utility functions (cn for className merging)
+```
+
+### Additional Tools
+```
+compress.ts                    # Image optimization script using Sharp
 ```
 
 ## 🎨 Design System
@@ -237,10 +277,17 @@ Three-tier font hierarchy:
 
 ### UI & Animation Libraries
 - **Framer Motion**: Advanced animations and transitions
+- **GSAP & ScrollTrigger**: High-performance scroll animations
 - **Lucide React**: Modern icon library
 - **React Fast Marquee**: Horizontal scrolling text
+- **Headless UI**: Accessible UI components (Dialog)
 - **Radix UI**: Accessible component primitives
 - **Class Variance Authority**: Type-safe component variants
+
+### Development Tools
+- **Sharp**: Image optimization and WebP conversion
+- **Axios**: HTTP client for API requests
+- **clsx & tailwind-merge**: Utility for merging className strings
 
 ## 🔐 Environment Variables
 
@@ -261,7 +308,7 @@ GOOGLE_CLIENT_EMAIL=your_service_account_email
 GOOGLE_PRIVATE_KEY=your_private_key
 GOOGLE_CALENDAR_ID=your_calendar_id
 
-# Firebase (Optional - for future database features)
+# Firebase (Required for admin dashboard and booking persistence)
 FIREBASE_PROJECT_ID=your_project_id
 FIREBASE_CLIENT_EMAIL=your_client_email
 FIREBASE_PRIVATE_KEY=your_private_key
@@ -275,11 +322,11 @@ FIREBASE_PRIVATE_KEY=your_private_key
 - ✅ **Responsive Design**: Mobile-first, multi-breakpoint layout
 - ✅ **SEO Optimized**: Meta tags, semantic HTML, accessibility
 - ✅ **Performance Optimized**: WebP images, lazy loading, code splitting
-- ✅ **Interactive Animations**: Parallax, marquees, hover effects
+- ✅ **Interactive Animations**: Parallax, marquees, hover effects, GSAP animations
 - ✅ **Modern UI Components**: Custom button, input, alert systems
 
 #### AI-Powered Quote System
-- ✅ **Intelligent Chat Interface**: Context-aware conversation
+- ✅ **Intelligent Chat Interface**: Context-aware conversation with modal dialog
 - ✅ **Quote Generation**: Automatic price extraction and formatting
 - ✅ **Business Logic Integration**: Menu pricing, service rates, location factors
 - ✅ **Conversation Summarization**: AI-powered chat history summaries
@@ -303,25 +350,30 @@ FIREBASE_PRIVATE_KEY=your_private_key
 - ✅ **Admin Approval System**: Dedicated approval pages with Accept/Reject/Suggest options
 - ✅ **Alternative Time Suggestions**: Chef can propose up to 3 alternative time slots
 - ✅ **Client Confirmation Flow**: Final confirmation system for clients
-- ✅ **Comprehensive Error Logging**: Step-by-step debugging with emoji tracking (🚀📧✅❌💡🎉)
+- ✅ **Comprehensive Error Logging**: Step-by-step debugging with emoji tracking (🚀📧✅❌💡🎉📊)
 - ✅ **Professional Email Templates**: Branded HTML emails with approval links and booking details
 
-### 🟡 Configured But Not Integrated
+#### Admin Dashboard
+- ✅ **Booking Management Interface**: Complete admin dashboard at `/admin`
+- ✅ **Real-time Status Updates**: API endpoints for updating booking status
+- ✅ **Filtering & Statistics**: Tab-based filtering with booking statistics
+- ✅ **Responsive Admin UI**: Mobile-friendly admin interface
 
-#### Backend Services (Ready for Production)
+### 🟡 Partially Integrated
+
+#### Backend Services
+- 🟡 **Database System**: Firebase Admin configured and used for admin dashboard
 - 🟡 **Calendar Integration**: Google Calendar API ready, needs booking connection
-- 🟡 **Database System**: Firebase Admin configured, needs data persistence
 
 ### 🔴 Missing for Full Production
 
 #### High Priority  
-- ❌ **Database Persistence**: Booking data currently only logged to console
 - ❌ **Calendar Events**: No automatic calendar booking creation
-- ❌ **Email-to-Database Integration**: Approval actions need to update booking status in database
+- ❌ **Email Status Updates**: Status changes don't trigger email notifications
 
 #### Medium Priority
 - ❌ **Payment Integration**: No deposit or payment processing
-- ❌ **Booking Management**: No status tracking or follow-up system
+- ❌ **Advanced Booking Management**: No recurring bookings or templates
 - ❌ **Analytics**: No user interaction or conversion tracking
 - ❌ **Testing Suite**: No automated testing implemented
 
@@ -333,29 +385,29 @@ FIREBASE_PRIVATE_KEY=your_private_key
 
 ## 📋 Next Development Steps
 
-### Phase 1: Core Backend Integration (Week 1-2)
-1. **Database Schema Design**: Create Firestore collections for bookings
-2. **Email Workflow**: Connect Mailjet to send confirmation emails
-3. **Calendar Integration**: Auto-create Google Calendar events
-4. **Admin Notifications**: Set up admin email alerts for new bookings
+### Phase 1: Complete Backend Integration (Week 1-2)
+1. **Calendar Integration**: Auto-create Google Calendar events on booking approval
+2. **Email Status Updates**: Send emails when booking status changes
+3. **Database Schema Enhancement**: Add more fields for better tracking
+4. **Authentication**: Add admin authentication for dashboard security
 
-### Phase 2: Admin Interface (Week 3-4)
-1. **Admin Dashboard**: Build consultation request management interface
-2. **Booking Status System**: Track consultation stages (pending, confirmed, completed)
-3. **Client Communication**: Email templates and follow-up automation
-4. **Reporting**: Basic analytics and booking metrics
+### Phase 2: Enhanced Admin Features (Week 3-4)
+1. **Advanced Filtering**: Date range, search, and multi-criteria filtering
+2. **Bulk Operations**: Select and update multiple bookings at once
+3. **Export Functionality**: Export bookings to CSV/Excel
+4. **Email Templates Editor**: Admin interface to customize email templates
 
-### Phase 3: Enhanced Features (Week 5-6)
+### Phase 3: Payment & Customer Portal (Week 5-6)
 1. **Payment Integration**: Stripe/Square for deposits
-2. **Advanced Validation**: Date availability and conflict checking
-3. **Customer Portal**: Client login for booking history
-4. **Mobile Optimization**: Enhanced mobile experience
+2. **Customer Portal**: Client login for booking history
+3. **Invoice Generation**: Automatic invoice creation
+4. **Refund Management**: Handle cancellations and refunds
 
-### Phase 4: Production Deployment (Week 7-8)
-1. **Error Monitoring**: Sentry or similar error tracking
-2. **Performance Monitoring**: Analytics and performance metrics
-3. **Security Audit**: Rate limiting, input sanitization
-4. **Load Testing**: Ensure system can handle traffic
+### Phase 4: Production Optimization (Week 7-8)
+1. **Error Monitoring**: Sentry integration
+2. **Performance Monitoring**: Analytics and metrics
+3. **Security Audit**: Rate limiting, CSRF protection
+4. **Load Testing**: Ensure scalability
 
 ## 📦 Dependencies
 
@@ -371,21 +423,26 @@ FIREBASE_PRIVATE_KEY=your_private_key
     "groq-sdk": "^0.24.0"
   },
   "backend_services": {
-    "firebase-admin": "^12.0.0",
+    "firebase-admin": "^13.4.0",
     "node-mailjet": "^6.0.8",
     "googleapis": "^150.0.1"
   },
   "ui_libraries": {
     "framer-motion": "^12.16.0",
+    "gsap": "^3.13.0",
+    "@gsap/react": "^2.1.2",
+    "@headlessui/react": "^2.2.4",
     "lucide-react": "^0.514.0",
     "react-fast-marquee": "^1.6.5",
-    "@radix-ui/react-slot": "^1.0.2",
-    "class-variance-authority": "^0.7.0"
+    "@radix-ui/react-slot": "^1.2.3",
+    "class-variance-authority": "^0.7.1"
   },
-  "development": {
-    "axios": "^1.6.0",
-    "clsx": "^2.0.0",
-    "tailwind-merge": "^2.0.0"
+  "utilities": {
+    "axios": "^1.9.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.3.1",
+    "sharp": "^0.34.2",
+    "nanoid": "^5.1.5"
   }
 }
 ```
@@ -404,18 +461,27 @@ GROQ_API_KEY=your_production_groq_key
 MAILJET_API_KEY=your_production_mailjet_key
 MAILJET_API_SECRET=your_production_mailjet_secret
 SENDER_EMAIL=hello@chefalexj.com
+ADMIN_EMAIL=hello@chefalexj.com
 GOOGLE_CLIENT_EMAIL=your_service_account
 GOOGLE_PRIVATE_KEY=your_production_key
 GOOGLE_CALENDAR_ID=your_calendar_id
 FIREBASE_PROJECT_ID=your_production_project
+FIREBASE_CLIENT_EMAIL=your_firebase_client_email
+FIREBASE_PRIVATE_KEY=your_firebase_private_key
 ```
 
 ### Build Commands
 ```bash
-npm run build    # Build for production
-npm run start    # Start production server
-npm run dev      # Development server
-npm run lint     # Code linting
+pnpm run build    # Build for production
+pnpm run start    # Start production server
+pnpm run dev      # Development server
+pnpm run lint     # Code linting
+```
+
+### Image Optimization
+```bash
+# Run image compression script
+npx ts-node compress.ts
 ```
 
 ## 📞 Support & Development
@@ -424,6 +490,7 @@ npm run lint     # Code linting
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
 - [Framer Motion Documentation](https://www.framer.com/motion/)
+- [GSAP Documentation](https://gsap.com/docs/)
 - [Groq AI Documentation](https://console.groq.com/docs)
 
 ### Component Usage Examples
@@ -539,9 +606,51 @@ export default function ApprovePage({ params }: { params: { bookingId: string } 
 }
 ```
 
+#### Using GSAP Animations
+```tsx
+import { useRef, useLayoutEffect } from 'react'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
+
+function AnimatedSection() {
+  const sectionRef = useRef(null)
+
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.from(sectionRef.current, {
+        y: 100,
+        opacity: 0,
+        duration: 1,
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 80%',
+          end: 'bottom 20%',
+          toggleActions: 'play none none reverse'
+        }
+      })
+    })
+
+    return () => ctx.revert()
+  }, [])
+
+  return <section ref={sectionRef}>Content</section>
+}
+```
+
 ## 🔄 Recent Updates
 
-### Latest Major Release: Complete Booking Approval Workflow
+### Latest Major Release: Admin Dashboard & Enhanced Animations
+- ✅ **Admin Dashboard**: Complete booking management interface at `/admin`
+- ✅ **GSAP Integration**: High-performance scroll-triggered animations
+- ✅ **Mobile Menu Carousel**: Touch-enabled swipeable plate carousel for mobile
+- ✅ **Interactive Plate Stack**: Desktop hover effects with menu items
+- ✅ **Bounce Arrow Component**: Animated scroll indicator
+- ✅ **Enhanced Color Manager**: Added color scheme presets (monochrome, complementary, etc.)
+- ✅ **Firebase Integration**: Database persistence for admin dashboard
+
+### Previous Major Release: Complete Booking Approval Workflow
 - ✅ **Email Service Integration**: Full Mailjet email workflow with branded HTML templates
 - ✅ **Admin Approval System**: Chef Alex can Accept/Reject/Suggest alternative times via email links
 - ✅ **Alternative Time Suggestions**: Interface for Chef to propose up to 3 alternative time slots

@@ -9,16 +9,24 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@gsap/react": "^2.1.2",
     "@headlessui/react": "^2.2.4",
     "@heroicons/react": "^2.2.0",
+    "@radix-ui/react-alert-dialog": "^1.1.14",
+    "@radix-ui/react-dialog": "^1.1.14",
     "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-switch": "^1.2.5",
+    "@radix-ui/react-tabs": "^1.1.12",
     "@tailwindcss/forms": "^0.5.10",
     "@tailwindcss/typography": "^0.5.16",
     "axios": "^1.9.0",
     "class-variance-authority": "^0.7.1",
     "classnames": "^2.5.1",
     "client-only": "^0.0.1",
+    "cloudinary": "^2.7.0",
     "clsx": "^2.1.1",
     "firebase": "^11.9.1",
     "firebase-admin": "^13.4.0",
@@ -39,7 +47,9 @@
     "sharp": "^0.34.2",
     "source-map-js": "^1.2.1",
     "tailwind-merge": "^3.3.1",
-    "watchpack": "^2.4.4"
+    "tailwindcss-animate": "^1.0.7",
+    "watchpack": "^2.4.4",
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "@types/node": "^20",

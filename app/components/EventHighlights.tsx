@@ -1,14 +1,5 @@
-// components/EventHighlights.tsx
-'use client'
-
 import { useState, useRef, useLayoutEffect } from 'react'
-import gsap from 'gsap'
-import { Power2 } from 'gsap'
-import { MorphSVGPlugin } from 'gsap/MorphSVGPlugin'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-
-// Register the MorphSVG plugin
-gsap.registerPlugin(MorphSVGPlugin)
 
 type Event = {
   id: number
@@ -17,7 +8,6 @@ type Event = {
   description: string
 }
 
-// ── EVENTS DATA ────────────────────────────────────────────────────────────────
 const events: Event[] = [
   {
     id: 1,
@@ -77,13 +67,7 @@ const events: Event[] = [
   }
 ]
 
-// ── SVG CLIP SHAPES ────────────────────────────────────────────────────────────
-// 📝 CUSTOMIZATION NOTES:
-// - These are compact organic shapes optimized for horizontal scaling
-// - All shapes must have the SAME NUMBER of path commands for smooth morphing
-// - To create new shapes: use tools like https://www.blobmaker.app/ or similar
-// - Keep coordinates roughly between -80 and +80 for best results with current viewBox
-// - More dramatic coordinate differences = more dramatic morphing animations
+// SVG clip shapes for morphing animation
 const shapes = [
   'M37.3,-54.3C52.4,-48.3,71.4,-44.8,80.1,-34.1C88.7,-23.4,87,-5.6,80.4,8.7C73.8,22.9,62.4,33.6,50.9,40.6C39.3,47.6,27.6,50.9,15,57.5C2.4,64.1,-11.1,74,-22.4,72.4C-33.6,70.8,-42.5,57.7,-46.8,44.9C-51,32.1,-50.5,19.7,-52.8,7.3C-55.1,-5.1,-60.1,-17.4,-58.5,-29.1C-56.9,-40.9,-48.8,-52,-37.9,-59.9C-27.1,-67.8,-13.5,-72.5,-1.2,-70.6C11.1,-68.7,22.2,-60.3,37.3,-54.3Z',
   'M30.4,-45.5C42.4,-39.6,57.4,-36.3,65.9,-27.3C74.4,-18.2,76.6,-3.5,75.3,11.3C73.9,26.1,69.1,40.9,58.5,47.8C48,54.7,31.8,53.9,16.8,59.2C1.8,64.5,-12,76,-20.1,72C-28.2,68,-30.8,48.4,-35.8,35.2C-40.9,21.9,-48.4,15,-49.5,7.1C-50.5,-0.7,-45.2,-9.4,-41.6,-19.7C-38,-29.9,-36.1,-41.6,-29.5,-50C-22.8,-58.4,-11.4,-63.5,-1.1,-61.7C9.2,-60,18.4,-51.4,30.4,-45.5Z',
@@ -93,111 +77,96 @@ const shapes = [
   'M48.3,-68.1C61.8,-66.6,71.2,-51.7,72.1,-36.7C73.1,-21.7,65.6,-6.7,63.8,9.5C62,25.7,65.9,43.1,59.4,52.4C52.8,61.7,35.8,62.9,19.7,67.9C3.7,72.8,-11.4,81.7,-25.1,80.1C-38.8,78.6,-51.1,66.7,-56.5,53.1C-62,39.4,-60.7,24,-63.4,8.8C-66.1,-6.4,-72.8,-21.4,-69.4,-32.8C-65.9,-44.2,-52.2,-52,-38.9,-53.6C-25.7,-55.1,-12.8,-50.3,2.3,-53.9C17.5,-57.5,34.9,-69.5,48.3,-68.1Z'
 ]
 
-// ── COMPONENT ─────────────────────────────────────────────────────────────────
 export default function EventHighlights() {
-  // 🎯 EASY SCALING CONTROL - CHANGE THIS NUMBER:
-  // 1.0 = normal, 1.5 = 50% bigger, 2.0 = double size, 0.8 = smaller
-  const SCALE = 1.8
-  
   const [index, setIndex] = useState(0)
   const pathRef = useRef<SVGPathElement>(null)
-  const imgRef = useRef<SVGImageElement>(null)
   const count = events.length
 
   const next = () => setIndex((i) => (i + 1) % count)
   const prev = () => setIndex((i) => (i - 1 + count) % count)
 
   useLayoutEffect(() => {
-    if (imgRef.current) {
-      imgRef.current.setAttribute('href', events[index].image)
-    }
     if (pathRef.current) {
-      // 📝 ANIMATION CUSTOMIZATION:
-      // - duration: speed of morph (0.3 = fast, 1.0 = slow)
-      // - ease: animation curve (try: Power2.easeOut, Power3.easeInOut, etc.)
-      // - Add delay: 0.1 for staggered effects
-      gsap.to(pathRef.current, {
-        duration: 0.5,
-        ease: Power2.easeInOut,
-        morphSVG: shapes[index % shapes.length],
-      })
+      pathRef.current.setAttribute('d', shapes[index % shapes.length])
     }
   }, [index])
 
   return (
-    <div className="flex flex-col md:flex-row items-center px-8">
-      {/* TEXT COLUMN */}
-      {/* 📝 LAYOUT CUSTOMIZATION: Change w-1/3 to w-1/2 for more text space, w-1/4 for less */}
-      <div className="w-full md:w-1/3 mb-8 md:mb-0">
-        <h2 className="text-4xl font-bold uppercase mb-6">{events[index].alt}</h2>
-        <p className="text-lg leading-relaxed">{events[index].description}</p>
-      </div>
-
-      {/* MORPHING IMAGE */}
-      {/* 📝 LAYOUT CUSTOMIZATION: Change w-2/3 to match text column ratio */}
-      <div className="relative w-full md:w-/3 flex justify-center items-center">
+    <div className="w-full min-h-[800px] flex items-center justify-center relative overflow-hidden -translate-y-[100px]">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-16 flex items-center justify-between h-full translate-y-28">
         <button
           onClick={prev}
           aria-label="Previous"
-          className="
-            absolute left-4 top-1/2 transform -translate-y-1/2
-            z-20 p-4 
-            bg-white bg-opacity-10 backdrop-blur-sm
-            hover:bg-opacity-20
-            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-400
-            rounded-full
-            transition
-          "
+          className="flex-shrink-0 p-2 bg-white bg-opacity-20 rounded-full"
         >
-          <ChevronLeft className="w-6 h-6 text-white" />
+          <ChevronLeft className="w-4 h-4 text-white" />
         </button>
 
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="-100 -100 200 200"
-          className="w-full max-w-[600px] h-[400px]"
-          clipPathUnits="userSpaceOnUse"
-          // 🎯 CSS SCALING - RESPONSIVE AND CONTAINED:
-          style={{ 
-            transform: `scale(${Math.min(SCALE, 1.8)})`, // Limit scale to prevent overflow
-            transformOrigin: 'center'
-          }}
-        >
-          <defs>
-            <clipPath id="clip">
-              <path ref={pathRef} d={shapes[0]} fill="#fff" />
-            </clipPath>
-          </defs>
-
-          <image
-            ref={imgRef}
-            href={events[0].image}
-            x={-100}
-            y={-100}
-            width={200}
-            height={200}
-            preserveAspectRatio="xMidYMid slice"
-            clipPath="url(#clip)"
-            aria-label={events[index].alt}
-            style={{ pointerEvents: 'none' }}
-          />
-        </svg>
+        <div className="flex-1 mx-12 flex items-center justify-center gap-16">
+          <div className="flex-1 max-w-lg">
+            <h2 className="text-3xl font-bold uppercase mb-4 text-accent2">
+              {events[index].alt}
+            </h2>
+            <p className="text-base leading-relaxed text-accent2">
+              {events[index].description}
+            </p>
+          </div>
+          
+          <div className="flex-shrink-0 relative z-0 overflow-visible -my-[200px]">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="-100 -100 200 200"
+    className="w-full max-w-[800px] h-[800px] pointer-events-none"
+    clipPathUnits="userSpaceOnUse"
+  >
+              <defs>
+                <clipPath id="morphClip">
+                  <path 
+                    ref={pathRef} 
+                    d={shapes[0]} 
+                    fill="#fff"
+                    style={{
+                      transition: 'd 0.6s ease-in-out'
+                    }}
+                  />
+                </clipPath>
+              </defs>
+              <image
+                href={events[index].image}
+                x={-150}
+                y={-150}
+                width={300}
+                height={300}
+                preserveAspectRatio="xMidYMid slice"
+                clipPath="url(#morphClip)"
+                aria-label={events[index].alt}
+              />
+            </svg>
+          </div>
+        </div>
 
         <button
           onClick={next}
           aria-label="Next"
-          className="
-            absolute right-4 top-1/2 transform -translate-y-1/2
-            z-20 p-4
-            bg-white bg-opacity-10 backdrop-blur-sm
-            hover:bg-opacity-20
-            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-400
-            rounded-full
-            transition
-          "
+          className="flex-shrink-0 p-2 bg-white bg-opacity-20 rounded-full"
         >
-          <ChevronRight className="w-6 h-6 text-white" />
+          <ChevronRight className="w-4 h-4 text-white" />
         </button>
+      </div>
+
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
+        {events.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setIndex(i)}
+            className={`w-2 h-2 rounded-full transition-all duration-200 ${
+              i === index 
+                ? 'bg-white scale-125' 
+                : 'bg-white bg-opacity-40 hover:bg-opacity-60'
+            }`}
+            aria-label={`Go to event ${i + 1}`}
+          />
+        ))}
       </div>
     </div>
   )

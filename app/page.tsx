@@ -527,8 +527,40 @@ function HomeContent() {
   </div>
 </section>
 
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 1440 320"
+  className="w-full h-auto"
+  style={{ transform: 'scaleY(-1)' }}
+>
+  <path
+    fill="var(--color-primary3)"
+    fillOpacity="1"
+d="M0,224L34.3,240C68.6,256,137,288,206,282.7C274.3,277,343,235,
+411,229.3C480,224,549,256,617,240C685.7,224,754,160,823,154.7C891.4,
+149,960,203,1029,208C1097.1,213,1166,171,1234,144C1302.9,117,1371,107,
+1406,101.3L1440,96L1440,320L1405.7,320C1371.4,320,1303,320,1234,320C1165.7,
+320,1097,320,1029,320C960,320,891,320,823,320C754.3,320,686,320,617,320C548.6,320,480,320,411,
+320C342.9,320,274,320,206,320C137.1,320,69,320,34,320L0,320Z"
+>
+
+</path>
+</svg>
+
+      {/* gallery */}
+      <section id="gallery" className="bg-primary2 z-10 text-accent2 py-4">
+  <div className="text-center mb-2">
+    <TextMarquee className="font-display text-3xl sm:text-5xl uppercase text-accent2">
+      Event Highlights
+    </TextMarquee>
+  </div>
+  <EventHighlights />
+</section>
 
 
+
+
+    
 
 
   <section
@@ -551,7 +583,7 @@ function HomeContent() {
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        className="fill-primary3"
+        className="fill-primary2"
         d="M0,128L34.3,149.3C68.6,171,137,213,206,240C274.3,267,343,277,411,234.7C480,192,549,96,617,85.3C685.7,75,754,149,823,160C891.4,171,960,117,1029,128C1097.1,139,1166,213,1234,213.3C1302.9,213,1371,139,1406,101.3L1440,64L1440,0L0,0Z"
       />
     </svg>
@@ -583,7 +615,7 @@ function HomeContent() {
     xmlns="http://www.w3.org/2000/svg"
   >
     <path
-      className="fill-primary3"
+      className="fill-primary2"
       d="M0,288L26.7,288C53.3,288,107,288,160,282.7C213.3,277,267,267,320,256C373.3,245,427,235,480,229.3C533.3,224,587,224,640,229.3C693.3,235,747,245,800,213.3C853.3,181,907,107,960,112C1013.3,117,1067,203,1120,202.7C1173.3,203,1227,117,1280,90.7C1333.3,64,1387,96,1413,112L1440,128L1440,320L0,320Z"
     />
   </svg>
@@ -595,29 +627,7 @@ function HomeContent() {
 
 
 
-      {/* gallery */}
-      <section id="gallery" className="bg-primary3 z-10 text-accent2 py-16">
-        <div className="w-full max-w-none">
-          <TextMarquee className="text-center font-display text-3xl sm:text-5xl uppercase mb-12 text-accent2">
-            Event Highlights
-          </TextMarquee>
-        </div>
-        <div className="px-4 sm:px-6 lg:px-10">
-          <EventHighlights />
-        </div>
-      </section>
 
-
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" className="block -mb-1">
-  {/* Filled base wave */}
-  <path
-    className="fill-primary3"
-    fillOpacity="1"
-    d="M0,160L26.7,138.7C53.3,117,107,75,160,69.3C213.3,64,267,96,320,138.7C373.3,181,427,235,480,250.7C533.3,267,587,245,640,229.3C693.3,213,747,203,800,192C853.3,181,907,171,960,165.3C1013.3,160,1067,160,1120,170.7C1173.3,181,1227,203,1280,176C1333.3,149,1387,75,1413,37.3L1440,0L1440,0L1413.3,0C1386.7,0,1333,0,1280,0C1226.7,0,1173,0,1120,0C1066.7,0,1013,0,960,0C906.7,0,853,0,800,0C746.7,0,693,0,640,0C586.7,0,533,0,480,0C426.7,0,373,0,320,0C266.7,0,213,0,160,0C106.7,0,53,0,27,0L0,0Z"
-  />
-
- 
-</svg>
 
       {/* testimonials */}
       <section id="testimonials" className="relative bg-primary2 text-center text-accent1 py-32">
