@@ -81,14 +81,20 @@ export default function TestimonialsSection() {
     
     console.log('Rating debug:', { original: rating, converted: numRating, valid: validRating })
     
-    return Array.from({ length: 5 }, (_, i) => (
-      <span
-        key={i}
-        className={`text-lg ${i < validRating ? 'text-accent2' : 'text-gray-400'}`}
-      >
-        ⭐
-      </span>
-    ))
+    return Array.from({ length: 5 }, (_, i) => {
+      const isFilled = i < validRating
+      console.log(`Star ${i + 1}: ${isFilled ? 'FILLED' : 'EMPTY'}`)
+      
+      return (
+        <span
+          key={i}
+          className={isFilled ? 'text-lg text-accent2' : 'text-lg text-gray-400'}
+          style={{ color: isFilled ? 'var(--color-accent2)' : '#9CA3AF' }}
+        >
+          ⭐
+        </span>
+      )
+    })
   }
 
   if (!testimonials?.length) return null
