@@ -54,22 +54,48 @@ function validatePartialTestimonial(data: any) {
 
 // GET - List all testimonials
 async function handleGet(req: NextRequest) {
-  await validateAdmin(req);
+  console.log('🔍 [API] /api/admin/testimonials GET request received');
+  console.log('🔍 [API] Request headers:', Object.fromEntries(req.headers.entries()));
   
-  const testimonialsRef = db.collection('testimonials');
-  const snapshot = await testimonialsRef.get();
-  
-  const testimonials = snapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data(),
-    createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || null,
-    updatedAt: doc.data().updatedAt?.toDate?.()?.toISOString() || null,
-  }));
-  
-  return new Response(JSON.stringify(testimonials), {
-    status: 200,
-    headers: { 'Content-Type': 'application/json' },
-  });
+  try {
+    await validateAdmin(req);
+    console.log('🔍 [API] Admin validation passed');
+    
+    const testimonialsRef = db.collection('testimonials');
+    console.log('🔍 [API] Firestore collection reference created');
+    
+    const snapshot = await testimonialsRef.get();
+    console.log('🔍 [API] Firestore query executed, docs count:', snapshot.docs.length);
+    
+    const testimonials = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || null,
+      updatedAt: doc.data().updatedAt?.toDate?.()?.toISOString() || null,
+    }));
+    
+    console.log('🔍 [API] Testimonials mapped:', testimonials.length, 'items');
+    console.log('🔍 [API] First testimonial sample:', testimonials[0] ? {
+      id: testimonials[0].id,
+      clientName: (testimonials[0] as any).clientName,
+      hasQuote: !!(testimonials[0] as any).quote,
+      approved: (testimonials[0] as any).approved,
+      order: (testimonials[0] as any).order
+    } : 'No testimonials found');
+    
+    return new Response(JSON.stringify(testimonials), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (error) {
+    console.error('❌ [API] Error in GET /api/admin/testimonials:', error);
+    console.error('❌ [API] Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : 'No stack trace',
+      name: error instanceof Error ? error.name : 'Unknown'
+    });
+    throw error; // Re-throw to be handled by withErrorHandling
+  }
 }
 
 // POST - Create new testimonial
