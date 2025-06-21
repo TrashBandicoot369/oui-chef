@@ -1,12 +1,11 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import * as Dialog from '@radix-ui/react-dialog';
-import * as AlertDialog from '@radix-ui/react-alert-dialog';
-import * as Switch from '@radix-ui/react-switch';
-import { Button } from '@/app/components/ui/button';
-import { Alert } from '@/app/components/ui/alert';
-import { Eye, EyeOff, Edit, Trash2, Plus, GripVertical } from 'lucide-react';
+import { useState, useEffect } from 'react'
+import * as Dialog from '@radix-ui/react-dialog'
+import * as AlertDialog from '@radix-ui/react-alert-dialog'
+import { Button } from '@/app/components/ui/button'
+import { Alert } from '@/app/components/ui/alert'
+import { Eye, EyeOff, Edit, Trash2, Plus, GripVertical } from 'lucide-react'
 import {
   DndContext,
   closestCenter,
@@ -14,50 +13,62 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent,
-} from '@dnd-kit/core';
+  DragEndEvent
+} from '@dnd-kit/core'
 import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
-  rectSortingStrategy,
-} from '@dnd-kit/sortable';
-import {
-  useSortable,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+  rectSortingStrategy
+} from '@dnd-kit/sortable'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 
+/* ──────────────────────────── Types ──────────────────────────── */
 interface GalleryItem {
-  id: string;
-  title: string;
-  description: string;
-  imageUrl: string;
-  category: string;
-  featured: boolean;
-  visible: boolean;
-  order: number;
-  publicId?: string;
+  id: string
+  title: string
+  description: string
+  imageUrl: string
+  category: string
+  featured: boolean
+  visible: boolean
+  order: number
+  publicId?: string
 }
 
-// Placeholder ImageUploader component
-// Replace this with the actual ImageUploader component when available
-function ImageUploader({ onUpload }: { onUpload: (data: { url: string; publicId: string }) => void }) {
-  const [uploading, setUploading] = useState(false);
-  
+interface FormDataState {
+  image: string
+  publicId: string
+  alt: string
+  description: string
+  /* extras used in handleEdit */
+  title: string
+  category: string
+  featured: boolean
+}
+
+/* ─────────────────────── Placeholder uploader ─────────────────────── */
+function ImageUploader({
+  onUpload
+}: {
+  onUpload: (data: { url: string; publicId: string }) => void
+}) {
+  const [uploading, setUploading] = useState(false)
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    
-    setUploading(true);
-    // Simulate upload - replace with actual upload logic
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploading(true)
+    // fake upload
     setTimeout(() => {
-      // For now, use a local URL
-      const url = URL.createObjectURL(file);
-      onUpload({ url, publicId: `temp-${Date.now()}` });
-      setUploading(false);
-    }, 1000);
-  };
-  
+      const url = URL.createObjectURL(file)
+      onUpload({ url, publicId: `temp-${Date.now()}` })
+      setUploading(false)
+    }, 1000)
+  }
+
   return (
     <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
       <input
@@ -78,15 +89,20 @@ function ImageUploader({ onUpload }: { onUpload: (data: { url: string; publicId:
         </span>
       </label>
     </div>
-  );
+  )
 }
 
-// Sortable Gallery Card Component
-function SortableCard({ item, onEdit, onDelete, onToggleVisibility }: {
-  item: GalleryItem;
-  onEdit: (item: GalleryItem) => void;
-  onDelete: (item: GalleryItem) => void;
-  onToggleVisibility: (item: GalleryItem) => void;
+/* ─────────────────────── Sortable gallery card ─────────────────────── */
+function SortableCard({
+  item,
+  onEdit,
+  onDelete,
+  onToggleVisibility
+}: {
+  item: GalleryItem
+  onEdit: (item: GalleryItem) => void
+  onDelete: (item: GalleryItem) => void
+  onToggleVisibility: (item: GalleryItem) => void
 }) {
   const {
     attributes,
@@ -94,14 +110,14 @@ function SortableCard({ item, onEdit, onDelete, onToggleVisibility }: {
     setNodeRef,
     transform,
     transition,
-    isDragging,
-  } = useSortable({ id: item.id });
+    isDragging
+  } = useSortable({ id: item.id })
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
+    opacity: isDragging ? 0.5 : 1
+  }
 
   return (
     <div
@@ -109,7 +125,7 @@ function SortableCard({ item, onEdit, onDelete, onToggleVisibility }: {
       style={style}
       className="relative group bg-white rounded-lg shadow-sm overflow-hidden"
     >
-      {/* Drag Handle */}
+      {/* drag handle */}
       <button
         className="absolute top-2 left-2 z-20 p-1 bg-white/80 rounded cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
         {...attributes}
@@ -118,22 +134,28 @@ function SortableCard({ item, onEdit, onDelete, onToggleVisibility }: {
         <GripVertical className="w-4 h-4 text-gray-600" />
       </button>
 
-      {/* Image */}
+      {/* image */}
       <div className="aspect-square relative overflow-hidden bg-gray-100">
         <img
           src={item.imageUrl}
           alt={item.title}
-          className={`w-full h-full object-cover ${!item.visible ? 'opacity-50' : ''}`}
+          className={`w-full h-full object-cover ${
+            !item.visible ? 'opacity-50' : ''
+          }`}
         />
-        
-        {/* Hover Overlay */}
+
+        {/* hover overlay */}
         <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
-          <h3 className="text-white font-medium text-sm mb-1 line-clamp-1">{item.title}</h3>
-          <p className="text-white/80 text-xs line-clamp-2">{item.description}</p>
+          <h3 className="text-white font-medium text-sm mb-1 line-clamp-1">
+            {item.title}
+          </h3>
+          <p className="text-white/80 text-xs line-clamp-2">
+            {item.description}
+          </p>
         </div>
       </div>
 
-      {/* Controls */}
+      {/* controls */}
       <div className="absolute top-2 right-2 z-20 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
         <button
           onClick={() => onToggleVisibility(item)}
@@ -162,248 +184,229 @@ function SortableCard({ item, onEdit, onDelete, onToggleVisibility }: {
         </button>
       </div>
     </div>
-  );
+  )
 }
 
+/* ─────────────────────────── Main tab ─────────────────────────── */
 export default function GalleryTab() {
-  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [editingItem, setEditingItem] = useState<GalleryItem | null>(null);
-  const [isNewItem, setIsNewItem] = useState(false);
-  const [deleteItem, setDeleteItem] = useState<GalleryItem | null>(null);
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
-  
-  // Form state
-  const [formData, setFormData] = useState({
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [editingItem, setEditingItem] = useState<GalleryItem | null>(null)
+  const [isNewItem, setIsNewItem] = useState(false)
+  const [deleteItem, setDeleteItem] = useState<GalleryItem | null>(null)
+  const [toast, setToast] = useState<
+    { message: string; type: 'success' | 'error' } | null
+  >(null)
+
+  const [formData, setFormData] = useState<FormDataState>({
     image: '',
     publicId: '',
     alt: '',
     description: '',
-  });
+    title: '',
+    category: '',
+    featured: false
+  })
 
-  // DnD sensors
+  /* dnd sensors */
   const sensors = useSensors(
     useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  )
 
-  // Fetch gallery items on mount
   useEffect(() => {
-    fetchGalleryItems();
-  }, []);
+    fetchGalleryItems()
+  }, [])
 
-  // Auto-hide toast after 3 seconds
   useEffect(() => {
     if (toast) {
-      const timer = setTimeout(() => setToast(null), 3000);
-      return () => clearTimeout(timer);
+      const timer = setTimeout(() => setToast(null), 3000)
+      return () => clearTimeout(timer)
     }
-  }, [toast]);
+  }, [toast])
 
   const fetchGalleryItems = async () => {
     try {
-      const response = await fetch('/api/admin/gallery');
-      if (!response.ok) throw new Error('Failed to fetch gallery items');
-      const data = await response.json();
-      // Sort by order
-      const sorted = data.sort((a: GalleryItem, b: GalleryItem) => a.order - b.order);
-      setGalleryItems(sorted);
-    } catch (error) {
-      console.error('Error fetching gallery:', error);
-      setToast({ message: 'Failed to load gallery', type: 'error' });
+      const res = await fetch('/api/admin/gallery')
+      if (!res.ok) throw new Error('Failed to fetch gallery')
+      const data = await res.json()
+      setGalleryItems(data.sort((a: GalleryItem, b: GalleryItem) => a.order - b.order))
+    } catch (err) {
+      console.error(err)
+      setToast({ message: 'Failed to load gallery', type: 'error' })
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
-  const handleDragEnd = async (event: DragEndEvent) => {
-    const { active, over } = event;
+  const handleDragEnd = async (evt: DragEndEvent) => {
+    const { active, over } = evt
+    if (!over || active.id === over.id) return
 
-    if (over && active.id !== over.id) {
-      const oldIndex = galleryItems.findIndex((item) => item.id === active.id);
-      const newIndex = galleryItems.findIndex((item) => item.id === over.id);
+    const oldIndex = galleryItems.findIndex(i => i.id === active.id)
+    const newIndex = galleryItems.findIndex(i => i.id === over.id)
+    const reordered = arrayMove(galleryItems, oldIndex, newIndex)
+    setGalleryItems(reordered)
 
-      const newOrder = arrayMove(galleryItems, oldIndex, newIndex);
-      
-      // Update local state immediately
-      setGalleryItems(newOrder);
-
-      // Update order values
-      const updates = newOrder.map((item, index) => ({
-        id: item.id,
-        order: index
-      }));
-
-      try {
-        // Send order updates to server
-        for (const update of updates) {
-          if (galleryItems.find(g => g.id === update.id)?.order !== update.order) {
-                    await fetch('/api/admin/gallery', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: update.id, order: update.order })
-        });
-          }
-        }
-        
-        setToast({ message: 'Order updated successfully', type: 'success' });
-      } catch (error) {
-        console.error('Error updating order:', error);
-        setToast({ message: 'Failed to update order', type: 'error' });
-        // Revert on error
-        await fetchGalleryItems();
-      }
-    }
-  };
-
-  const handleToggleVisibility = async (item: GalleryItem) => {
-    // Optimistic update
-    const updatedItems = galleryItems.map(g => 
-      g.id === item.id ? { ...g, visible: !g.visible } : g
-    );
-    setGalleryItems(updatedItems);
+    const updates = reordered.map((item, idx) => ({ id: item.id, order: idx }))
 
     try {
-      const response = await fetch('/api/admin/gallery', {
+      for (const u of updates) {
+        if (galleryItems.find(g => g.id === u.id)?.order !== u.order) {
+          await fetch('/api/admin/gallery', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(u)
+          })
+        }
+      }
+      setToast({ message: 'Order updated successfully', type: 'success' })
+    } catch (err) {
+      console.error(err)
+      setToast({ message: 'Failed to update order', type: 'error' })
+      await fetchGalleryItems()
+    }
+  }
+
+  const handleToggleVisibility = async (item: GalleryItem) => {
+    const updated = galleryItems.map(g =>
+      g.id === item.id ? { ...g, visible: !g.visible } : g
+    )
+    setGalleryItems(updated)
+
+    try {
+      const res = await fetch('/api/admin/gallery', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: item.id, visible: !item.visible })
-      });
-
-      if (!response.ok) throw new Error('Failed to update visibility');
-      
-      setToast({ message: 'Visibility updated', type: 'success' });
-    } catch (error) {
-      // Revert on error
-      setGalleryItems(galleryItems);
-      console.error('Error updating visibility:', error);
-      setToast({ message: 'Failed to update visibility', type: 'error' });
+      })
+      if (!res.ok) throw new Error()
+      setToast({ message: 'Visibility updated', type: 'success' })
+    } catch {
+      setGalleryItems(galleryItems)
+      setToast({ message: 'Failed to update visibility', type: 'error' })
     }
-  };
+  }
 
   const handleEdit = (item: GalleryItem) => {
-    setEditingItem(item);
+    setEditingItem(item)
     setFormData({
       image: item.imageUrl,
       publicId: item.publicId || '',
-      title: item.title,
+      alt: '',
       description: item.description,
+      title: item.title,
       category: item.category,
-      featured: item.featured,
-    });
-    setIsNewItem(false);
-  };
+      featured: item.featured
+    })
+    setIsNewItem(false)
+  }
 
   const handleNewItem = () => {
-    setIsNewItem(true);
-    setEditingItem(null);
+    setIsNewItem(true)
+    setEditingItem(null)
     setFormData({
       image: '',
       publicId: '',
       alt: '',
       description: '',
-    });
-  };
+      title: '',
+      category: '',
+      featured: false
+    })
+  }
 
-  const handleImageUpload = (data: { url: string; publicId: string }) => {
-    setFormData({
-      ...formData,
-      image: data.url,
-      publicId: data.publicId,
-    });
-  };
+  const handleImageUpload = (d: { url: string; publicId: string }) =>
+    setFormData({ ...formData, image: d.url, publicId: d.publicId })
 
   const handleSave = async () => {
     try {
-      const galleryData = {
+      const payload = {
         image: formData.image,
         publicId: formData.publicId,
         alt: formData.alt,
         description: formData.description,
         visible: true,
         order: isNewItem ? galleryItems.length : undefined
-      };
-
-      if (isNewItem) {
-        // Create new item
-        const response = await fetch('/api/admin/gallery', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(galleryData)
-        });
-
-        if (!response.ok) throw new Error('Failed to create gallery item');
-        
-        setToast({ message: 'Gallery item created successfully', type: 'success' });
-      } else if (editingItem) {
-        // Update existing item
-        const response = await fetch(`/api/admin/gallery/${editingItem.id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            image: formData.image,
-            publicId: formData.publicId,
-            alt: formData.alt,
-            description: formData.description
-          })
-        });
-
-        if (!response.ok) throw new Error('Failed to update gallery item');
-        
-        setToast({ message: 'Gallery item updated successfully', type: 'success' });
       }
 
-      // Reset form and refresh data
-      setIsNewItem(false);
-      setEditingItem(null);
-      setFormData({ image: '', publicId: '', alt: '', description: '' });
-      await fetchGalleryItems();
-    } catch (error) {
-      console.error('Error saving gallery item:', error);
-      setToast({ message: 'Failed to save gallery item', type: 'error' });
+      if (isNewItem) {
+        const r = await fetch('/api/admin/gallery', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+        if (!r.ok) throw new Error()
+        setToast({ message: 'Gallery item created', type: 'success' })
+      } else if (editingItem) {
+        const r = await fetch(`/api/admin/gallery/${editingItem.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+        if (!r.ok) throw new Error()
+        setToast({ message: 'Gallery item updated', type: 'success' })
+      }
+
+      setIsNewItem(false)
+      setEditingItem(null)
+      setFormData({
+        image: '',
+        publicId: '',
+        alt: '',
+        description: '',
+        title: '',
+        category: '',
+        featured: false
+      })
+      await fetchGalleryItems()
+    } catch {
+      setToast({ message: 'Failed to save gallery item', type: 'error' })
     }
-  };
+  }
 
   const handleDelete = async () => {
-    if (!deleteItem) return;
-
+    if (!deleteItem) return
     try {
-      const response = await fetch('/api/admin/gallery', {
+      const r = await fetch('/api/admin/gallery', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: deleteItem.id })
-      });
-
-      if (!response.ok) throw new Error('Failed to delete gallery item');
-      
-      setToast({ message: 'Gallery item deleted successfully', type: 'success' });
-      setDeleteItem(null);
-      await fetchGalleryItems();
-    } catch (error) {
-      console.error('Error deleting gallery item:', error);
-      setToast({ message: 'Failed to delete gallery item', type: 'error' });
+      })
+      if (!r.ok) throw new Error()
+      setToast({ message: 'Gallery item deleted', type: 'success' })
+      setDeleteItem(null)
+      await fetchGalleryItems()
+    } catch {
+      setToast({ message: 'Failed to delete gallery item', type: 'error' })
     }
-  };
+  }
 
   const handleCancel = () => {
-    setEditingItem(null);
-    setIsNewItem(false);
-    setFormData({ image: '', publicId: '', alt: '', description: '' });
-  };
+    setEditingItem(null)
+    setIsNewItem(false)
+    setFormData({
+      image: '',
+      publicId: '',
+      alt: '',
+      description: '',
+      title: '',
+      category: '',
+      featured: false
+    })
+  }
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-gray-500">Loading gallery...</div>
       </div>
-    );
+    )
   }
 
+  /* ───────────────────────── Render ───────────────────────── */
   return (
     <div className="p-8">
-      {/* Toast Notification */}
       {toast && (
         <div className="fixed top-4 right-4 z-50 animate-in fade-in slide-in-from-top-2">
           <Alert variant={toast.type === 'error' ? 'destructive' : 'default'}>
@@ -412,13 +415,13 @@ export default function GalleryTab() {
         </div>
       )}
 
-      {/* Header */}
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Gallery Management</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          Gallery Management
+        </h2>
         <p className="text-gray-600">Manage event photos and gallery images</p>
       </div>
 
-      {/* Add New Button */}
       <div className="mb-6">
         <Button onClick={handleNewItem}>
           <Plus className="w-4 h-4 mr-2" />
@@ -426,23 +429,22 @@ export default function GalleryTab() {
         </Button>
       </div>
 
-      {/* Gallery Grid */}
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
         <SortableContext
-          items={galleryItems.map(item => item.id)}
+          items={galleryItems.map(i => i.id)}
           strategy={rectSortingStrategy}
         >
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {galleryItems.map((item) => (
+            {galleryItems.map(i => (
               <SortableCard
-                key={item.id}
-                item={item}
+                key={i.id}
+                item={i}
                 onEdit={handleEdit}
-                onDelete={(item) => setDeleteItem(item)}
+                onDelete={i => setDeleteItem(i)}
                 onToggleVisibility={handleToggleVisibility}
               />
             ))}
@@ -450,17 +452,20 @@ export default function GalleryTab() {
         </SortableContext>
       </DndContext>
 
-      {/* Edit/Create Dialog */}
-      <Dialog.Root open={!!editingItem || isNewItem} onOpenChange={(open: boolean) => !open && handleCancel()}>
+      {/* dialogs */}
+      <Dialog.Root
+        open={!!editingItem || isNewItem}
+        onOpenChange={o => !o && handleCancel()}
+      >
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 bg-black/50 animate-in fade-in" />
           <Dialog.Content className="fixed left-[50%] top-[50%] max-h-[85vh] w-[90vw] max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-lg animate-in fade-in zoom-in-95 overflow-y-auto">
             <Dialog.Title className="text-lg font-semibold mb-4">
               {isNewItem ? 'Add Gallery Item' : 'Edit Gallery Item'}
             </Dialog.Title>
-            
+
             <div className="space-y-4">
-              {/* Image Upload */}
+              {/* image */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Image
@@ -473,7 +478,13 @@ export default function GalleryTab() {
                       className="w-full h-48 object-cover rounded-lg"
                     />
                     <button
-                      onClick={() => setFormData({ ...formData, image: '', publicId: '' })}
+                      onClick={() =>
+                        setFormData({
+                          ...formData,
+                          image: '',
+                          publicId: ''
+                        })
+                      }
                       className="absolute top-2 right-2 p-1 bg-white/80 rounded hover:bg-white"
                     >
                       <Trash2 className="w-4 h-4 text-red-600" />
@@ -491,9 +502,11 @@ export default function GalleryTab() {
                 <input
                   type="text"
                   value={formData.alt}
-                  onChange={(e) => setFormData({ ...formData, alt: e.target.value })}
+                  onChange={e =>
+                    setFormData({ ...formData, alt: e.target.value })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Describe the image for accessibility"
+                  placeholder="Describe the image"
                 />
               </div>
 
@@ -503,10 +516,12 @@ export default function GalleryTab() {
                 </label>
                 <textarea
                   value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  onChange={e =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-vertical"
-                  placeholder="Detailed description of the event or image"
+                  placeholder="Detailed description"
                 />
               </div>
             </div>
@@ -525,8 +540,10 @@ export default function GalleryTab() {
         </Dialog.Portal>
       </Dialog.Root>
 
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog.Root open={!!deleteItem} onOpenChange={(open: boolean) => !open && setDeleteItem(null)}>
+      <AlertDialog.Root
+        open={!!deleteItem}
+        onOpenChange={o => !o && setDeleteItem(null)}
+      >
         <AlertDialog.Portal>
           <AlertDialog.Overlay className="fixed inset-0 bg-black/50 animate-in fade-in" />
           <AlertDialog.Content className="fixed left-[50%] top-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-lg animate-in fade-in zoom-in-95">
@@ -534,24 +551,23 @@ export default function GalleryTab() {
               Delete Gallery Item
             </AlertDialog.Title>
             <AlertDialog.Description className="text-sm text-gray-600 mb-4">
-              Are you sure you want to delete this image? This action cannot be undone.
+              Are you sure you want to delete this image? This action cannot be
+              undone.
             </AlertDialog.Description>
-            
+
             {deleteItem && (
               <div className="mb-4">
                 <img
-                  src={deleteItem.image}
-                  alt={deleteItem.alt}
+                  src={deleteItem.imageUrl}
+                  alt={deleteItem.title}
                   className="w-full h-32 object-cover rounded"
                 />
               </div>
             )}
-            
+
             <div className="flex gap-3 justify-end">
               <AlertDialog.Cancel asChild>
-                <Button variant="ghost">
-                  Cancel
-                </Button>
+                <Button variant="ghost">Cancel</Button>
               </AlertDialog.Cancel>
               <AlertDialog.Action asChild>
                 <Button variant="destructive" onClick={handleDelete}>
@@ -563,5 +579,5 @@ export default function GalleryTab() {
         </AlertDialog.Portal>
       </AlertDialog.Root>
     </div>
-  );
-} 
+  )
+}
