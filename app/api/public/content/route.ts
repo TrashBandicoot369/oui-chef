@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase-admin';
 import { Query } from 'firebase-admin/firestore';
 
+// Force dynamic rendering since this API uses query parameters
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     console.log('📖 Public Content API: Fetching public content...');
