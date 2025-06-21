@@ -154,32 +154,20 @@ export default function TestimonialsTab() {
 
   const fetchTestimonials = async () => {
     try {
-      console.log('🔍 [TestimonialsTab] Fetching testimonials...');
       const response = await fetch('/api/admin/testimonials');
-      console.log('🔍 [TestimonialsTab] Response status:', response.status);
-      console.log('🔍 [TestimonialsTab] Response headers:', Object.fromEntries(response.headers.entries()));
       
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('🔍 [TestimonialsTab] Error response:', errorText);
         throw new Error(`Failed to fetch testimonials: ${response.status} ${errorText}`);
       }
       
       const data = await response.json();
-      console.log('🔍 [TestimonialsTab] Received data:', data);
-      console.log('🔍 [TestimonialsTab] Data type:', typeof data, 'Array?', Array.isArray(data));
       
       // Sort by order
       const sorted = data.sort((a: Testimonial, b: Testimonial) => a.order - b.order);
-      console.log('🔍 [TestimonialsTab] Sorted testimonials:', sorted.length, 'items');
       setTestimonials(sorted);
     } catch (error) {
-      console.error('❌ [TestimonialsTab] Error fetching testimonials:', error);
-      console.error('❌ [TestimonialsTab] Error details:', {
-        message: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : 'No stack trace',
-        name: error instanceof Error ? error.name : 'Unknown'
-      });
+      console.error('Error fetching testimonials:', error);
       setToast({ message: 'Failed to load testimonials', type: 'error' });
     } finally {
       setLoading(false);
@@ -355,7 +343,6 @@ export default function TestimonialsTab() {
   };
 
   if (loading) {
-    console.log('🔍 [TestimonialsTab] Rendering loading state...');
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-gray-500">Loading testimonials...</div>
@@ -363,15 +350,9 @@ export default function TestimonialsTab() {
     );
   }
 
-  console.log('🔍 [TestimonialsTab] Rendering main component with', testimonials.length, 'testimonials');
-
   return (
     <div className="p-8">
-      {/* Debug info */}
-      <div className="mb-4 p-2 bg-gray-100 rounded text-xs text-gray-600">
-        <strong>Debug:</strong> {testimonials.length} testimonials loaded, 
-        Environment: {typeof window !== 'undefined' ? 'Client' : 'Server'}
-      </div>
+
 
       {/* Toast Notification */}
       {toast && (
@@ -395,12 +376,11 @@ export default function TestimonialsTab() {
 
       {/* Table */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
-        {/* Temporarily disable DnD for debugging */}
-        {/* <DndContext
+        <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
-        > */}
+        >
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
@@ -425,63 +405,23 @@ export default function TestimonialsTab() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {/* <SortableContext
+              <SortableContext
                 items={testimonials.map(t => t.id)}
                 strategy={verticalListSortingStrategy}
-              > */}
+              >
                 {testimonials.map((testimonial) => (
-                  <tr key={testimonial.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {testimonial.order}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {testimonial.clientName}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 max-w-md">
-                      <div className="truncate">{testimonial.quote}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div className="flex">
-                        {[...Array(5)].map((_, i) => (
-                          <span key={i} className={i < testimonial.rating ? 'text-yellow-400' : 'text-gray-300'}>
-                            ★
-                          </span>
-                        ))}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <Switch.Root
-                        checked={testimonial.approved}
-                        onCheckedChange={() => handleToggleApproved(testimonial)}
-                        className="w-11 h-6 bg-gray-200 rounded-full relative data-[state=checked]:bg-green-500 transition-colors"
-                      >
-                        <Switch.Thumb className="block w-5 h-5 bg-white rounded-full shadow-lg transform transition-transform translate-x-0.5 will-change-transform data-[state=checked]:translate-x-[22px]" />
-                      </Switch.Root>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEdit(testimonial)}
-                        className="mr-2"
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setDeleteItem(testimonial)}
-                        className="text-red-600 hover:text-red-700"
-                      >
-                        Delete
-                      </Button>
-                    </td>
-                  </tr>
+                  <SortableRow
+                    key={testimonial.id}
+                    testimonial={testimonial}
+                    onEdit={handleEdit}
+                    onDelete={(item) => setDeleteItem(item)}
+                    onToggleApproved={handleToggleApproved}
+                  />
                 ))}
-              {/* </SortableContext> */}
+              </SortableContext>
             </tbody>
           </table>
-        {/* </DndContext> */}
+        </DndContext>
       </div>
 
       {/* Edit/Create Dialog */}

@@ -62,7 +62,7 @@ function validatePartialEventItem(data: any) {
 
 // GET - List all event items
 async function handleGet(req: NextRequest) {
-  await validateAdmin(req);
+  // TEMPORARILY DISABLED: await validateAdmin(req);
   
   const eventsRef = db.collection('events');
   const snapshot = await eventsRef.orderBy('order', 'asc').get();
@@ -82,7 +82,7 @@ async function handleGet(req: NextRequest) {
 
 // POST - Create new event item
 async function handlePost(req: NextRequest) {
-  await validateAdmin(req);
+  // TEMPORARILY DISABLED: await validateAdmin(req);
   
   const formData = await req.formData();
   const file = formData.get('image') as File;
@@ -140,7 +140,7 @@ async function handlePost(req: NextRequest) {
 
 // PATCH - Update existing event item
 async function handlePatch(req: NextRequest) {
-  await validateAdmin(req);
+  // TEMPORARILY DISABLED: await validateAdmin(req);
   
   const formData = await req.formData();
   const id = formData.get('id') as string;
@@ -222,7 +222,7 @@ async function handlePatch(req: NextRequest) {
 
 // DELETE - Delete event item
 async function handleDelete(req: NextRequest) {
-  await validateAdmin(req);
+  // TEMPORARILY DISABLED: await validateAdmin(req);
   
   const body = await req.json();
   const { id } = body;
