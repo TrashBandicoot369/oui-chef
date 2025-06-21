@@ -56,10 +56,16 @@ export default function TestimonialsSection() {
 
   // Generate star icons based on rating
   const renderStars = (rating: number) => {
+    // Ensure rating is a number and within valid range
+    const numRating = Number(rating) || 0
+    const validRating = Math.max(0, Math.min(5, numRating))
+    
+    console.log('Rating debug:', { original: rating, converted: numRating, valid: validRating })
+    
     return Array.from({ length: 5 }, (_, i) => (
       <span
         key={i}
-        className={`text-lg ${i < rating ? 'text-accent2' : 'text-gray-400'}`}
+        className={`text-lg ${i < validRating ? 'text-accent2' : 'text-gray-400'}`}
       >
         ⭐
       </span>
@@ -137,7 +143,7 @@ export default function TestimonialsSection() {
                     }}
                   >
                     {/* Quote */}
-                    <blockquote className="text-accent2 text-lg font-sansleading-relaxed mb-6 italic">
+                    <blockquote className="text-accent2 text-lg font-sans leading-relaxed mb-6 italic">
                       "{testimonial.quote}"
                     </blockquote>
                     
