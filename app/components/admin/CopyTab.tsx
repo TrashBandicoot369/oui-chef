@@ -38,7 +38,15 @@ export default function CopyTab() {
       const response = await fetch('/api/admin/content');
       if (!response.ok) throw new Error('Failed to fetch content');
       const data = await response.json();
-      setCopyData(data);
+      
+      // Migrate data structure if needed (for backward compatibility)
+      const migratedData = data.map((item: any) => ({
+        ...item,
+        section: item.section || 'unknown',
+        content: item.content || ''
+      }));
+      
+      setCopyData(migratedData);
     } catch (error) {
       console.error('Error fetching content:', error);
       setToast({ message: 'Failed to load content', type: 'error' });
@@ -108,10 +116,11 @@ export default function CopyTab() {
     setEditContent('');
   };
 
-  const truncateContent = (content: string, maxLength: number = 60) => {
-    if (content.length <= maxLength) return content;
-    return content.substring(0, maxLength) + '...';
-  };
+  const truncateContent = (content: string | undefined | null, maxLength: number = 60) => {
+  if (!content) return 'No content';
+  if (content.length <= maxLength) return content;
+  return content.substring(0, maxLength) + '...';
+};
 
   if (loading) {
     return (
@@ -163,7 +172,7 @@ export default function CopyTab() {
             {copyData.map((item) => (
               <tr key={item.id}>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {item.section}
+                  {item.section || 'Unnamed Section'}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-500">
                   {truncateContent(item.content)}

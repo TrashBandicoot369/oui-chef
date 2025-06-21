@@ -26,8 +26,8 @@ const shapes = [
 export default function EventHighlights() {
   const [index, setIndex] = useState(0)
   const pathRef = useRef<SVGPathElement>(null)
-  const eventsData = useApi<Event>('public/events')
-  const events = eventsData || []
+  const eventsData = useApi<Event>('public/gallery')
+  const events = (eventsData || []).filter(event => event.featured === true)
   const count = events.length
 
   const next = () => count > 0 && setIndex((i) => (i + 1) % count)
@@ -52,7 +52,7 @@ export default function EventHighlights() {
       <div className="w-full min-h-[800px] flex items-center justify-center relative overflow-hidden -translate-y-[100px]">
         <div className="text-center text-accent2">
           <div className="animate-pulse">
-            {!eventsData ? 'Loading events...' : 'No events to display at this time.'}
+            {!eventsData ? 'Loading events...' : 'No featured events to display. Use the Gallery tab to mark events as featured.'}
           </div>
         </div>
       </div>

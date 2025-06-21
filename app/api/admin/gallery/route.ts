@@ -217,15 +217,32 @@ async function handlePost(req: NextRequest) {
 async function handlePatch(req: NextRequest) {
   // TEMPORARILY DISABLED: await validateAdmin(req);
   
-  const formData = await req.formData();
-  const id = formData.get('id') as string;
-  const file = formData.get('image') as File;
-  const title = formData.get('title') as string;
-  const description = formData.get('description') as string;
-  const category = formData.get('category') as string;
-  const featured = formData.get('featured') === 'true';
-  const visible = formData.get('visible') !== 'false';
-  const order = parseInt(formData.get('order') as string);
+  const contentType = req.headers.get('content-type');
+  let id: string, file: File | null = null, title: string, description: string, 
+      category: string, featured: boolean, visible: boolean, order: number;
+  
+  if (contentType?.includes('application/json')) {
+    // Handle JSON requests (for simple updates like visibility)
+    const jsonData = await req.json();
+    id = jsonData.id;
+    title = jsonData.title;
+    description = jsonData.description;
+    category = jsonData.category;
+    featured = jsonData.featured;
+    visible = jsonData.visible;
+    order = jsonData.order;
+  } else {
+    // Handle FormData requests (for file uploads)
+    const formData = await req.formData();
+    id = formData.get('id') as string;
+    file = formData.get('image') as File;
+    title = formData.get('title') as string;
+    description = formData.get('description') as string;
+    category = formData.get('category') as string;
+    featured = formData.get('featured') === 'true';
+    visible = formData.get('visible') !== 'false';
+    order = parseInt(formData.get('order') as string);
+  }
   
   if (!id) {
     throw new Error('Document ID is required for updates');
@@ -246,8 +263,8 @@ async function handlePatch(req: NextRequest) {
   if (description !== undefined && description !== null) updateData.description = description;
   if (category !== undefined && category !== null) updateData.category = category;
   if (!isNaN(order)) updateData.order = order;
-  updateData.featured = featured;
-  updateData.visible = visible;
+  if (featured !== undefined) updateData.featured = featured;
+  if (visible !== undefined) updateData.visible = visible;
   
   // Handle image upload if provided
   if (file && file.size > 0) {

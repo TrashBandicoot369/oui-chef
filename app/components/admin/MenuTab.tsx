@@ -9,12 +9,12 @@ import { Alert } from '@/app/components/ui/alert';
 
 interface MenuItem {
   id: string;
-  group: string;
+  group?: string;
   name: string;
   description: string;
-  price: number;
-  tags: string[];
-  visible: boolean;
+  price?: number;
+  tags?: string[];
+  visible?: boolean;
 }
 
 export default function MenuTab() {
@@ -52,7 +52,17 @@ export default function MenuTab() {
       const response = await fetch('/api/admin/menu');
       if (!response.ok) throw new Error('Failed to fetch menu items');
       const data = await response.json();
-      setMenuItems(data);
+      
+      // Migrate data structure if needed (for backward compatibility)
+      const migratedData = data.map((item: any) => ({
+        ...item,
+        group: item.group || 'Uncategorized',
+        price: item.price || 0,
+        tags: item.tags || [],
+        visible: item.visible !== false // Default to true
+      }));
+      
+      setMenuItems(migratedData);
     } catch (error) {
       console.error('Error fetching menu:', error);
       setToast({ message: 'Failed to load menu items', type: 'error' });
@@ -62,9 +72,12 @@ export default function MenuTab() {
   };
 
   const handleVisibilityToggle = async (item: MenuItem) => {
+    const currentVisible = item.visible !== false; // Default to true if undefined
+    const newVisible = !currentVisible;
+    
     // Optimistic update
     const updatedItems = menuItems.map(i => 
-      i.id === item.id ? { ...i, visible: !i.visible } : i
+      i.id === item.id ? { ...i, visible: newVisible } : i
     );
     setMenuItems(updatedItems);
 
@@ -72,7 +85,7 @@ export default function MenuTab() {
               const response = await fetch('/api/admin/menu', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: item.id, visible: !item.visible })
+          body: JSON.stringify({ id: item.id, visible: newVisible })
         });
 
       if (!response.ok) throw new Error('Failed to update visibility');
@@ -89,11 +102,11 @@ export default function MenuTab() {
   const handleEdit = (item: MenuItem) => {
     setEditingItem(item);
     setFormData({
-      group: item.group,
+      group: item.group || '',
       name: item.name,
       description: item.description,
-      price: item.price.toString(),
-      tags: item.tags.join(', ')
+      price: (item.price || 0).toString(),
+      tags: (item.tags || []).join(', ')
     });
     setIsNewItem(false);
   };
@@ -185,8 +198,10 @@ export default function MenuTab() {
 
   // Sort items by group then name
   const sortedItems = [...menuItems].sort((a, b) => {
-    if (a.group !== b.group) {
-      return a.group.localeCompare(b.group);
+    const aGroup = a.group || 'Uncategorized';
+    const bGroup = b.group || 'Uncategorized';
+    if (aGroup !== bGroup) {
+      return aGroup.localeCompare(bGroup);
     }
     return a.name.localeCompare(b.name);
   });
@@ -250,7 +265,7 @@ export default function MenuTab() {
             {sortedItems.map((item) => (
               <tr key={item.id}>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {item.group}
+                  {item.group || 'Uncategorized'}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-900">
                   <div>
@@ -259,11 +274,11 @@ export default function MenuTab() {
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  ${item.price.toFixed(2)}
+                  ${(item.price || 0).toFixed(2)}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-500">
                   <div className="flex flex-wrap gap-1">
-                    {item.tags.map((tag, index) => (
+                    {(item.tags || []).map((tag, index) => (
                       <span
                         key={index}
                         className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800"
@@ -275,7 +290,7 @@ export default function MenuTab() {
                 </td>
                 <td className="px-6 py-4 text-center">
                   <Switch.Root
-                    checked={item.visible}
+                    checked={item.visible !== false}
                     onCheckedChange={() => handleVisibilityToggle(item)}
                     className="w-11 h-6 bg-gray-200 rounded-full relative data-[state=checked]:bg-green-500 transition-colors"
                   >

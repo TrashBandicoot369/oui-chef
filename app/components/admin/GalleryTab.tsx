@@ -5,7 +5,7 @@ import * as Dialog from '@radix-ui/react-dialog'
 import * as AlertDialog from '@radix-ui/react-alert-dialog'
 import { Button } from '@/app/components/ui/button'
 import { Alert } from '@/app/components/ui/alert'
-import { Eye, EyeOff, Edit, Trash2, Plus, GripVertical } from 'lucide-react'
+import { Eye, EyeOff, Edit, Trash2, Plus, GripVertical, Star } from 'lucide-react'
 import {
   DndContext,
   closestCenter,
@@ -97,12 +97,14 @@ function SortableCard({
   item,
   onEdit,
   onDelete,
-  onToggleVisibility
+  onToggleVisibility,
+  onToggleFeatured
 }: {
   item: GalleryItem
   onEdit: (item: GalleryItem) => void
   onDelete: (item: GalleryItem) => void
   onToggleVisibility: (item: GalleryItem) => void
+  onToggleFeatured: (item: GalleryItem) => void
 }) {
   const {
     attributes,
@@ -169,6 +171,13 @@ function SortableCard({
           )}
         </button>
         <button
+          onClick={() => onToggleFeatured(item)}
+          className="p-1.5 bg-white/80 rounded hover:bg-white transition-colors"
+          title={item.featured ? 'Remove from Event Highlights' : 'Add to Event Highlights'}
+        >
+          <Star className={`w-4 h-4 ${item.featured ? 'text-yellow-500 fill-current' : 'text-gray-600'}`} />
+        </button>
+        <button
           onClick={() => onEdit(item)}
           className="p-1.5 bg-white/80 rounded hover:bg-white transition-colors"
           title="Edit"
@@ -183,6 +192,13 @@ function SortableCard({
           <Trash2 className="w-4 h-4 text-red-600" />
         </button>
       </div>
+      
+      {/* Featured badge */}
+      {item.featured && (
+        <div className="absolute bottom-2 left-2 z-20 px-2 py-1 bg-yellow-500 text-white text-xs font-bold rounded">
+          FEATURED
+        </div>
+      )}
     </div>
   )
 }
@@ -285,6 +301,26 @@ export default function GalleryTab() {
     } catch {
       setGalleryItems(galleryItems)
       setToast({ message: 'Failed to update visibility', type: 'error' })
+    }
+  }
+
+  const handleToggleFeatured = async (item: GalleryItem) => {
+    const updated = galleryItems.map(g =>
+      g.id === item.id ? { ...g, featured: !g.featured } : g
+    )
+    setGalleryItems(updated)
+
+    try {
+      const res = await fetch('/api/admin/gallery', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: item.id, featured: !item.featured })
+      })
+      if (!res.ok) throw new Error()
+      setToast({ message: 'Featured status updated', type: 'success' })
+    } catch {
+      setGalleryItems(galleryItems)
+      setToast({ message: 'Failed to update featured status', type: 'error' })
     }
   }
 
@@ -446,6 +482,7 @@ export default function GalleryTab() {
                 onEdit={handleEdit}
                 onDelete={i => setDeleteItem(i)}
                 onToggleVisibility={handleToggleVisibility}
+                onToggleFeatured={handleToggleFeatured}
               />
             ))}
           </div>

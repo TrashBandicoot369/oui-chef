@@ -35,7 +35,7 @@ async function handleGet() {
     console.log(`🔄 [PUBLIC GALLERY] All docs mapped: ${allDocs.length}`);
     
     const visibleDocs = allDocs.filter((doc: any) => {
-      const isVisible = doc.visible !== false;
+      const isVisible = doc.visible === true;
       console.log(`👁️ [PUBLIC GALLERY] Doc ${doc.id} visible check: ${isVisible} (visible field: ${doc.visible})`);
       return isVisible;
     });

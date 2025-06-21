@@ -23,6 +23,7 @@ export async function GET(request: NextRequest) {
       'testimonials',
       'gallery',
       'siteCopy',
+      'content',
       'theme'
     ];
 
