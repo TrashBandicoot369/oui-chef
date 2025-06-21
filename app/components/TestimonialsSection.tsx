@@ -75,26 +75,32 @@ export default function TestimonialsSection() {
 
   // Generate star icons based on rating
   const renderStars = (rating: number) => {
-    // Ensure rating is a number and within valid range
-    const numRating = Number(rating) || 0
+    const numRating = Math.floor(Number(rating)) || 0
     const validRating = Math.max(0, Math.min(5, numRating))
     
-    console.log('Rating debug:', { original: rating, converted: numRating, valid: validRating })
+    console.log('Rating debug:', { original: rating, validRating })
     
-    return Array.from({ length: 5 }, (_, i) => {
-      const isFilled = i < validRating
-      console.log(`Star ${i + 1}: ${isFilled ? 'FILLED' : 'EMPTY'}`)
-      
-      return (
-        <span
-          key={i}
-          className={isFilled ? 'text-lg text-accent2' : 'text-lg text-gray-400'}
-          style={{ color: isFilled ? 'var(--color-accent2)' : '#9CA3AF' }}
-        >
-          ⭐
+    const stars = []
+    
+    // Add filled stars
+    for (let i = 0; i < validRating; i++) {
+      stars.push(
+        <span key={`filled-${i}`} className="text-lg" style={{ color: 'var(--color-accent2)' }}>
+          ★
         </span>
       )
-    })
+    }
+    
+    // Add empty stars
+    for (let i = validRating; i < 5; i++) {
+      stars.push(
+        <span key={`empty-${i}`} className="text-lg" style={{ color: '#9CA3AF' }}>
+          ☆
+        </span>
+      )
+    }
+    
+    return stars
   }
 
   if (!testimonials?.length) return null
