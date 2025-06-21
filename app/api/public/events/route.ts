@@ -3,7 +3,7 @@ import { withErrorHandling } from '@/lib/apiHandler';
 
 // GET - List all visible events
 async function handleGet() {
-  const eventsRef = db.collection('events');
+  const eventsRef = db.collection('eventHighlights');
   const snapshot = await eventsRef.where('visible', '==', true).orderBy('order', 'asc').get();
   
   const events = snapshot.docs.map(doc => {
@@ -22,7 +22,7 @@ async function handleGet() {
     status: 200,
     headers: { 
       'Content-Type': 'application/json',
-      'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600'
+      'Cache-Control': 'no-cache'
     },
   });
 }

@@ -64,7 +64,7 @@ function validatePartialEventItem(data: any) {
 async function handleGet(req: NextRequest) {
   // TEMPORARILY DISABLED: await validateAdmin(req);
   
-  const eventsRef = db.collection('events');
+  const eventsRef = db.collection('eventHighlights');
   const snapshot = await eventsRef.orderBy('order', 'asc').get();
   
   const events = snapshot.docs.map(doc => ({
@@ -122,7 +122,7 @@ async function handlePost(req: NextRequest) {
     updatedAt: timestamp,
   };
   
-  const docRef = await db.collection('events').add(docData);
+  const docRef = await db.collection('eventHighlights').add(docData);
   const doc = await docRef.get();
   
   const responseData = {
@@ -154,7 +154,7 @@ async function handlePatch(req: NextRequest) {
     throw new Error('Document ID is required for updates');
   }
   
-  const docRef = db.collection('events').doc(id);
+  const docRef = db.collection('eventHighlights').doc(id);
   const doc = await docRef.get();
   
   if (!doc.exists) {
@@ -231,7 +231,7 @@ async function handleDelete(req: NextRequest) {
     throw new Error('Document ID is required for deletion');
   }
   
-  const docRef = db.collection('events').doc(id);
+  const docRef = db.collection('eventHighlights').doc(id);
   const doc = await docRef.get();
   
   if (!doc.exists) {

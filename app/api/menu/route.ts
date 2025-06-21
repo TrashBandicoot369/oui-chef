@@ -2,7 +2,7 @@ import { db } from '@/lib/firebase-admin'
 import { NextResponse } from 'next/server'
 
 export async function GET() {
-  const snap = await db.collection('menu')
+  const snap = await db.collection('menuItems')
     .where('visible', '==', true)
     .get()
   const data = snap.docs.map((d: any) => ({ id: d.id, ...d.data() }))

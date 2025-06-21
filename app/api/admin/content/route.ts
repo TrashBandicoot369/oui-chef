@@ -37,7 +37,7 @@ function validatePartialContent(data: any) {
 async function handleGet(req: NextRequest) {
   // TEMPORARILY DISABLED: await validateAdmin(req);
   
-  const contentRef = db.collection('content');
+  const contentRef = db.collection('siteCopy');
   const snapshot = await contentRef.get();
   
   const content = snapshot.docs.map(doc => ({
@@ -67,7 +67,7 @@ async function handlePost(req: NextRequest) {
     updatedAt: timestamp,
   };
   
-  const docRef = await db.collection('content').add(docData);
+  const docRef = await db.collection('siteCopy').add(docData);
   const doc = await docRef.get();
   
   const responseData = {
@@ -100,7 +100,7 @@ async function handlePatch(req: NextRequest) {
     throw new Error('At least one field must be provided for update');
   }
   
-  const docRef = db.collection('content').doc(id);
+  const docRef = db.collection('siteCopy').doc(id);
   const doc = await docRef.get();
   
   if (!doc.exists) {
@@ -139,7 +139,7 @@ async function handleDelete(req: NextRequest) {
     throw new Error('Document ID is required for deletion');
   }
   
-  const docRef = db.collection('content').doc(id);
+  const docRef = db.collection('siteCopy').doc(id);
   const doc = await docRef.get();
   
   if (!doc.exists) {

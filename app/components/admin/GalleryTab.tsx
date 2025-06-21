@@ -339,10 +339,10 @@ export default function GalleryTab() {
         if (!r.ok) throw new Error()
         setToast({ message: 'Gallery item created', type: 'success' })
       } else if (editingItem) {
-        const r = await fetch(`/api/admin/gallery/${editingItem.id}`, {
+        const r = await fetch('/api/admin/gallery', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          body: JSON.stringify({ id: editingItem.id, ...payload })
         })
         if (!r.ok) throw new Error()
         setToast({ message: 'Gallery item updated', type: 'success' })

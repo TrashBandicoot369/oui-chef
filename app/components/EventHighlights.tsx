@@ -26,7 +26,7 @@ const shapes = [
 export default function EventHighlights() {
   const [index, setIndex] = useState(0)
   const pathRef = useRef<SVGPathElement>(null)
-  const eventsData = useApi<Event>('public/gallery')
+  const eventsData = useApi<Event>('public/events')
   const events = eventsData || []
   const count = events.length
 
