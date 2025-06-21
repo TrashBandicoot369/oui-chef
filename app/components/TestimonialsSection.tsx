@@ -24,10 +24,29 @@ export default function TestimonialsSection() {
   const carouselRef = useRef<HTMLDivElement>(null)
   const testimonials = useApi<Testimonial>('testimonials')
   
+  // Debug: Log the raw testimonials data
+  useEffect(() => {
+    if (testimonials) {
+      console.log('🔍 Raw testimonials data:', testimonials)
+      testimonials.forEach((t, i) => {
+        console.log(`🔍 Testimonial ${i}:`, {
+          id: t.id,
+          clientName: t.clientName,
+          rating: t.rating,
+          ratingType: typeof t.rating,
+          approved: t.approved,
+          order: t.order
+        })
+      })
+    }
+  }, [testimonials])
+  
   // Filter only approved testimonials and sort by order
   const approvedTestimonials = (testimonials || [])
     .filter(t => t.approved)
     .sort((a, b) => a.order - b.order)
+  
+  console.log('🔍 Approved testimonials:', approvedTestimonials.length, approvedTestimonials)
   
   const count = approvedTestimonials.length
 
@@ -183,4 +202,4 @@ export default function TestimonialsSection() {
       </div>
     </section>
   )
-} 
+}
