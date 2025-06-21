@@ -6,14 +6,21 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import { useState, useEffect, useRef } from 'react'
 import TextMarquee from './components/TextMarquee'
 import EventHighlights from './components/EventHighlights'
-import VerticalMarquee from './components/VerticalMarquee'
+import TestimonialsSection from './components/TestimonialsSection'
 import PlateStack from './components/PlateStack'
 import MobilePlateCarousel from './components/MobilePlateCarousel'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import dynamic from 'next/dynamic'
 import { Dialog } from '@headlessui/react'
+import useApi from '@/lib/useApi'
 const BounceArrow = dynamic(() => import('./components/BounceArrow'), { ssr: false })
+
+type ContentItem = {
+  id: string
+  section: string
+  content: string
+}
 
 
 // Register GSAP plugins
@@ -25,6 +32,13 @@ function HomeContent() {
   const [bookingBgImage, setBookingBgImage] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { scrollY } = useScroll();
+  const contentData = useApi<ContentItem>('content');
+  
+  // Helper function to get content by section
+  const getContent = (section: string, fallback: string = '') => {
+    const item = contentData?.find(item => item.section === section);
+    return item?.content || fallback;
+  };
   
   // Refs for hero text animation
   const heroTitleRef = useRef<HTMLHeadingElement>(null);
@@ -430,15 +444,15 @@ function HomeContent() {
     <h1 
       ref={heroTitleRef}
       className="font-display tracking-tight text-3xl sm:text-5xl md:text-7xl leading-snug sm:leading-tight uppercase drop-shadow-lg"
-    >
-      restaurant-quality<br />private dining
-    </h1>
+      dangerouslySetInnerHTML={{ 
+        __html: getContent('hero_title', 'restaurant-quality<br />private dining') 
+      }}
+    />
     <p 
       ref={heroSubtitleRef}
       className="mt-6 max-w-xl mx-auto text-lg drop-shadow-lg"
     >
-      From intimate dinners to large galas, Chef Alex J crafts unforgettable culinary experiences wherever you
-      celebrate.
+      {getContent('hero_subtitle', 'From intimate dinners to large galas, Chef Alex J crafts unforgettable culinary experiences wherever you celebrate.')}
     </p>
     
       <a
@@ -502,27 +516,19 @@ function HomeContent() {
 
 <div ref={textRef}>
 <h2 className="font-display text-accent2 text-4xl sm:text-5xl mb-4">
-    Meet Chef Alex J
+    {getContent('about_title', 'Meet Chef Alex J')}
   </h2>
 
-  <p className="text-accent2 mb-4">
-    Raised in bustling family kitchens in Montréal and Toronto, Alex learned
-    early on that the best way to care for people is through food. Eighteen
-    years later, that passion still drives him. From intimate dinners to large
-    festivals, he brings the flavours and techniques he grew up loving to every
-    plate he serves.
-  </p>
-
-  <p className="text-accent2 mb-4">
-    Every event is tailored to your unique tastes and needs—because when you
-    dine with us, you're family.
-  </p>
-
-  <p className="text-accent2 mb-4">
-    Welcome to the family,
-    <br />
-    Alex
-  </p>
+  <div 
+    className="text-accent2 space-y-4"
+    dangerouslySetInnerHTML={{ 
+      __html: getContent('about_content', `
+        <p>Raised in bustling family kitchens in Montréal and Toronto, Alex learned early on that the best way to care for people is through food. Eighteen years later, that passion still drives him. From intimate dinners to large festivals, he brings the flavours and techniques he grew up loving to every plate he serves.</p>
+        <p>Every event is tailored to your unique tastes and needs—because when you dine with us, you're family.</p>
+        <p>Welcome to the family,<br />Alex</p>
+      `).replace(/\n\s+/g, ' ').trim()
+    }}
+  />
     </div>
   </div>
 </section>
@@ -630,30 +636,7 @@ d="M0,224L34.3,240C68.6,256,137,288,206,282.7C274.3,277,343,235,
 
 
       {/* testimonials */}
-      <section id="testimonials" className="relative bg-primary2 text-center text-accent1 py-32">
-        <div className="w-full max-w-none">
-          <TextMarquee className="text-center font-display text-3xl text-accent1 sm:text-5xl uppercase mb-12 text-accent2">
-            Testimonials
-          </TextMarquee>
-        </div>
-        <div className="px-4">
-          <VerticalMarquee 
-            items={[
-              "Chef Alex transformed our backyard into a Michelin-starred experience. Every dish was a masterpiece!",
-              "The attention to detail was incredible. From the menu planning to the final presentation, everything was perfect.",
-              "Our corporate event was a huge success thanks to Chef Alex's innovative menu and professional service.",
-              "The seasonal tasting menu was a journey through local flavors. Each course told a story.",
-              "What impressed me most was how Chef Alex made everyone feel like family while maintaining professional excellence.",
-              "The family-style feast was perfect for our large gathering. Everyone raved about the food!",
-              "Chef Alex's passion for local ingredients shines through in every dish. Truly exceptional dining.",
-              "The wine pairings were spot on, and the service was impeccable. A memorable evening!",
-              "From intimate dinners to large events, Chef Alex delivers consistently outstanding experiences."
-            ]}
-            speed={30} // Slightly slower speed for better readability
-            className="max-w-6xl mx-auto"
-          />
-        </div>
-      </section>
+      <TestimonialsSection />
 
      
 
@@ -702,7 +685,7 @@ d="M0,224L34.3,240C68.6,256,137,288,206,282.7C274.3,277,343,235,
           </div>
           <div>
             <h4 className="font-bold uppercase mb-4">Join the Mailing List</h4>
-            <p className="text-sm mb-4">Seasonal menus, pop-ups & chef&apos;s secrets—straight to your inbox.</p>
+            <p className="text-sm mb-4">{getContent('footer_newsletter', 'Seasonal menus, pop-ups & chef\'s secrets—straight to your inbox.')}</p>
             <form className="flex gap-2 w-full sm:w-auto sm:max-w-xs">
               <input type="email" placeholder="Email Address" className="flex-1 px-3 py-2 text-xs text-black placeholder:text-gray-400" />
               <button className="bg-primary1 px-4 py-2 text-xs text-accent1 uppercase tracking-wider hover:bg-white hover:text-accent1 transition font-button">
@@ -712,11 +695,12 @@ d="M0,224L34.3,240C68.6,256,137,288,206,282.7C274.3,277,343,235,
           </div>
           <div>
             <h4 className="font-bold uppercase mb-4">Contact</h4>
-            <p className="text-xs leading-6">
-              Toronto, ON<br />
-              info@chefalexj.com<br />
-              416-555-0123
-            </p>
+            <div 
+              className="text-xs leading-6"
+              dangerouslySetInnerHTML={{ 
+                __html: getContent('footer_contact', 'Toronto, ON<br />info@chefalexj.com<br />416-555-0123') 
+              }}
+            />
             <h4 className="font-bold uppercase mt-6 mb-2">Follow</h4>
             <div className="flex space-x-4 text-xl">
               <a href="#">🐦</a><a href="#">📸</a><a href="#">🎵</a>

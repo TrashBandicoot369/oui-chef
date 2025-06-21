@@ -265,13 +265,19 @@ export default function TestimonialsTab() {
 
       if (isNewItem) {
         // Create new item
+        console.log('Creating testimonial with data:', testimonialData);
         const response = await fetch('/api/admin/testimonials', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(testimonialData)
         });
+        console.log('Create response status:', response.status);
 
-        if (!response.ok) throw new Error('Failed to create testimonial');
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Create testimonial error:', response.status, errorText);
+          throw new Error(`Failed to create testimonial: ${response.status} ${errorText}`);
+        }
         
         setToast({ message: 'Testimonial created successfully', type: 'success' });
       } else if (editingItem) {

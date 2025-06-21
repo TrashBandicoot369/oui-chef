@@ -4,38 +4,38 @@ import { validateAdmin, withErrorHandling } from '@/lib/apiHandler';
 
 // Simple validation functions for testimonials
 function validateTestimonial(data: any) {
-  if (!data.name || typeof data.name !== 'string' || data.name.trim().length === 0) {
-    throw new Error('Name is required and must be a non-empty string');
+  if (!data.clientName || typeof data.clientName !== 'string' || data.clientName.trim().length === 0) {
+    throw new Error('Client name is required and must be a non-empty string');
   }
-  if (!data.content || typeof data.content !== 'string' || data.content.trim().length === 0) {
-    throw new Error('Content is required and must be a non-empty string');
+  if (!data.quote || typeof data.quote !== 'string' || data.quote.trim().length === 0) {
+    throw new Error('Quote is required and must be a non-empty string');
   }
   if (data.rating !== undefined && (isNaN(Number(data.rating)) || Number(data.rating) < 1 || Number(data.rating) > 5)) {
     throw new Error('Rating must be a number between 1 and 5');
   }
   
   return {
-    name: data.name.trim(),
-    content: data.content.trim(),
+    clientName: data.clientName.trim(),
+    quote: data.quote.trim(),
     rating: data.rating ? Number(data.rating) : 5,
-    date: data.date || new Date().toISOString().split('T')[0],
-    featured: data.featured || false
+    approved: data.approved !== undefined ? Boolean(data.approved) : false,
+    order: data.order !== undefined ? Number(data.order) : 0
   };
 }
 
 function validatePartialTestimonial(data: any) {
   const result: any = {};
-  if (data.name !== undefined) {
-    if (typeof data.name !== 'string' || data.name.trim().length === 0) {
-      throw new Error('Name must be a non-empty string when provided');
+  if (data.clientName !== undefined) {
+    if (typeof data.clientName !== 'string' || data.clientName.trim().length === 0) {
+      throw new Error('Client name must be a non-empty string when provided');
     }
-    result.name = data.name.trim();
+    result.clientName = data.clientName.trim();
   }
-  if (data.content !== undefined) {
-    if (typeof data.content !== 'string' || data.content.trim().length === 0) {
-      throw new Error('Content must be a non-empty string when provided');
+  if (data.quote !== undefined) {
+    if (typeof data.quote !== 'string' || data.quote.trim().length === 0) {
+      throw new Error('Quote must be a non-empty string when provided');
     }
-    result.content = data.content.trim();
+    result.quote = data.quote.trim();
   }
   if (data.rating !== undefined) {
     if (isNaN(Number(data.rating)) || Number(data.rating) < 1 || Number(data.rating) > 5) {
@@ -43,11 +43,11 @@ function validatePartialTestimonial(data: any) {
     }
     result.rating = Number(data.rating);
   }
-  if (data.date !== undefined) {
-    result.date = data.date;
+  if (data.approved !== undefined) {
+    result.approved = Boolean(data.approved);
   }
-  if (data.featured !== undefined) {
-    result.featured = Boolean(data.featured);
+  if (data.order !== undefined) {
+    result.order = Number(data.order);
   }
   return result;
 }

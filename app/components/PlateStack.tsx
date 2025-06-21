@@ -1,15 +1,27 @@
 'use client'
 
-import { useRef, useLayoutEffect, useState } from 'react'
+import { useRef, useLayoutEffect, useState, useEffect } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import useApi from '@/lib/useApi'
 
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger)
 
+type MenuItem = {
+  id: string
+  group: string
+  name: string
+  description: string
+  price: number
+  tags: string[]
+  visible: boolean
+}
+
 export default function PlateStack() {
   const stackRef = useRef<HTMLDivElement>(null)
   const [shuffledPlates, setShuffledPlates] = useState<string[]>([])
+  const menuItems = useApi<MenuItem>('menu')
 
   // ── plates with no text ───────────────────────────────────────────────
   const noTextPathsOriginal = [
@@ -55,44 +67,8 @@ export default function PlateStack() {
   const defaultPlates = [...noTextPathsOriginal, ...textPlatePaths]
   const allPlates = shuffledPlates.length > 0 ? shuffledPlates : defaultPlates
 
-  // ── flat list of every single menu item ────────────────────────────────
-  const items = [
-    'Stuffed Calamari: N\'Duja Parsley Oil, Herbs',
-    'Seared Cabbage: Almond Chili Butter & Chives',
-    'Crostini: Mushroom, Truffle, Gorgonzola, Mascarpone, Caramelized Onion, Thyme',
-    'Scallop: Aji Blanco, Dill, Almonds, Cucumber',
-    'Summer Salad: Ontario Peas, Charred Broccolini, Red Onion, Cumin, Yogurt, Fennel, Mint, Lemon',
-    'Burrata: Roasted Grapes, Pistachio, Saba, Basil',
-    'Oysters: Caesar · Black Garlic/Fermented Chili · Mignonette · Lime/Ginger/Fish Sauce Granita',
-    'Tomato Carpaccio: N\'Duja Vinaigrette, Stracciatella Di Bufala, EVOO',
-    'Braised Beef: Birria Demi, Onion Cracker, Pickled Radish, Cilantro Oil, Spiced Carrot',
-    'Roasted Chicken: Guyanese Curry Reduction, Potato',
-    'Pan-Seared Perch: Prosecco Beurre Blanc, Pickled Chilis, Herbs',
-    'Veal Tenderloin: Rapini Pesto, Pan Jus, Pear Caponata',
-    'Fennel & Cherry Tomato Gratin: Green Olive, Celery & Raisin Salsa',
-    'Cardamom Panna Cotta: Quince Gelée, Toasted Milk Crumb',
-    'Citrus Olive Oil Cake: Mascarpone, Basil Sorbet',
-    'Hot Chocolate Tiramisu',
-    'Berry & Stone Fruit: Almond Crumble, Whipped Vanilla Ganache',
-    'Corn Cake: Popcorn Gelato, Corn Pops',
-    'Spiced Chocolate Cake: Marshmallow, Buttered Graham Cracker Gelato, Spiced Chocolate Crème',
-    'Parmesan & Thyme Muffins',
-    'Guinness‐Braised Beef Stew with Mini Yorkshire Puddings',
-    'Rabbit Orecchiette',
-    'Potenza‐Style Chicken: Fresh Tomato, Basil',
-    'Pollo Mattone with Pan Jus',
-    'Savoury Bread Pudding',
-    'Zesty Kale Salad & Date Dressing',
-    'Baby Gem Lettuce: Burnt Lemon Dressing, Pecorino',
-    'XO Grilled Shrimp',
-    'Cannoli Tartare',
-    'Japchae',
-    'Braised Chicken Phyllo Cups',
-    'Dauphine Potato: Black Garlic, Tomato, Beef',
-    'Empanadas',
-    'Goat Cheese & Tomato Tartlet',
-    'Seasonal Tasting Menu: 5-course seasonal menu subject to change depending on season & availability',
-  ]
+  // Convert menu items to display format
+  const items = menuItems?.map(item => `${item.name}: ${item.description}`) || []
 
   // ── build 12 badges, distributing text evenly by length ────────────────
   function distributeItemsEvenly() {

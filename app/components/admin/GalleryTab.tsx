@@ -29,9 +29,11 @@ import { CSS } from '@dnd-kit/utilities';
 
 interface GalleryItem {
   id: string;
-  image: string;
-  alt: string;
+  title: string;
   description: string;
+  imageUrl: string;
+  category: string;
+  featured: boolean;
   visible: boolean;
   order: number;
   publicId?: string;
@@ -119,14 +121,14 @@ function SortableCard({ item, onEdit, onDelete, onToggleVisibility }: {
       {/* Image */}
       <div className="aspect-square relative overflow-hidden bg-gray-100">
         <img
-          src={item.image}
-          alt={item.alt}
+          src={item.imageUrl}
+          alt={item.title}
           className={`w-full h-full object-cover ${!item.visible ? 'opacity-50' : ''}`}
         />
         
         {/* Hover Overlay */}
         <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
-          <h3 className="text-white font-medium text-sm mb-1 line-clamp-1">{item.alt}</h3>
+          <h3 className="text-white font-medium text-sm mb-1 line-clamp-1">{item.title}</h3>
           <p className="text-white/80 text-xs line-clamp-2">{item.description}</p>
         </div>
       </div>
@@ -284,10 +286,12 @@ export default function GalleryTab() {
   const handleEdit = (item: GalleryItem) => {
     setEditingItem(item);
     setFormData({
-      image: item.image,
+      image: item.imageUrl,
       publicId: item.publicId || '',
-      alt: item.alt,
+      title: item.title,
       description: item.description,
+      category: item.category,
+      featured: item.featured,
     });
     setIsNewItem(false);
   };

@@ -39,6 +39,7 @@
     "lucide-react": "^0.514.0",
     "nanoid": "^5.1.5",
     "next": "14.0.0",
+    "next-cloudinary": "^6.16.0",
     "node-mailjet": "^6.0.8",
     "picocolors": "^1.1.1",
     "react": "^18",

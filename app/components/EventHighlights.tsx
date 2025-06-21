@@ -1,71 +1,17 @@
-import { useState, useRef, useLayoutEffect } from 'react'
+import { useState, useRef, useLayoutEffect, useEffect } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import useApi from '@/lib/useApi'
 
 type Event = {
-  id: number
-  image: string
-  alt: string
+  id: string
+  title: string
   description: string
+  imageUrl: string
+  publicId?: string
+  category: string
+  featured: boolean
+  order: number
 }
-
-const events: Event[] = [
-  {
-    id: 1,
-    image: '/images/events/dinnerparty (1).jpg',
-    alt: 'Dinner in a contemporary art gallery',
-    description:
-      'A quiet, thoughtful evening where every plate felt like part of the exhibit. The space was clean and bright, the food minimal but intentional. Each course landed with a sense of purpose—no showboating, no filler. Just great pacing, warm lighting, and a menu built to reflect the art on the walls.',
-  },
-  {
-    id: 2,
-    image: '/images/events/dinnerparty (4).jpg',
-    alt: 'Loft dinner filled with candles, plants, and soft light',
-    description:
-      'This felt like spring indoors—fresh herbs on the table, linen napkins just barely wrinkled, and dishes that tasted like someone cared. Served family-style, the menu moved from light and bright to deeply comforting. Everything smelled like lemon zest, olive oil, and trust.',
-  },
-  {
-    id: 3,
-    image: '/images/events/dinnerparty (5).jpg',
-    alt: 'Late-night dinner thrown in a brick-and-beam loft downtown',
-    description:
-      'Held in a raw industrial space with long tables and loose rules, this dinner ditched formalities in favour of good wine and better pacing. Dishes came out slow and generous—built to anchor conversation, not interrupt it. A full-bodied, brick-walled kind of night that hit its stride after the second bottle.',
-  },
-  {
-    id: 4,
-    image: '/images/events/dinnerparty (7).jpg',
-    alt: 'A private dinner hosted aboard a wood-paneled boat',
-    description:
-      'Waves tapping at the hull, glasses clinking on wood—this was one of those "how is this real?" dinners. The courses felt coastal and precise, plated between portside views and clean ocean air. It moved like a tide: calm, then surprising. You left feeling lighter.',
-  },
-  {
-    id: 5,
-    image: '/images/events/dinnerparty (8).jpg',
-    alt: 'Dinner in a winery hall overlooking rows of vines',
-    description:
-      'Set against a backdrop of late-summer vineyards, this dinner leaned into the earthy and elemental. Stoneware plates, wood-fired mains, and wine poured with zero ceremony. The kind of evening that starts golden and ends with sweaters over shoulders and forks chasing the last bite of something warm.',
-  },
-  {
-    id: 6,
-    image: '/images/events/dinnerparty (9).jpg',
-    alt: 'Rooftop dinner framed by city skylines and patio plants',
-    description:
-      'Equal parts dinner and hang, this rooftop gathering delivered that perfect balance of casual and magic. Music low, wine cold, and food that arrived when it was ready. Nothing rushed, everything easy. If you\'ve ever wanted a dinner to feel like a soft landing, this was it.',
-  },
-  {
-    id: 7,
-    image: '/images/events/dinnerparty (10).jpg',
-    alt: 'Minimalist dinner inside a concrete-walled private room',
-    description:
-      'This one played with restraint. The setting was clean and architectural, the menu stripped of anything unnecessary. No centerpieces, no noise—just elegant plates arriving in rhythm and disappearing just as quietly. Precision without pretense.',
-  },
-  {
-    id: 8,
-    image: '/images/events/dinnerparty (11).jpg',
-    alt: 'Tightly lit dinner in a tucked-away private space',
-    description:
-      'Tucked behind a nondescript door and down a quiet hallway, this dinner had that rare "you had to be there" feel. The food was vibrant and unexpected, the mood a little rowdy, but always intentional. Designed to feel like a secret—one you\'re glad got out.',
-  }
-]
 
 // SVG clip shapes for morphing animation
 const shapes = [
@@ -80,16 +26,38 @@ const shapes = [
 export default function EventHighlights() {
   const [index, setIndex] = useState(0)
   const pathRef = useRef<SVGPathElement>(null)
+  const eventsData = useApi<Event>('public/gallery')
+  const events = eventsData || []
   const count = events.length
 
-  const next = () => setIndex((i) => (i + 1) % count)
-  const prev = () => setIndex((i) => (i - 1 + count) % count)
+  const next = () => count > 0 && setIndex((i) => (i + 1) % count)
+  const prev = () => count > 0 && setIndex((i) => (i - 1 + count) % count)
+
+  // Reset index if it's out of bounds when events change
+  useEffect(() => {
+    if (events.length > 0 && index >= events.length) {
+      setIndex(0)
+    }
+  }, [events.length, index])
 
   useLayoutEffect(() => {
-    if (pathRef.current) {
+    if (pathRef.current && events.length > 0) {
       pathRef.current.setAttribute('d', shapes[index % shapes.length])
     }
-  }, [index])
+  }, [index, events.length])
+
+  // Show loading state or empty state
+  if (!eventsData || events.length === 0) {
+    return (
+      <div className="w-full min-h-[800px] flex items-center justify-center relative overflow-hidden -translate-y-[100px]">
+        <div className="text-center text-accent2">
+          <div className="animate-pulse">
+            {!eventsData ? 'Loading events...' : 'No events to display at this time.'}
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="w-full min-h-[800px] flex items-center justify-center relative overflow-hidden -translate-y-[100px]">
@@ -105,10 +73,10 @@ export default function EventHighlights() {
         <div className="flex-1 mx-12 flex items-center justify-center gap-16">
           <div className="flex-1 max-w-lg">
             <h2 className="text-3xl font-bold uppercase mb-4 text-accent2">
-              {events[index].alt}
+              {events[index]?.title || 'Loading...'}
             </h2>
             <p className="text-base leading-relaxed text-accent2">
-              {events[index].description}
+              {events[index]?.description || 'Loading event details...'}
             </p>
           </div>
           
@@ -132,14 +100,14 @@ export default function EventHighlights() {
                 </clipPath>
               </defs>
               <image
-                href={events[index].image}
+                href={events[index]?.imageUrl || ''}
                 x={-150}
                 y={-150}
                 width={300}
                 height={300}
                 preserveAspectRatio="xMidYMid slice"
                 clipPath="url(#morphClip)"
-                aria-label={events[index].alt}
+                aria-label={events[index]?.title || 'Event image'}
               />
             </svg>
           </div>
