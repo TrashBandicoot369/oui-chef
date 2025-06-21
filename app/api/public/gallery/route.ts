@@ -1,6 +1,9 @@
 import { db } from '@/lib/firebase-admin';
 import { withErrorHandling } from '@/lib/apiHandler';
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 // GET - List all visible gallery items
 async function handleGet() {
   try {
@@ -81,7 +84,7 @@ async function handleGet() {
       status: 200,
       headers: { 
         'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache'
+        'Cache-Control': 'no-store, must-revalidate'
       },
     });
   } catch (error) {

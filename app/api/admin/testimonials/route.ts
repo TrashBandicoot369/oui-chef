@@ -18,7 +18,7 @@ function validateTestimonial(data: any) {
     clientName: data.clientName.trim(),
     quote: data.quote.trim(),
     rating: data.rating ? Number(data.rating) : 5,
-    approved: data.approved !== undefined ? Boolean(data.approved) : false,
+    approved: data.approved !== undefined ? Boolean(data.approved) : true,
     order: data.order !== undefined ? Number(data.order) : 0
   };
 }
