@@ -162,22 +162,22 @@ const QuoteChat: React.FC = () => {
               <div
                 className={`max-w-[90%] sm:max-w-[70%] p-3 rounded-xl shadow ${
                   msg.role === "user"
-                    ? "bg-primary3 text-stroke rounded-br-none" /* 🎨 USER MESSAGE BUBBLE */
-                    : "bg-white/50 text-stroke rounded-bl-none" /* 🎨 AI MESSAGE BUBBLE */
+                    ? "bg-accent1 text-primary1 rounded-br-none" /* 🎨 USER MESSAGE BUBBLE */
+                    : "bg-primary1 text-accent1 rounded-bl-none" /* 🎨 AI MESSAGE BUBBLE */
                 }`}
               >
                 {/* 🎨 CHEF HAT ICON - Assistant message icon */}
                 {msg.role === "assistant" && (
-                  <ChefHat className="w-5 h-5 inline mr-2 mb-1 text-stroke" />
+                  <ChefHat className="w-5 h-5 inline mr-2 mb-1 text-accent1" />
                 )}
                 {/* 🎨 USER ICON - User message icon */}
                 {msg.role === "user" && (
-                  <User className="w-5 h-5 inline mr-2 mb-1 text-stroke" />
+                  <User className="w-5 h-5 inline mr-2 mb-1 text-primary1" />
                 )}
                 {msg.content}
                 {/* 🎨 QUOTE DISPLAY - Shows estimated price in message */}
                 {msg.quoted && msg.quote != null && (
-                  <p className="text-xs mt-1 pt-1 border-t border-stroke">
+                  <p className="text-xs mt-1 pt-1 border-t border-accent1">
                     <span className="font-semibold">Estimated Quote:</span> $
                     {msg.quote} CAD
                   </p>
@@ -189,8 +189,8 @@ const QuoteChat: React.FC = () => {
           {/* 🎨 LOADING MESSAGE - Shows while AI is thinking */}
           {isLoading && messages[messages.length - 1]?.role === "user" && (
             <div className="flex justify-start">
-              <div className="max-w-[90%] sm:max-w-[70%] p-3 rounded-xl shadow bg-primary3/50 text-accent1 rounded-bl-none flex items-center">
-                <Loader2 className="w-5 h-5 inline mr-2 animate-spin text-accent1/70" />
+              <div className="max-w-[90%] sm:max-w-[70%] p-3 rounded-xl shadow bg-primary1 text-accent1 rounded-bl-none flex items-center">
+                <Loader2 className="w-5 h-5 inline mr-2 animate-spin text-accent1" />
                 Typing...
               </div>
             </div>
@@ -243,18 +243,15 @@ const QuoteChat: React.FC = () => {
     className="
       lg:w-[500px] lg:min-w-[500px]            /* same width as chat */
       
-      bg-white rounded-lg shadow-xl border border-accent1/20
       transition-opacity duration-300          /* fades in 300 ms */
       opacity-100                              /* mounted with full opacity */
     "
   >
-    <div className="p-6">
       <BookingForm
         quote={cateringQuote}
         onBookingSuccess={handleBookingSuccess}
         chatHistory={messages}
       />
-    </div>
   </div>
 )}
     </div>

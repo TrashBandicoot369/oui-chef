@@ -6,6 +6,7 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import { useState, useEffect, useRef } from 'react'
 import TextMarquee from './components/TextMarquee'
 import EventHighlights from './components/EventHighlights'
+import MobileEventHighlights from './components/MobileEventHighlights'
 import TestimonialsSection from './components/TestimonialsSection'
 import PlateStack from './components/PlateStack'
 import MobilePlateCarousel from './components/MobilePlateCarousel'
@@ -560,7 +561,14 @@ d="M0,224L34.3,240C68.6,256,137,288,206,282.7C274.3,277,343,235,
       Event Highlights
     </TextMarquee>
   </div>
-  <EventHighlights />
+  {/* Mobile version */}
+  <div className="block sm:hidden">
+    <MobileEventHighlights />
+  </div>
+  {/* Desktop version */}
+  <div className="hidden sm:block">
+    <EventHighlights />
+  </div>
 </section>
 
 

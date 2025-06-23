@@ -138,7 +138,7 @@ export default function BookingForm({ quote, onBookingSuccess, chatHistory }: Bo
 
   if (success) {
     return (
-      <Alert variant="default" className="bg-primary3/20 border-primary1 text-accent1 my-4">
+      <Alert variant="default" className="bg-primary1 border-accent1 text-accent1 shadow-xl">
         <AlertTitle className="font-semibold">Consultation Request Sent!</AlertTitle>
         <AlertDescription>
           Thank you! Chef Alex will get back to you within 24 hours to discuss your event details.
@@ -148,7 +148,7 @@ export default function BookingForm({ quote, onBookingSuccess, chatHistory }: Bo
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 p-4 border border-accent1/20 rounded-md my-4 bg-primary2/10 shadow-md">
+    <form onSubmit={handleSubmit} className="space-y-4 p-6 border border-accent1/20 rounded-lg bg-primary2 shadow-xl">
       <h3 className="text-lg font-semibold text-accent1">Book Your Consultation</h3>
       
       <div>
@@ -158,7 +158,7 @@ export default function BookingForm({ quote, onBookingSuccess, chatHistory }: Bo
           id="quoteDisplay" 
           value={`$${quote.toFixed(0)} CAD`} 
           readOnly 
-          className="mt-1 block w-full bg-gray-100 border-gray-300 rounded-md shadow-sm text-gray-500"
+          className="mt-1 block w-full bg-primary3 border-accent1/30 rounded-md shadow-sm text-accent1 font-semibold"
         />
       </div>
       
@@ -172,7 +172,7 @@ export default function BookingForm({ quote, onBookingSuccess, chatHistory }: Bo
             value={formData.fullName} 
             onChange={handleChange} 
             placeholder="Your full name" 
-            className={`mt-1 ${errors.fullName ? 'border-red-500' : ''}`}
+            className={`mt-1 bg-primary3 border-accent1/30 text-accent1 placeholder:text-accent1/60 focus-visible:ring-accent1 ${errors.fullName ? 'border-red-500' : ''}`}
           />
           {errors.fullName && <p className="text-xs text-red-600 mt-1">{errors.fullName}</p>}
         </div>
@@ -186,7 +186,7 @@ export default function BookingForm({ quote, onBookingSuccess, chatHistory }: Bo
             value={formData.email} 
             onChange={handleChange} 
             placeholder="you@example.com" 
-            className={`mt-1 ${errors.email ? 'border-red-500' : ''}`}
+            className={`mt-1 bg-primary3 border-accent1/30 text-accent1 placeholder:text-accent1/60 focus-visible:ring-accent1 ${errors.email ? 'border-red-500' : ''}`}
           />
           {errors.email && <p className="text-xs text-red-600 mt-1">{errors.email}</p>}
         </div>
@@ -202,7 +202,7 @@ export default function BookingForm({ quote, onBookingSuccess, chatHistory }: Bo
             value={formData.phone} 
             onChange={handleChange} 
             placeholder="(416) 555-0123" 
-            className={`mt-1 ${errors.phone ? 'border-red-500' : ''}`}
+            className={`mt-1 bg-primary3 border-accent1/30 text-accent1 placeholder:text-accent1/60 focus-visible:ring-accent1 ${errors.phone ? 'border-red-500' : ''}`}
           />
           {errors.phone && <p className="text-xs text-red-600 mt-1">{errors.phone}</p>}
         </div>
@@ -217,7 +217,7 @@ export default function BookingForm({ quote, onBookingSuccess, chatHistory }: Bo
             onChange={handleChange} 
             placeholder="8" 
             min="1"
-            className={`mt-1 ${errors.guestCount ? 'border-red-500' : ''}`}
+            className={`mt-1 bg-primary3 border-accent1/30 text-accent1 placeholder:text-accent1/60 focus-visible:ring-accent1 ${errors.guestCount ? 'border-red-500' : ''}`}
           />
           {errors.guestCount && <p className="text-xs text-red-600 mt-1">{errors.guestCount}</p>}
         </div>
@@ -233,7 +233,7 @@ export default function BookingForm({ quote, onBookingSuccess, chatHistory }: Bo
             value={formData.eventDate} 
             onChange={handleChange} 
             min={new Date().toISOString().split('T')[0]}
-            className={`mt-1 ${errors.eventDate ? 'border-red-500' : ''}`}
+            className={`mt-1 bg-primary3 border-accent1/30 text-accent1 focus-visible:ring-accent1 ${errors.eventDate ? 'border-red-500' : ''}`}
           />
           {errors.eventDate && <p className="text-xs text-red-600 mt-1">{errors.eventDate}</p>}
         </div>
@@ -246,7 +246,7 @@ export default function BookingForm({ quote, onBookingSuccess, chatHistory }: Bo
             id="eventTime" 
             value={formData.eventTime} 
             onChange={handleChange} 
-            className="mt-1"
+            className="mt-1 bg-primary3 border-accent1/30 text-accent1 focus-visible:ring-accent1"
           />
         </div>
       </div>
@@ -260,7 +260,7 @@ export default function BookingForm({ quote, onBookingSuccess, chatHistory }: Bo
           value={formData.location} 
           onChange={handleChange} 
           placeholder="Address or venue name" 
-          className={`mt-1 ${errors.location ? 'border-red-500' : ''}`}
+          className={`mt-1 bg-primary3 border-accent1/30 text-accent1 placeholder:text-accent1/60 focus-visible:ring-accent1 ${errors.location ? 'border-red-500' : ''}`}
         />
         {errors.location && <p className="text-xs text-red-600 mt-1">{errors.location}</p>}
       </div>
@@ -274,12 +274,12 @@ export default function BookingForm({ quote, onBookingSuccess, chatHistory }: Bo
           onChange={handleChange} 
           placeholder="Dietary restrictions, special requests, etc..." 
           rows={3}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm ring-offset-background placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent1 focus-visible:ring-offset-2"
+          className="mt-1 block w-full rounded-md border border-accent1/30 bg-primary3 px-3 py-2 text-sm text-accent1 placeholder:text-accent1/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent1 focus-visible:ring-offset-2"
         />
       </div>
 
       {error && (
-        <Alert variant="destructive" className="bg-red-100 border-red-500 text-red-700">
+        <Alert variant="destructive" className="bg-primary1 border-red-500 text-red-400">
           <AlertTitle className="font-semibold">Error</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
         </Alert>
