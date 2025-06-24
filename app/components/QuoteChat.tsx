@@ -49,8 +49,13 @@ const QuoteChat: React.FC = () => {
   }, [messages]);
 
   useEffect(() => {
-    if (inputRef.current && !isLoading && !showBookingForm)
-      inputRef.current.focus({ preventScroll: true });
+    if (inputRef.current && !isLoading && !showBookingForm) {
+      try {
+        inputRef.current.focus({ preventScroll: true });
+      } catch {
+        inputRef.current.focus();        // fallback for browsers that don't support preventScroll
+      }
+    }
   }, [isLoading, showBookingForm]);
 
   /* initial greeting */
