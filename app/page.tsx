@@ -55,7 +55,7 @@ function HomeContent() {
     backgroundColor: 'var(--color-accent1)',
     WebkitMask: 'url("/images/logo-white.png") no-repeat center',
     WebkitMaskSize: 'contain',
-    mask: 'url("/images/logo-white.png") no-repeat center',
+    mask: 'url("/images/old-logo.png") no-repeat center',
     maskSize: 'contain'
   };
 
@@ -231,7 +231,7 @@ function HomeContent() {
       backgroundColor: 'var(--color-accent1)',
       WebkitMask: 'url("/images/logo-white.png") no-repeat center',
       WebkitMaskSize: 'contain',
-      mask: 'url("/images/logo-white.png") no-repeat center',
+      mask: 'url("/images/old-logo.png") no-repeat center',
       maskSize: 'contain',
     }}
     aria-label="Chef Alex J Logo"
