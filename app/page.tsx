@@ -32,6 +32,7 @@ function HomeContent() {
   const [parallaxOffset, setParallaxOffset] = useState({ x: 0, y: 0, tiltX: 0, tiltY: 0 });
   const [bookingBgImage, setBookingBgImage] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
   const { scrollY } = useScroll();
   const contentData = useApi<ContentItem>('content');
   
@@ -681,45 +682,61 @@ d="M0,224L34.3,240C68.6,256,137,288,206,282.7C274.3,277,343,235,
 
 
       {/* footer */}
-      <footer className="bg-primary1 text-accent1 py-32 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-4 gap-12">
-          <div>
-            <h4 className="font-bold uppercase mb-4">Explore</h4>
-            <ul className="space-y-1 text-sm">
-              <li><a href="#menu" className="hover:text-primary1">Menu</a></li>
-              <li><a href="#gallery" className="hover:text-primary1">Gallery</a></li>
-              <li><a href="#booking" className="hover:text-primary1">Book Event</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold uppercase mb-4">Join the Mailing List</h4>
-            <p className="text-sm mb-4">{getContent('footer_newsletter', 'Seasonal menus, pop-ups & chef\'s secrets—straight to your inbox.')}</p>
-            <form className="flex gap-2 w-full sm:w-auto sm:max-w-xs">
-              <input type="email" placeholder="Email Address" className="flex-1 px-3 py-2 text-xs text-black placeholder:text-gray-400" />
-              <button className="bg-primary1 px-4 py-2 text-xs text-accent1 uppercase tracking-wider hover:bg-white hover:text-accent1 transition font-button">
-                Sign Up
-              </button>
-            </form>
-          </div>
-          <div>
-            <h4 className="font-bold uppercase mb-4">Contact</h4>
-            <div 
-              className="text-xs leading-6"
-              dangerouslySetInnerHTML={{ 
-                __html: getContent('footer_contact', 'Toronto, ON<br />info@chefalexj.com<br />416-555-0123') 
-              }}
-            />
-            <h4 className="font-bold uppercase mt-6 mb-2">Follow</h4>
-            <div className="flex space-x-4 text-xl">
-              <a href="#">🐦</a><a href="#">📸</a><a href="#">🎵</a>
-            </div>
-          </div>
-        </div>
-        <p className="text-center text-xs mt-12 opacity-70">&copy; 2025 Chef Alex J. All rights reserved.</p>
-      </footer>
+<footer className="bg-primary1 text-accent1 py-32 px-4 sm:px-6 lg:px-8">
+  <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-y-4 gap-12">
+    {/* Explore */}
+    <div>
+      <h4 className="font-bold uppercase mb-4">Explore</h4>
+      <ul className="space-y-1 text-sm">
+        <li><a href="#menu"    className="hover:text-primary1">Menu</a></li>
+        <li><a href="#gallery" className="hover:text-primary1">Gallery</a></li>
+        <li><a href="#booking" className="hover:text-primary1">Book&nbsp;Event</a></li>
+      </ul>
+    </div>
+
+    {/* Contact */}
+    <div className="relative">
+      <h4 className="font-bold uppercase mb-4">Contact</h4>
+
+      {/* clickable e-mail – copies to clipboard */}
+      <button
+        onClick={() => {
+          navigator.clipboard.writeText('chefalexjevents@gmail.com');
+          setCopied(true);
+        }}
+        className="text-xl leading-6 underline hover:text-primary1 transition-colors"
+        dangerouslySetInnerHTML={{
+          __html: getContent('footer_contact', 'chefalexjevents@gmail.com'),
+        }}
+      />
+
+      {/* confirmation bubble */}
+      {copied && (
+        <span className="absolute -top-6 left-0 bg-black text-white text-xs px-2 py-1 rounded pointer-events-none animate-fade">
+          Copied!
+        </span>
+      )}
+    </div>
+
+    {/* Follow */}
+    <div>
+      <h4 className="font-bold uppercase mb-4">Follow</h4>
+      <div className="flex space-x-4 text-xl">
+        <a href="https://www.instagram.com/chef.alexj/" className="hover:text-primary1 transition-colors">
+          Instagram
+        </a>
+      </div>
+         </div>
+   </div>
+
+   <p className="text-center text-xs mt-12 opacity-70">
+     &copy; 2025 Chef Alex J. All rights reserved.
+   </p>
+ </footer>
     </>
   );
 }
+
 
 export default function Home() {
   return <HomeContent />;
