@@ -61,7 +61,7 @@ export default function EventHighlights() {
 
   return (
     <div className="w-full min-h-[800px] flex items-center justify-center relative overflow-hidden -translate-y-[100px]">
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-16 flex items-center justify-between h-full translate-y-28">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-16 flex items-center justify-between h-full translate-y-28">
         <button
           onClick={prev}
           aria-label="Previous"
@@ -70,7 +70,7 @@ export default function EventHighlights() {
           <ChevronLeft className="w-4 h-4 text-white" />
         </button>
 
-        <div className="flex-1 mx-12 flex items-center justify-center gap-16">
+        <div className="flex-1 mx-0 sm:mx-12 flex items-center justify-center gap-8 sm:gap-16">
           <div className="flex-1 max-w-lg">
             <h2 className="text-3xl font-bold uppercase mb-4 text-accent2">
               {events[index]?.title || 'Loading...'}
@@ -84,7 +84,7 @@ export default function EventHighlights() {
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="-100 -100 200 200"
-    className="w-full max-w-[800px] h-[800px] pointer-events-none"
+    className="w-full max-w-[350px] h-[350px] sm:max-w-[800px] sm:h-[800px] pointer-events-none"
     clipPathUnits="userSpaceOnUse"
   >
               <defs>
