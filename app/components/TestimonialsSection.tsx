@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import TextMarquee from '@/app/components/TextMarquee'
-import useApi from '@/lib/useApi'
+import usePublicCollection from '@/lib/usePublicCollection'
 
 // Register the useGSAP hook
 gsap.registerPlugin(useGSAP)
@@ -22,7 +22,7 @@ export default function TestimonialsSection() {
   const [index, setIndex] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
   const carouselRef = useRef<HTMLDivElement>(null)
-  const testimonials = useApi<Testimonial>('testimonials')
+  const { data: testimonials } = usePublicCollection<Testimonial>('testimonials')
   
   // Debug: Log the raw testimonials data
   useEffect(() => {
