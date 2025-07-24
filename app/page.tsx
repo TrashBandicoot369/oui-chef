@@ -34,7 +34,7 @@ function HomeContent() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const { scrollY } = useScroll();
-  const contentData = useApi<ContentItem>('content');
+  const contentData = useApi<ContentItem>('public/content');
   
   // Helper function to get content by section
   const getContent = (section: string, fallback: string = '') => {

@@ -22,7 +22,7 @@ export default function TestimonialsSection() {
   const [index, setIndex] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
   const carouselRef = useRef<HTMLDivElement>(null)
-  const testimonials = useApi<Testimonial>('testimonials')
+  const testimonials = useApi<Testimonial>('public/testimonials')
   
   // Debug: Log the raw testimonials data
   useEffect(() => {

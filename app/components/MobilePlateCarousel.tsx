@@ -17,7 +17,7 @@ export default function MobilePlateCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const touchStartX = useRef(0)
   const touchEndX = useRef(0)
-  const menuItems = useApi<MenuItem>('menu')
+  const menuItems = useApi<MenuItem>('public/menu')
 
   // ── Use only one plate with no text as the first image ──────────────────
   const firstPlate = '/images/plate-no-text/plate-1_0007_Marzapane-dessert-verde-antico.png'
