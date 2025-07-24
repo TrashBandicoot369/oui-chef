@@ -12,7 +12,13 @@ export default function usePublicCollection<T = any>(collectionName: string) {
         setLoading(true)
         setError(null)
         
-        const response = await fetch(`/api/public/content?collection=${collectionName}`)
+        const response = await fetch(`/api/public/content?collection=${collectionName}&t=${Date.now()}`, {
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        })
         
         if (!response.ok) {
           throw new Error(`Failed to fetch ${collectionName}: ${response.statusText}`)

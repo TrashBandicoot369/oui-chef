@@ -41,9 +41,8 @@ export default function TestimonialsSection() {
     }
   }, [testimonials])
   
-  // Filter only approved testimonials and sort by order
+  // Testimonials are already filtered by API, just sort by order
   const approvedTestimonials = (testimonials || [])
-    .filter(t => t.approved)
     .sort((a, b) => a.order - b.order)
   
   console.log('🔍 Approved testimonials:', approvedTestimonials.length, approvedTestimonials)

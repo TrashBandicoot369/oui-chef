@@ -2,6 +2,9 @@ import { NextRequest } from 'next/server';
 import { db } from '@/lib/firebase-admin';
 import { validateAdmin, withErrorHandling } from '@/lib/apiHandler';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // Simple validation functions for media items
 function validateMediaItem(data: any) {
   if (!data.filename || typeof data.filename !== 'string' || data.filename.trim().length === 0) {

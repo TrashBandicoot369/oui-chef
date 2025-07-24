@@ -2,6 +2,9 @@ import { NextRequest } from 'next/server';
 import { db } from '@/lib/firebase-admin';
 import { validateAdmin, withErrorHandling } from '@/lib/apiHandler';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // Simple validation functions (replace with Zod after installation)
 function validateContent(data: any) {
   if (!data.section || typeof data.section !== 'string' || data.section.trim().length === 0) {

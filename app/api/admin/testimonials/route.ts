@@ -2,6 +2,9 @@ import { NextRequest } from 'next/server';
 import { db } from '@/lib/firebase-admin';
 import { validateAdmin, withErrorHandling } from '@/lib/apiHandler';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // Simple validation functions for testimonials
 function validateTestimonial(data: any) {
   if (!data.clientName || typeof data.clientName !== 'string' || data.clientName.trim().length === 0) {
