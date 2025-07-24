@@ -9,12 +9,8 @@ export async function GET(request: NextRequest) {
   try {
     console.log('📖 Public Content API: Fetching public content...');
     
-    const url = new URL(request.url);
-    const collection = url.searchParams.get('collection');
-    
-    if (!collection) {
-      return NextResponse.json({ error: 'Collection parameter is required' }, { status: 400 });
-    }
+  const url = new URL(request.url);
+  const collection = url.searchParams.get('collection') || 'content';
 
     // Validate allowed collections for public access
     const allowedCollections = [

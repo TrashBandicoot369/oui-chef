@@ -21,7 +21,7 @@ type MenuItem = {
 export default function PlateStack() {
   const stackRef = useRef<HTMLDivElement>(null)
   const [shuffledPlates, setShuffledPlates] = useState<string[]>([])
-  const menuItems = useApi<MenuItem>('menu')
+  const menuItems = useApi<MenuItem>('public/menu')
 
   // ── plates with no text ───────────────────────────────────────────────
   const noTextPathsOriginal = [
