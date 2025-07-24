@@ -16,8 +16,6 @@ export default function CopyTab() {
   const [loading, setLoading] = useState(true);
   const [editingItem, setEditingItem] = useState<SiteCopyData | null>(null);
   const [editContent, setEditContent] = useState('');
-  const [isNewSection, setIsNewSection] = useState(false);
-  const [newSection, setNewSection] = useState('');
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   // Fetch site copy data on mount
@@ -58,37 +56,12 @@ export default function CopyTab() {
   const handleEdit = (item: SiteCopyData) => {
     setEditingItem(item);
     setEditContent(item.content);
-    setIsNewSection(false);
   };
 
-  const handleNewSection = () => {
-    setIsNewSection(true);
-    setNewSection('');
-    setEditContent('');
-    setEditingItem(null);
-  };
 
   const handleSave = async () => {
     try {
-      if (isNewSection) {
-        // Create new section
-        const response = await fetch('/api/admin/content', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            section: newSection,
-            content: editContent
-          })
-        });
-
-        if (!response.ok) throw new Error('Failed to create section');
-        
-        setToast({ message: 'Section created successfully', type: 'success' });
-        setIsNewSection(false);
-        setNewSection('');
-        setEditContent('');
-        await fetchCopyData();
-      } else if (editingItem) {
+      if (editingItem) {
         // Update existing section
         const response = await fetch('/api/admin/content', {
           method: 'PATCH',
@@ -111,10 +84,9 @@ export default function CopyTab() {
 
   const handleCancel = () => {
     setEditingItem(null);
-    setIsNewSection(false);
-    setNewSection('');
     setEditContent('');
   };
+
 
   const truncateContent = (content: string | undefined | null, maxLength: number = 60) => {
   if (!content) return 'No content';
@@ -147,10 +119,6 @@ export default function CopyTab() {
         <p className="text-gray-600">Manage hero, about, footer, and SEO copy</p>
       </div>
 
-      {/* New Section Button */}
-      <div className="mb-4">
-        <Button onClick={handleNewSection}>New Section</Button>
-      </div>
 
       {/* Table */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -192,29 +160,14 @@ export default function CopyTab() {
         </table>
       </div>
 
-      {/* Edit/Create Dialog */}
-      <Dialog.Root open={!!editingItem || isNewSection} onOpenChange={(open: boolean) => !open && handleCancel()}>
+      {/* Edit Dialog */}
+      <Dialog.Root open={!!editingItem} onOpenChange={(open: boolean) => !open && handleCancel()}>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 bg-black/50 animate-in fade-in" />
           <Dialog.Content className="fixed left-[50%] top-[50%] max-h-[85vh] w-[90vw] max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-lg animate-in fade-in zoom-in-95">
             <Dialog.Title className="text-lg font-semibold mb-4">
-              {isNewSection ? 'Create New Section' : `Edit ${editingItem?.section}`}
+              Edit {editingItem?.section}
             </Dialog.Title>
-            
-            {isNewSection && (
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Section Name
-                </label>
-                <input
-                  type="text"
-                  value={newSection}
-                  onChange={(e) => setNewSection(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="e.g., hero, about, footer"
-                />
-              </div>
-            )}
 
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">

@@ -4,6 +4,7 @@ import { Query } from 'firebase-admin/firestore';
 
 // Force dynamic rendering since this API uses query parameters
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET(request: NextRequest) {
   try {
@@ -36,17 +37,27 @@ export async function GET(request: NextRequest) {
     // Fetch data from Firestore using admin SDK
     let query: Query = db.collection(collection);
     
-    // Add ordering for collections that have an order field
-    if (['eventHighlights', 'menuItems', 'testimonials', 'gallery'].includes(collection)) {
-      query = query.orderBy('order');
-    }
-    
+    // Get all documents first, then filter in JavaScript to handle missing fields
     const snapshot = await query.get();
     
-    const data = snapshot.docs.map(doc => ({
+    let data = snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
     }));
+
+    // Apply visibility/approval filtering for specific collections
+    if (collection === 'menuItems') {
+      data = data.filter((item: any) => item.visible !== false); // Show if visible is true or undefined
+    } else if (collection === 'testimonials') {
+      data = data.filter((item: any) => item.approved === true); // Only show explicitly approved
+    } else if (collection === 'gallery' || collection === 'eventHighlights') {
+      data = data.filter((item: any) => item.visible !== false); // Show if visible is true or undefined
+    }
+    
+    // Sort by order field if available
+    if (['eventHighlights', 'menuItems', 'testimonials', 'gallery'].includes(collection)) {
+      data = data.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+    }
 
     console.log(`📖 Retrieved ${data.length} documents from ${collection}`);
     
@@ -55,6 +66,8 @@ export async function GET(request: NextRequest) {
       data,
       collection,
       count: data.length
+    }, {
+      headers: { 'Cache-Control': 'no-store, must-revalidate' }
     });
 
   } catch (error) {

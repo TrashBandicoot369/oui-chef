@@ -3,6 +3,9 @@ import { db } from '@/lib/firebase-admin';
 import { validateAdmin, withErrorHandling } from '@/lib/apiHandler';
 import { uploadToCloudinary, deleteFromCloudinary } from '@/lib/cloudinary';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // Simple validation functions for gallery items
 function validateGalleryItem(data: any) {
   if (!data.title || typeof data.title !== 'string' || data.title.trim().length === 0) {
@@ -155,62 +158,103 @@ async function handleGet(req: NextRequest) {
 async function handlePost(req: NextRequest) {
   // TEMPORARILY DISABLED: await validateAdmin(req);
   
-  const formData = await req.formData();
-  const file = formData.get('image') as File;
-  const title = formData.get('title') as string;
-  const description = formData.get('description') as string;
-  const category = formData.get('category') as string;
-  const featured = formData.get('featured') === 'true';
-  const visible = formData.get('visible') !== 'false';
-  const order = parseInt(formData.get('order') as string) || 0;
+  const contentType = req.headers.get('content-type');
   
-  if (!file) {
-    throw new Error('Image file is required');
+  if (contentType?.includes('application/json')) {
+    // Handle JSON requests (from frontend with existing image URLs)
+    const jsonData = await req.json();
+    
+    const validatedData = validateGalleryItem({
+      title: jsonData.alt || 'Untitled',
+      description: jsonData.description || '',
+      category: 'event',
+      imageUrl: jsonData.image,
+      publicId: jsonData.publicId,
+      featured: jsonData.featured || false,
+      visible: jsonData.visible !== false,
+      order: jsonData.order || 0
+    });
+    
+    const timestamp = new Date();
+    const docData = {
+      ...validatedData,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    };
+    
+    const docRef = await db.collection('gallery').add(docData);
+    const doc = await docRef.get();
+    
+    const responseData = {
+      id: doc.id,
+      ...doc.data(),
+      createdAt: doc.data()?.createdAt?.toDate?.()?.toISOString() || null,
+      updatedAt: doc.data()?.updatedAt?.toDate?.()?.toISOString() || null,
+    };
+    
+    return new Response(JSON.stringify(responseData), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } else {
+    // Handle FormData requests (for actual file uploads)
+    const formData = await req.formData();
+    const file = formData.get('image') as File;
+    const title = formData.get('title') as string;
+    const description = formData.get('description') as string;
+    const category = formData.get('category') as string;
+    const featured = formData.get('featured') === 'true';
+    const visible = formData.get('visible') !== 'false';
+    const order = parseInt(formData.get('order') as string) || 0;
+    
+    if (!file) {
+      throw new Error('Image file is required');
+    }
+    
+    if (!title || !description || !category) {
+      throw new Error('Title, description, and category are required');
+    }
+    
+    // Upload image to Cloudinary
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const uploadResult = await uploadToCloudinary(buffer, {
+      folder: 'gallery',
+      tags: ['event-highlight', 'gallery']
+    });
+    
+    const validatedData = validateGalleryItem({
+      title,
+      description,
+      category,
+      imageUrl: uploadResult.secure_url,
+      publicId: uploadResult.public_id,
+      featured,
+      visible,
+      order
+    });
+    
+    const timestamp = new Date();
+    const docData = {
+      ...validatedData,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    };
+    
+    const docRef = await db.collection('gallery').add(docData);
+    const doc = await docRef.get();
+    
+    const responseData = {
+      id: doc.id,
+      ...doc.data(),
+      createdAt: doc.data()?.createdAt?.toDate?.()?.toISOString() || null,
+      updatedAt: doc.data()?.updatedAt?.toDate?.()?.toISOString() || null,
+    };
+    
+    return new Response(JSON.stringify(responseData), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
-  
-  if (!title || !description || !category) {
-    throw new Error('Title, description, and category are required');
-  }
-  
-  // Upload image to Cloudinary
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const uploadResult = await uploadToCloudinary(buffer, {
-    folder: 'gallery',
-    tags: ['event-highlight', 'gallery']
-  });
-  
-  const validatedData = validateGalleryItem({
-    title,
-    description,
-    category,
-    imageUrl: uploadResult.secure_url,
-    publicId: uploadResult.public_id,
-    featured,
-    visible,
-    order
-  });
-  
-  const timestamp = new Date();
-  const docData = {
-    ...validatedData,
-    createdAt: timestamp,
-    updatedAt: timestamp,
-  };
-  
-  const docRef = await db.collection('gallery').add(docData);
-  const doc = await docRef.get();
-  
-  const responseData = {
-    id: doc.id,
-    ...doc.data(),
-    createdAt: doc.data()?.createdAt?.toDate?.()?.toISOString() || null,
-    updatedAt: doc.data()?.updatedAt?.toDate?.()?.toISOString() || null,
-  };
-  
-  return new Response(JSON.stringify(responseData), {
-    status: 201,
-    headers: { 'Content-Type': 'application/json' },
-  });
 }
 
 // PATCH - Update existing gallery item

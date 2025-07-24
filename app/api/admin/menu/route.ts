@@ -2,6 +2,9 @@ import { NextRequest } from 'next/server';
 import { db } from '@/lib/firebase-admin';
 import { validateAdmin, withErrorHandling } from '@/lib/apiHandler';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // Simple validation functions for menu items
 function validateMenuItem(data: any) {
   if (!data.group || typeof data.group !== 'string' || data.group.trim().length === 0) {

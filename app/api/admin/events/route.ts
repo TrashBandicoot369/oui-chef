@@ -3,6 +3,9 @@ import { db } from '@/lib/firebase-admin';
 import { validateAdmin, withErrorHandling } from '@/lib/apiHandler';
 import { uploadToCloudinary, deleteFromCloudinary } from '@/lib/cloudinary';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // Simple validation functions for event items
 function validateEventItem(data: any) {
   if (!data.title || typeof data.title !== 'string' || data.title.trim().length === 0) {

@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 import QuoteChat from './components/QuoteChat'
 import { motion, useScroll, useTransform } from 'framer-motion'
@@ -12,10 +14,10 @@ import PlateStack from './components/PlateStack'
 import MobilePlateCarousel from './components/MobilePlateCarousel'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import dynamic from 'next/dynamic'
+import nextDynamic from 'next/dynamic'
 import { Dialog } from '@headlessui/react'
 import usePublicCollection from '@/lib/usePublicCollection'
-const BounceArrow = dynamic(() => import('./components/BounceArrow'), { ssr: false })
+const BounceArrow = nextDynamic(() => import('./components/BounceArrow'), { ssr: false })
 
 type ContentItem = {
   id: string
@@ -447,14 +449,14 @@ function HomeContent() {
       ref={heroTitleRef}
       className="font-display tracking-tight text-3xl sm:text-5xl md:text-7xl leading-snug sm:leading-tight uppercase drop-shadow-lg"
       dangerouslySetInnerHTML={{ 
-        __html: getContent('hero_title', 'restaurant-quality<br />private dining') 
+        __html: getContent('hero-title', 'restaurant-quality<br />private dining') 
       }}
     />
     <p 
       ref={heroSubtitleRef}
       className="mt-6 max-w-xl mx-auto text-lg drop-shadow-lg"
     >
-      {getContent('hero_subtitle', 'From intimate dinners to large galas, Chef Alex J crafts unforgettable culinary experiences wherever you celebrate.')}
+      {getContent('hero-subtitle', 'From intimate dinners to large galas, Chef Alex J crafts unforgettable culinary experiences wherever you celebrate.')}
     </p>
     
       <a
@@ -518,19 +520,28 @@ function HomeContent() {
 
 <div ref={textRef}>
 <h2 className="font-display text-accent2 text-4xl sm:text-5xl mb-4">
-    {getContent('about_title', 'Meet Chef Alex J')}
+    {getContent('about-title', 'Meet Chef Alex J')}
   </h2>
 
-  <div 
-    className="text-accent2 space-y-4"
-    dangerouslySetInnerHTML={{ 
-      __html: getContent('about_content', `
-        <p>Raised in bustling family kitchens in Montréal and Toronto, Alex learned early on that the best way to care for people is through food. Eighteen years later, that passion still drives him. From intimate dinners to large festivals, he brings the flavours and techniques he grew up loving to every plate he serves.</p>
-        <p>Every event is tailored to your unique tastes and needs—because when you dine with us, you're family.</p>
-        <p>Welcome to the family,<br />Alex</p>
-      `).replace(/\n\s+/g, ' ').trim()
-    }}
-  />
+  <div className="text-accent2 space-y-4">
+    {getContent('about-description', `
+      Raised in bustling family kitchens in Montréal and Toronto, Alex learned early on that the best way to care for people is through food. Eighteen years later, that passion still drives him. From intimate dinners to large festivals, he brings the flavours and techniques he grew up loving to every plate he serves.
+
+      Every event is tailored to your unique tastes and needs—because when you dine with us, you're family.
+
+      Welcome to the family,
+      Alex
+    `).split('\n\n').map((paragraph, index) => (
+      <p key={index} className="mb-4 last:mb-0">
+        {paragraph.trim().split('\n').map((line, lineIndex, lines) => (
+          <span key={lineIndex}>
+            {line.trim()}
+            {lineIndex < lines.length - 1 && <br />}
+          </span>
+        ))}
+      </p>
+    ))}
+  </div>
     </div>
   </div>
 </section>
@@ -706,7 +717,7 @@ d="M0,224L34.3,240C68.6,256,137,288,206,282.7C274.3,277,343,235,
         }}
         className="text-xl leading-6 underline hover:text-primary1 transition-colors"
         dangerouslySetInnerHTML={{
-          __html: getContent('footer_contact', 'chefalexjevents@gmail.com'),
+          __html: getContent('footer-contact', 'chefalexjevents@gmail.com'),
         }}
       />
 

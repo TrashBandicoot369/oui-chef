@@ -1,18 +1,19 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 import { useState } from 'react';
-import dynamic from 'next/dynamic';
+import nextDynamic from 'next/dynamic';
 import * as Tabs from '@radix-ui/react-tabs';
 import { Button } from '@/app/components/ui/button';
 
 // Dynamic imports for admin components
-const BookingsTab = dynamic(() => import('@/app/components/admin/BookingsTab'), { ssr: false });
-const CopyTab = dynamic(() => import('@/app/components/admin/CopyTab'), { ssr: false });
-const MenuTab = dynamic(() => import('@/app/components/admin/MenuTab'), { ssr: false });
-const TestimonialsTab = dynamic(() => import('@/app/components/admin/TestimonialsTab'), { ssr: false });
-const GalleryTab = dynamic(() => import('@/app/components/admin/GalleryTab'), { ssr: false });
-const MediaTab = dynamic(() => import('@/app/components/admin/SimpleMediaTab'), { ssr: false });
-const DesignToolsTab = dynamic(() => import('@/app/components/admin/DesignToolsTab'), { ssr: false });
+const BookingsTab = nextDynamic(() => import('@/app/components/admin/BookingsTab'), { ssr: false });
+const CopyTab = nextDynamic(() => import('@/app/components/admin/CopyTab'), { ssr: false });
+const MenuTab = nextDynamic(() => import('@/app/components/admin/MenuTab'), { ssr: false });
+const TestimonialsTab = nextDynamic(() => import('@/app/components/admin/TestimonialsTab'), { ssr: false });
+const GalleryTab = nextDynamic(() => import('@/app/components/admin/GalleryTab'), { ssr: false });
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState('bookings');
@@ -23,8 +24,6 @@ export default function AdminPage() {
     { value: 'menu', label: 'Menu' },
     { value: 'testimonials', label: 'Testimonials' },
     { value: 'gallery', label: 'Gallery' },
-    { value: 'media', label: 'Media' },
-    { value: 'design', label: 'Design Tools' },
   ];
 
   return (
@@ -67,16 +66,6 @@ export default function AdminPage() {
 
         <Tabs.Content value="gallery" className="focus:outline-none">
           <GalleryTab />
-        </Tabs.Content>
-
-        <Tabs.Content value="media" className="focus:outline-none">
-          <MediaTab />
-        </Tabs.Content>
-
-        <Tabs.Content value="design" className="focus:outline-none">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <DesignToolsTab />
-          </div>
         </Tabs.Content>
       </Tabs.Root>
     </div>
