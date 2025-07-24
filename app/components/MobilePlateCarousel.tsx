@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import useApi from '@/lib/useApi'
+import usePublicCollection from '@/lib/usePublicCollection'
 
 type MenuItem = {
   id: string
@@ -17,7 +17,7 @@ export default function MobilePlateCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const touchStartX = useRef(0)
   const touchEndX = useRef(0)
-  const menuItems = useApi<MenuItem>('menu')
+  const { data: menuItems } = usePublicCollection<MenuItem>('menuItems')
 
   // ── Use only one plate with no text as the first image ──────────────────
   const firstPlate = '/images/plate-no-text/plate-1_0007_Marzapane-dessert-verde-antico.png'
