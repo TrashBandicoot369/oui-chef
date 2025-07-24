@@ -15,6 +15,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import dynamic from 'next/dynamic'
 import { Dialog } from '@headlessui/react'
 import useApi from '@/lib/useApi'
+import useTheme from '@/lib/useTheme'
 const BounceArrow = dynamic(() => import('./components/BounceArrow'), { ssr: false })
 
 type ContentItem = {
@@ -35,6 +36,7 @@ function HomeContent() {
   const [copied, setCopied] = useState(false);
   const { scrollY } = useScroll();
   const contentData = useApi<ContentItem>('content');
+  const theme = useTheme();
   
   // Helper function to get content by section
   const getContent = (section: string, fallback: string = '') => {
@@ -61,23 +63,9 @@ function HomeContent() {
   };
 
   useEffect(() => {
-    // Lock in current colors and fonts
+    if (!theme) return;
     const root = document.documentElement;
-    
-    // Set locked colors (current values with -72% brightness on primaries)
-    root.style.setProperty('--color-primary1', '#1c1b20');
-    root.style.setProperty('--color-primary2', '#383234');
-    root.style.setProperty('--color-primary3', '#3f393c');
-    root.style.setProperty('--color-accent1', '#e3973b');
-    root.style.setProperty('--color-accent2', '#ee962b');
-    root.style.setProperty('--color-stroke', '#532030');
-    
-    // Set locked fonts (current values from your font picker)
-    root.style.setProperty('--font-display', '"Anton", cursive');
-    root.style.setProperty('--font-sans', '"Bitter", sans-serif');
-    root.style.setProperty('--font-button', '"Oswald", sans-serif');
-    
-    // Load Google Fonts
+
     const loadFont = (fontName: string) => {
       if (!document.querySelector(`link[href*="${encodeURIComponent(fontName)}"]`)) {
         const link = document.createElement('link');
@@ -86,10 +74,29 @@ function HomeContent() {
         document.head.appendChild(link);
       }
     };
-    
-    loadFont('Anton');
-    loadFont('Bitter');
-    loadFont('Oswald');
+
+    const colors = theme.colors || {};
+    Object.entries(colors).forEach(([key, value]) => {
+      root.style.setProperty(`--color-${key}`, String(value));
+    });
+
+    const fonts = theme.fonts || {};
+    if (fonts.display) {
+      root.style.setProperty('--font-display', fonts.display);
+      loadFont(fonts.display);
+    }
+    if (fonts.sans) {
+      root.style.setProperty('--font-sans', fonts.sans);
+      loadFont(fonts.sans);
+    }
+    if (fonts.button) {
+      root.style.setProperty('--font-button', fonts.button);
+      loadFont(fonts.button);
+    }
+  }, [theme]);
+
+  useEffect(() => {
+    const root = document.documentElement;
 
     // Set random background image for booking section
     const backgroundImages = [

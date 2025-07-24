@@ -20,9 +20,9 @@ async function handleGet() {
   
   return new Response(JSON.stringify(events), {
     status: 200,
-    headers: { 
+    headers: {
       'Content-Type': 'application/json',
-      'Cache-Control': 'no-cache'
+      'Cache-Control': 'no-store, must-revalidate'
     },
   });
 }

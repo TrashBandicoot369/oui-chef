@@ -5,6 +5,8 @@ import { Query } from 'firebase-admin/firestore';
 // Force dynamic rendering since this API uses query parameters
 export const dynamic = 'force-dynamic';
 
+export const revalidate = 0
+
 export async function GET(request: NextRequest) {
   try {
     console.log('📖 Public Content API: Fetching public content...');
@@ -50,22 +52,34 @@ export async function GET(request: NextRequest) {
 
     console.log(`📖 Retrieved ${data.length} documents from ${collection}`);
     
-    return NextResponse.json({
-      success: true,
-      data,
-      collection,
-      count: data.length
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        data,
+        collection,
+        count: data.length
+      },
+      {
+        headers: {
+          'Cache-Control': 'no-store, must-revalidate'
+        }
+      }
+    );
 
   } catch (error) {
     console.error('📖 Public Content API Error:', error);
     
     return NextResponse.json(
-      { 
+      {
         error: 'Failed to fetch content',
         message: error instanceof Error ? error.message : 'Unknown error'
       },
-      { status: 500 }
+      {
+        status: 500,
+        headers: {
+          'Cache-Control': 'no-store, must-revalidate'
+        }
+      }
     );
   }
 } 
