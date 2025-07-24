@@ -7,7 +7,7 @@ export default function useApi<T>(endpoint: string) {
   useEffect(() => {
     let isMounted = true
     console.log(`🌐 [useApi] Fetching: /api/${endpoint}`)
-    fetch(`/api/${endpoint}`)
+    fetch(`/api/${endpoint}`, { cache: 'no-store' })
       .then(res => {
         console.log(`📡 [useApi] Response status: ${res.status} for /api/${endpoint}`)
         if (!res.ok) {
