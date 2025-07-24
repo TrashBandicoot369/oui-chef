@@ -3,7 +3,7 @@
 import { useRef, useLayoutEffect, useState, useEffect } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import useApi from '@/lib/useApi'
+import usePublicCollection from '@/lib/usePublicCollection'
 
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger)
@@ -21,7 +21,7 @@ type MenuItem = {
 export default function PlateStack() {
   const stackRef = useRef<HTMLDivElement>(null)
   const [shuffledPlates, setShuffledPlates] = useState<string[]>([])
-  const menuItems = useApi<MenuItem>('menu')
+  const { data: menuItems } = usePublicCollection<MenuItem>('menuItems')
 
   // ── plates with no text ───────────────────────────────────────────────
   const noTextPathsOriginal = [

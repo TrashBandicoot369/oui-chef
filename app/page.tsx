@@ -14,7 +14,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import dynamic from 'next/dynamic'
 import { Dialog } from '@headlessui/react'
-import useApi from '@/lib/useApi'
+import usePublicCollection from '@/lib/usePublicCollection'
 const BounceArrow = dynamic(() => import('./components/BounceArrow'), { ssr: false })
 
 type ContentItem = {
@@ -34,7 +34,7 @@ function HomeContent() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const { scrollY } = useScroll();
-  const contentData = useApi<ContentItem>('content');
+  const { data: contentData } = usePublicCollection<ContentItem>('content');
   
   // Helper function to get content by section
   const getContent = (section: string, fallback: string = '') => {
