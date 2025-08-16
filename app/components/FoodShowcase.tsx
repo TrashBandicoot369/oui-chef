@@ -84,7 +84,7 @@ export default function FoodShowcase() {
           {foodItems.map((item, index) => (
             <div
               key={item.id}
-              ref={(el) => (imageRefs.current[index] = el)}
+              ref={(el) => { imageRefs.current[index] = el; }}
               /* add selector class for GSAP */
               className="showcase-item relative group cursor-pointer overflow-hidden rounded-lg"
               style={{
