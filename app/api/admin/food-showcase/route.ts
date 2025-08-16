@@ -95,7 +95,8 @@ export const POST = withErrorHandling(async (request: NextRequest) => {
   
   if (data.image && data.image.startsWith('data:')) {
     console.log('📤 Uploading image to Cloudinary');
-    const cloudinaryResult = await uploadToCloudinary(data.image, 'food-showcase');
+    const buffer = Buffer.from(data.image.split(',')[1], 'base64');
+    const cloudinaryResult = await uploadToCloudinary(buffer, { folder: 'food-showcase' });
     finalImageUrl = cloudinaryResult.secure_url;
     finalPublicId = cloudinaryResult.public_id;
     console.log('✅ Image uploaded successfully');
@@ -158,7 +159,8 @@ export const PATCH = withErrorHandling(async (request: NextRequest) => {
       }
     }
     
-    const cloudinaryResult = await uploadToCloudinary(data.image, 'food-showcase');
+    const buffer = Buffer.from(data.image.split(',')[1], 'base64');
+    const cloudinaryResult = await uploadToCloudinary(buffer, { folder: 'food-showcase' });
     validatedData.imageUrl = cloudinaryResult.secure_url;
     validatedData.publicId = cloudinaryResult.public_id;
     console.log('✅ New image uploaded successfully');
