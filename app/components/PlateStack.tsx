@@ -20,7 +20,6 @@ type MenuItem = {
 
 export default function PlateStack() {
   const stackRef = useRef<HTMLDivElement>(null)
-  const [shuffledPlates, setShuffledPlates] = useState<string[]>([])
   const { data: menuItems } = usePublicCollection<MenuItem>('menuItems')
 
   // ── plates with no text ───────────────────────────────────────────────
@@ -46,29 +45,21 @@ export default function PlateStack() {
     '/images/plates/plate-1_0013_Remove-tool-edits.png',
   ]
 
-  // Combine all plates, shuffle, and ensure the specified no-text plate is last
-  function getShuffledPlates() {
-    const allPlates = [...noTextPathsOriginal, ...textPlatePaths]
-    const topPlate = '/images/plate-no-text/plate-1_0007_Marzapane-dessert-verde-antico.png'
-    // Remove the top plate if present
-    const idx = allPlates.indexOf(topPlate)
-    if (idx !== -1) allPlates.splice(idx, 1)
-    // Shuffle the rest
-    for (let i = allPlates.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-      ;[allPlates[i], allPlates[j]] = [allPlates[j], allPlates[i]]
-    }
-    // Add the top plate at the end
-    allPlates.push(topPlate)
-    return allPlates
-  }
+  // Combine all plates in consistent order with no-text plate at the end
+  const topPlate = '/images/plate-no-text/plate-1_0007_Marzapane-dessert-verde-antico.png'
+  const otherNoTextPlates = noTextPathsOriginal.filter(plate => plate !== topPlate)
+  const allPlates = [...otherNoTextPlates, ...textPlatePaths, topPlate]
 
-  // Use a default order for initial render, shuffle in useLayoutEffect
-  const defaultPlates = [...noTextPathsOriginal, ...textPlatePaths]
-  const allPlates = shuffledPlates.length > 0 ? shuffledPlates : defaultPlates
+  // Sort menu items by category only
+  const sortedMenuItems = menuItems ? [...menuItems].sort((a, b) => {
+    const groupOrder = ['Appetizers', 'Mains', 'Desserts']
+    const aGroupIndex = groupOrder.indexOf(a.group) === -1 ? 999 : groupOrder.indexOf(a.group)
+    const bGroupIndex = groupOrder.indexOf(b.group) === -1 ? 999 : groupOrder.indexOf(b.group)
+    return aGroupIndex - bGroupIndex
+  }) : []
 
-  // Convert menu items to display format
-  const items = menuItems?.map(item => `${item.name}: ${item.description}`) || []
+  // Convert sorted menu items to display format
+  const items = sortedMenuItems.map(item => `${item.name}: ${item.description}`) || []
 
   // ── build 12 badges, distributing text evenly by length ────────────────
   function distributeItemsEvenly() {
@@ -94,9 +85,6 @@ export default function PlateStack() {
   useLayoutEffect(() => {
     if (!stackRef.current) return
     const container = stackRef.current
-
-    // Shuffle plates on client side only
-    setShuffledPlates(getShuffledPlates())
 
     const doLayout = () => {
       const plates = Array.from(container.querySelectorAll<HTMLDivElement>('.plate'))
@@ -181,7 +169,7 @@ export default function PlateStack() {
         }
       })
     }
-  }, [shuffledPlates.length])
+  }, [menuItems])
 
   return (
     <section className="w-full overflow-visible p-0 m-0 relative z-20">

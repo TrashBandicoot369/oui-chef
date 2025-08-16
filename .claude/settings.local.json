@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__get-library-docs",
+      "WebSearch",
+      "WebFetch(domain:gsap.com)",
+      "WebFetch(domain:tympanus.net)",
+      "WebFetch(domain:css-tricks.com)",
+      "WebFetch(domain:dev.to)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -17,6 +17,7 @@ interface BookingFormProps {
   quote: number;
   onBookingSuccess: () => void;
   chatHistory: Message[];
+  onClose?: () => void; // Add onClose prop
 }
 
 interface FormData {
@@ -41,7 +42,7 @@ const initialFormData: FormData = {
   additionalNotes: '',
 };
 
-export default function BookingForm({ quote, onBookingSuccess, chatHistory }: BookingFormProps) {
+export default function BookingForm({ quote, onBookingSuccess, chatHistory, onClose }: BookingFormProps) {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -149,14 +150,26 @@ export default function BookingForm({ quote, onBookingSuccess, chatHistory }: Bo
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 p-6 border border-accent1/20 rounded-lg bg-primary2 shadow-xl">
-      <h3 className="text-lg font-semibold text-accent1">Book Your Consultation</h3>
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-semibold text-accent1">Book Your Consultation</h3>
+        {onClose && (
+          <button 
+            type="button" 
+            onClick={onClose}
+            className="text-accent1 hover:text-accent2 text-2xl leading-none"
+            aria-label="Close form"
+          >
+            &times;
+          </button>
+        )}
+      </div>
       
       <div>
         <label htmlFor="quoteDisplay" className="block text-sm font-medium text-accent1">Estimated Quote</label>
         <Input 
           type="text" 
           id="quoteDisplay" 
-          value={`$${quote.toFixed(0)} CAD`} 
+          value={`${quote.toFixed(0)} CAD`} 
           readOnly 
           className="mt-1 block w-full bg-primary3 border-accent1/30 rounded-md shadow-sm text-accent1 font-semibold"
         />

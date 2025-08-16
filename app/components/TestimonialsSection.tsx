@@ -20,6 +20,9 @@ type Testimonial = {
 
 export default function TestimonialsSection() {
   const [index, setIndex] = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
+  const [dragStart, setDragStart] = useState(0)
+  const [dragOffset, setDragOffset] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
   const carouselRef = useRef<HTMLDivElement>(null)
   const { data: testimonials } = usePublicCollection<Testimonial>('testimonials')
@@ -60,17 +63,75 @@ export default function TestimonialsSection() {
     }
   }, [approvedTestimonials.length, index])
 
+  // Touch/drag handlers for mobile swiping
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsDragging(true)
+    setDragStart(e.touches[0].clientX)
+    setDragOffset(0)
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return
+    const currentX = e.touches[0].clientX
+    const diff = currentX - dragStart
+    setDragOffset(diff)
+  }
+
+  const handleTouchEnd = () => {
+    if (!isDragging) return
+    setIsDragging(false)
+    
+    const threshold = 50 // minimum swipe distance
+    if (Math.abs(dragOffset) > threshold && count > 1) {
+      if (dragOffset > 0) {
+        prev() // Swipe right = previous
+      } else {
+        next() // Swipe left = next
+      }
+    }
+    setDragOffset(0)
+  }
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true)
+    setDragStart(e.clientX)
+    setDragOffset(0)
+  }
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return
+    const diff = e.clientX - dragStart
+    setDragOffset(diff)
+  }
+
+  const handleMouseUp = () => {
+    if (!isDragging) return
+    setIsDragging(false)
+    
+    const threshold = 50
+    if (Math.abs(dragOffset) > threshold && count > 1) {
+      if (dragOffset > 0) {
+        prev()
+      } else {
+        next()
+      }
+    }
+    setDragOffset(0)
+  }
+
   // GSAP animation for carousel movement
   useGSAP(() => {
     if (carouselRef.current && count > 0) {
-      gsap.to(carouselRef.current, {
-        xPercent: -index * (100 / count),
-        duration: 0.8,
-        ease: 'power2.inOut'
-      })
+      const baseOffset = -index * (100 / count)
+      const dragPercentage = isDragging ? (dragOffset / containerRef.current!.offsetWidth) * (100 / count) : 0
       
+      gsap.to(carouselRef.current, {
+        xPercent: baseOffset + dragPercentage,
+        duration: isDragging ? 0 : 0.8,
+        ease: isDragging ? 'none' : 'power2.inOut'
+      })
     }
-  }, { dependencies: [index], scope: containerRef })
+  }, { dependencies: [index, dragOffset, isDragging], scope: containerRef })
 
   // Generate star icons based on rating
   const renderStars = (rating: number) => {
@@ -150,10 +211,19 @@ export default function TestimonialsSection() {
         )}
 
         {/* Carousel Container */}
-        <div className="overflow-hidden">
+        <div 
+          className="overflow-hidden cursor-grab active:cursor-grabbing"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+        >
           <div
             ref={carouselRef}
-            className="flex"
+            className="flex select-none"
             style={{ width: `${count * 100}%` }}
           >
             {approvedTestimonials.map((testimonial) => (

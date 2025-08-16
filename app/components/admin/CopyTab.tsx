@@ -9,6 +9,8 @@ interface SiteCopyData {
   id: string;
   section: string;
   content: string;
+  imageUrl?: string;
+  publicId?: string;
 }
 
 export default function CopyTab() {
@@ -16,6 +18,8 @@ export default function CopyTab() {
   const [loading, setLoading] = useState(true);
   const [editingItem, setEditingItem] = useState<SiteCopyData | null>(null);
   const [editContent, setEditContent] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   // Fetch site copy data on mount
@@ -56,24 +60,43 @@ export default function CopyTab() {
   const handleEdit = (item: SiteCopyData) => {
     setEditingItem(item);
     setEditContent(item.content);
+    setSelectedFile(null);
+    setImagePreview(item.imageUrl || null);
   };
 
 
   const handleSave = async () => {
     try {
       if (editingItem) {
-        // Update existing section
-        const response = await fetch('/api/admin/content', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: editingItem.id, content: editContent })
-        });
+        let response;
+        
+        if (selectedFile && editingItem.section.toLowerCase() === 'about') {
+          // Use FormData for file upload
+          const formData = new FormData();
+          formData.append('id', editingItem.id);
+          formData.append('content', editContent);
+          formData.append('image', selectedFile);
+          
+          response = await fetch('/api/admin/content', {
+            method: 'PATCH',
+            body: formData
+          });
+        } else {
+          // Use JSON for text-only updates
+          response = await fetch('/api/admin/content', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: editingItem.id, content: editContent })
+          });
+        }
 
         if (!response.ok) throw new Error('Failed to update content');
         
         setToast({ message: 'Content updated successfully', type: 'success' });
         setEditingItem(null);
         setEditContent('');
+        setSelectedFile(null);
+        setImagePreview(null);
         await fetchCopyData();
       }
     } catch (error) {
@@ -85,6 +108,19 @@ export default function CopyTab() {
   const handleCancel = () => {
     setEditingItem(null);
     setEditContent('');
+    setSelectedFile(null);
+    setImagePreview(null);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+    }
   };
 
 
@@ -129,7 +165,10 @@ export default function CopyTab() {
                 Section
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Snippet
+                Content Preview
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Image
               </th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
@@ -144,6 +183,17 @@ export default function CopyTab() {
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-500">
                   {truncateContent(item.content)}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {item.imageUrl ? (
+                    <img 
+                      src={item.imageUrl} 
+                      alt={`${item.section} image`}
+                      className="w-12 h-12 object-cover rounded-lg border border-gray-200"
+                    />
+                  ) : (
+                    <span className="text-gray-400">No image</span>
+                  )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <Button
@@ -181,6 +231,34 @@ export default function CopyTab() {
                 placeholder="Enter your content here..."
               />
             </div>
+
+            {editingItem?.section.toLowerCase() === 'about' && (
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  About Section Image
+                </label>
+                
+                {imagePreview && (
+                  <div className="mb-3">
+                    <img 
+                      src={imagePreview} 
+                      alt="Preview" 
+                      className="w-32 h-32 object-cover rounded-lg border border-gray-300"
+                    />
+                  </div>
+                )}
+                
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  Upload a new image to replace the current about section image
+                </p>
+              </div>
+            )}
 
             <div className="flex gap-3 justify-end">
               <Dialog.Close asChild>

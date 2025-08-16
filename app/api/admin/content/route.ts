@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/firebase-admin';
 import { validateAdmin, withErrorHandling } from '@/lib/apiHandler';
+import { uploadToCloudinary, deleteFromCloudinary } from '@/lib/cloudinary';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -16,6 +17,8 @@ function validateContent(data: any) {
   return {
     section: data.section.trim(),
     content: data.content.trim(),
+    imageUrl: data.imageUrl || null,
+    publicId: data.publicId || null,
   };
 }
 
@@ -32,6 +35,12 @@ function validatePartialContent(data: any) {
       throw new Error('Content must be a non-empty string when provided');
     }
     result.content = data.content.trim();
+  }
+  if (data.imageUrl !== undefined) {
+    result.imageUrl = data.imageUrl;
+  }
+  if (data.publicId !== undefined) {
+    result.publicId = data.publicId;
   }
   return result;
 }
@@ -90,17 +99,35 @@ async function handlePost(req: NextRequest) {
 async function handlePatch(req: NextRequest) {
   // TEMPORARILY DISABLED: await validateAdmin(req);
   
-  const body = await req.json();
-  const { id, ...updateData } = body;
+  const contentType = req.headers.get('content-type');
+  let updateData: any;
+  let id: string;
+  let file: File | null = null;
+  
+  if (contentType?.includes('multipart/form-data')) {
+    // Handle FormData (with potential image upload)
+    const formData = await req.formData();
+    id = formData.get('id') as string;
+    file = formData.get('image') as File;
+    
+    updateData = {
+      content: formData.get('content') as string,
+    };
+    
+    // Remove undefined values
+    Object.keys(updateData).forEach(key => {
+      if (updateData[key] === null || updateData[key] === undefined) {
+        delete updateData[key];
+      }
+    });
+  } else {
+    // Handle JSON (text-only updates)
+    const body = await req.json();
+    ({ id, ...updateData } = body);
+  }
   
   if (!id) {
     throw new Error('Document ID is required for updates');
-  }
-  
-  const validatedData = validatePartialContent(updateData);
-  
-  if (Object.keys(validatedData).length === 0) {
-    throw new Error('At least one field must be provided for update');
   }
   
   const docRef = db.collection('content').doc(id);
@@ -108,6 +135,37 @@ async function handlePatch(req: NextRequest) {
   
   if (!doc.exists) {
     throw new Error('Content not found');
+  }
+  
+  const existingData = doc.data();
+  
+  // Handle image upload if provided
+  if (file && file.size > 0) {
+    const buffer = Buffer.from(await file.arrayBuffer());
+    
+    // If there's an existing image, delete it first
+    if (existingData?.publicId) {
+      try {
+        await deleteFromCloudinary(existingData.publicId);
+      } catch (error) {
+        console.warn('Failed to delete old image:', error);
+      }
+    }
+    
+    // Upload new image
+    const uploadResult = await uploadToCloudinary(buffer, {
+      folder: 'content',
+      tags: ['site-content']
+    });
+    
+    updateData.imageUrl = uploadResult.secure_url;
+    updateData.publicId = uploadResult.public_id;
+  }
+  
+  const validatedData = validatePartialContent(updateData);
+  
+  if (Object.keys(validatedData).length === 0) {
+    throw new Error('At least one field must be provided for update');
   }
   
   const updatePayload = {

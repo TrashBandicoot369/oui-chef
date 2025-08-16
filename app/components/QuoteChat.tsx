@@ -32,6 +32,7 @@ const QuoteChat: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showBookingForm, setShowBookingForm] = useState(false);
   const [cateringQuote, setCateringQuote] = useState<number | null>(null);
+  const [hasShownBookingForm, setHasShownBookingForm] = useState(false); // Track if form was shown
 
   /* ──────────────────────────────── refs */
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -83,8 +84,9 @@ const QuoteChat: React.FC = () => {
     setInput("");
     setIsLoading(true);
     setError(null);
-    setShowBookingForm(false);
-    setCateringQuote(null);
+    // Don't automatically hide the form on new messages
+    // setShowBookingForm(false);
+    // Only reset cateringQuote if we're getting a new quote from the API
 
     try {
       const filtered = currentMessages.map(({ role, content }) => ({
@@ -110,7 +112,9 @@ const QuoteChat: React.FC = () => {
       if (shouldShowForm(botMsg) && typeof botMsg.quote === "number") {
         setCateringQuote(botMsg.quote);
         setShowBookingForm(true);
+        setHasShownBookingForm(true); // Mark that the form has been shown
       }
+      // If the API response doesn't include a new quote, keep the existing one
     } catch (e) {
       console.error(e);
       const err =
@@ -127,8 +131,24 @@ const QuoteChat: React.FC = () => {
   };
 
   const handleBookingSuccess = () => {
-    /* Form hides automatically on next user message */
-    console.log("Booking successful");
+    // Add a message to the chat to instruct the user
+    const instructionMessage: Message = {
+      role: "assistant",
+      content: "Thank you for submitting your consultation request! Chef Alex will review your details and get back to you soon. Please check your email for confirmation.",
+    };
+    
+    setMessages((m) => [...m, instructionMessage]);
+    
+    // Hide the form after submission but keep the quote
+    setShowBookingForm(false);
+    // setCateringQuote(null); // Don't reset the quote
+  };
+
+  // Function to reopen the booking form
+  const handleReopenBookingForm = () => {
+    if (cateringQuote !== null) {
+      setShowBookingForm(true);
+    }
   };
 
   /* ─────────────────────────────── render */
@@ -149,6 +169,8 @@ const QuoteChat: React.FC = () => {
     ${showBookingForm ? 'lg:w-2/3 lg:min-w-[500px] ' : 'max-w-lg lg:translate-x-0'}
     bg-primary2 rounded-lg opacity-90 shadow-xl
     transition-transform duration-300 ease-in-out   /* ⬅︎ keep transition on every state */
+    ${showBookingForm ? 'relative' : ''} /* Add relative positioning when form is shown */
+    ${showBookingForm ? 'lg:overflow-hidden' : ''} /* Hide overflow on desktop when form is shown */
   `}
 >
 
@@ -205,6 +227,19 @@ const QuoteChat: React.FC = () => {
             </div>
           )}
 
+          {/* 🎨 REOPEN BOOKING FORM BUTTON - Shows when form is closed but was previously shown */}
+          {!showBookingForm && hasShownBookingForm && cateringQuote !== null && (
+            <div className="flex justify-center">
+              <Button 
+                onClick={handleReopenBookingForm}
+                className="bg-accent1 hover:bg-accent2 text-white mt-2"
+                size="sm"
+              >
+                Reopen Booking Form
+              </Button>
+            </div>
+          )}
+
           <div ref={messagesEndRef} />
         </div>
 
@@ -254,13 +289,40 @@ const QuoteChat: React.FC = () => {
       
       transition-opacity duration-300          /* fades in 300 ms */
       opacity-100                              /* mounted with full opacity */
+      
+      /* Mobile overlay styles */
+      fixed inset-0 z-50
+      lg:relative lg:inset-auto lg:z-auto
+      flex items-center justify-center
+      bg-black/50 lg:bg-transparent
     "
+    onClick={(e) => {
+      // Close the form if the backdrop is clicked (mobile only)
+      if (e.target === e.currentTarget) {
+        setShowBookingForm(false);
+        setCateringQuote(null);
+      }
+    }}
   >
+    <div 
+      className="
+        bg-primary2 rounded-lg shadow-xl
+        w-full max-w-md max-h-[90vh] overflow-y-auto
+        lg:w-[500px] lg:min-w-[500px]
+        lg:max-h-none lg:overflow-visible
+      "
+      onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the form
+    >
       <BookingForm
         quote={cateringQuote}
         onBookingSuccess={handleBookingSuccess}
         chatHistory={messages}
+        onClose={() => {
+          setShowBookingForm(false);
+          setCateringQuote(null);
+        }}
       />
+    </div>
   </div>
 )}
     </div>

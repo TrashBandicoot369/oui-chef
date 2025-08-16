@@ -14,6 +14,7 @@ const CopyTab = nextDynamic(() => import('@/app/components/admin/CopyTab'), { ss
 const MenuTab = nextDynamic(() => import('@/app/components/admin/MenuTab'), { ssr: false });
 const TestimonialsTab = nextDynamic(() => import('@/app/components/admin/TestimonialsTab'), { ssr: false });
 const GalleryTab = nextDynamic(() => import('@/app/components/admin/GalleryTab'), { ssr: false });
+const FoodShowcaseTab = nextDynamic(() => import('@/app/components/admin/FoodShowcaseTab'), { ssr: false });
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState('bookings');
@@ -24,6 +25,7 @@ export default function AdminPage() {
     { value: 'menu', label: 'Menu' },
     { value: 'testimonials', label: 'Testimonials' },
     { value: 'gallery', label: 'Gallery' },
+    { value: 'food-showcase', label: 'Food Showcase' },
   ];
 
   return (
@@ -66,6 +68,10 @@ export default function AdminPage() {
 
         <Tabs.Content value="gallery" className="focus:outline-none">
           <GalleryTab />
+        </Tabs.Content>
+
+        <Tabs.Content value="food-showcase" className="focus:outline-none">
+          <FoodShowcaseTab />
         </Tabs.Content>
       </Tabs.Root>
     </div>

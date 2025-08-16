@@ -12,6 +12,7 @@ import MobileEventHighlights from './components/MobileEventHighlights'
 import TestimonialsSection from './components/TestimonialsSection'
 import PlateStack from './components/PlateStack'
 import MobilePlateCarousel from './components/MobilePlateCarousel'
+import FoodShowcase from './components/FoodShowcase'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import nextDynamic from 'next/dynamic'
@@ -319,6 +320,15 @@ function HomeContent() {
                   </li>
                   <li>
                     <a 
+                      href="#testimonials" 
+                      className="block hover:text-accent2 transition-colors duration-200"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Testimonials
+                    </a>
+                  </li>
+                  <li>
+                    <a 
                       href="#booking" 
                       className="block hover:text-accent2 transition-colors duration-200"
                       onClick={() => setIsMobileMenuOpen(false)}
@@ -546,6 +556,8 @@ function HomeContent() {
   </div>
 </section>
 
+
+
 <svg
   xmlns="http://www.w3.org/2000/svg"
   viewBox="0 0 1440 320"
@@ -565,6 +577,36 @@ d="M0,224L34.3,240C68.6,256,137,288,206,282.7C274.3,277,343,235,
 
 </path>
 </svg>
+
+
+
+{/* food showcase */}
+<section className="bg-primary2 text-accent1 py-4">
+  <div className="text-center mb-2">
+    <TextMarquee className="font-display text-3xl sm:text-5xl uppercase text-accent2">
+      Food Showcase
+    </TextMarquee>
+  </div>
+  <FoodShowcase />
+</section>
+
+{/* CTA section */}
+<section className="bg-primary2 text-accent2 py-16 px-4">
+  <div className="max-w-3xl mx-auto text-center">
+    <h2 className="font-display text-3xl sm:text-4xl uppercase mb-6">
+      Ready to Book Your Event?
+    </h2>
+    <p className="text-lg mb-8 leading-relaxed">
+      Let's create an unforgettable culinary experience tailored just for you.
+    </p>
+    <a
+      href="#booking"
+      className="inline-block bg-accent1 text-white px-8 py-3 text-sm uppercase tracking-wider hover:bg-white hover:text-accent1 transition font-button"
+    >
+      Get Your Quote
+    </a>
+  </div>
+</section>
 
       {/* gallery */}
       <section id="gallery" className="bg-primary2 z-10 text-accent2 py-4">

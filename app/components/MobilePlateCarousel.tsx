@@ -40,8 +40,16 @@ export default function MobilePlateCarousel() {
   // Combine first plate with text plates
   const allPlates = [firstPlate, ...textPlatePaths]
 
-  // Convert menu items to display format
-  const items = menuItems?.map(item => `${item.name}: ${item.description}`) || []
+  // Sort menu items by category only
+  const sortedMenuItems = menuItems ? [...menuItems].sort((a, b) => {
+    const groupOrder = ['Appetizers', 'Mains', 'Desserts']
+    const aGroupIndex = groupOrder.indexOf(a.group) === -1 ? 999 : groupOrder.indexOf(a.group)
+    const bGroupIndex = groupOrder.indexOf(b.group) === -1 ? 999 : groupOrder.indexOf(b.group)
+    return aGroupIndex - bGroupIndex
+  }) : []
+
+  // Convert sorted menu items to display format
+  const items = sortedMenuItems.map(item => `${item.name}: ${item.description}`) || []
 
   // Distribute menu items evenly across text plates
   function distributeItemsEvenly() {

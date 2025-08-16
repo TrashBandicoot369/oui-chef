@@ -1,21 +1,28 @@
-import mailjet from 'node-mailjet';
+import nodemailer from 'nodemailer';
 
 console.log('🔧 Email service initializing...');
 console.log('📧 Environment check:', {
-  hasMailjetApiKey: !!process.env.MAILJET_API_KEY,
-  hasMailjetApiSecret: !!process.env.MAILJET_API_SECRET,
+  hasSmtpHost: !!process.env.SMTP_HOST,
+  hasSmtpUser: !!process.env.SMTP_USER,
+  hasSmtpPass: !!process.env.SMTP_PASS,
   hasSenderEmail: !!process.env.SENDER_EMAIL,
   hasAdminEmail: !!process.env.ADMIN_EMAIL,
-  mailjetApiKeyLength: process.env.MAILJET_API_KEY?.length || 0,
-  mailjetApiSecretLength: process.env.MAILJET_API_SECRET?.length || 0,
+  smtpHost: process.env.SMTP_HOST,
+  smtpPort: process.env.SMTP_PORT,
+  smtpUser: process.env.SMTP_USER,
   senderEmail: process.env.SENDER_EMAIL,
   adminEmail: process.env.ADMIN_EMAIL
 });
 
-const mailjetClient = mailjet.apiConnect(
-  process.env.MAILJET_API_KEY!,
-  process.env.MAILJET_API_SECRET!
-);
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: parseInt(process.env.SMTP_PORT || '587'),
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
 
 export async function sendBookingConfirmation(bookingData: {
   email: string;
@@ -109,17 +116,12 @@ export async function sendBookingConfirmation(bookingData: {
     `;
     
     console.log('📧 STEP 1: Preparing email data...');
-    const emailData = {
-      Messages: [
-        {
-          From: {
-            Email: process.env.SENDER_EMAIL!,
-            Name: 'Chef Alex J',
-          },
-          To: [{ Email: bookingData.email, Name: bookingData.fullName }],
-          Subject: `Booking Request Received - ${bookingData.eventDate}`,
-          HTMLPart: htmlContent,
-          TextPart: `Hi ${bookingData.fullName},
+    const mailOptions = {
+      from: `"Chef Alex J" <${process.env.SENDER_EMAIL}>`,
+      to: `"${bookingData.fullName}" <${bookingData.email}>`,
+      subject: `Booking Request Received - ${bookingData.eventDate}`,
+      html: htmlContent,
+      text: `Hi ${bookingData.fullName},
 
 Thank you for your booking request! We've received your request for a private dining experience on ${bookingData.eventDate} for ${bookingData.guestCount} guests at ${bookingData.location}.
 
@@ -133,19 +135,15 @@ Questions? Reply to this email or contact us at hello@chefalexj.com
 
 Best regards,
 Chef Alex J Team`,
-        },
-      ],
     };
     
     console.log('📧 STEP 1: Email data prepared');
-    console.log('📧 STEP 1: Sending email via Mailjet API...');
+    console.log('📧 STEP 1: Sending email via Nodemailer SMTP...');
     
-    const result = await mailjetClient
-      .post('send', { version: 'v3.1' })
-      .request(emailData);
+    const result = await transporter.sendMail(mailOptions);
     
     console.log('📧 STEP 1: ✅ Email sent successfully!');
-    console.log('📧 STEP 1: Mailjet response:', JSON.stringify(result.body, null, 2));
+    console.log('📧 STEP 1: Nodemailer response:', JSON.stringify(result, null, 2));
     
     return result;
   } catch (error) {
@@ -153,10 +151,6 @@ Chef Alex J Team`,
     console.error('📧 STEP 1: Error details:', error);
     console.error('📧 STEP 1: Error message:', error instanceof Error ? error.message : 'Unknown error');
     console.error('📧 STEP 1: Error stack:', error instanceof Error ? error.stack : 'No stack trace');
-    
-    if (error && typeof error === 'object' && 'response' in error) {
-      console.error('📧 STEP 1: API Response error:', (error as any).response?.data || (error as any).response);
-    }
     
     throw error;
   }
@@ -226,30 +220,21 @@ Admin Dashboard: ${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/
       </div>
     `;
     
-    const emailData = {
-      Messages: [
-        {
-          From: {
-            Email: process.env.SENDER_EMAIL!,
-            Name: 'Chef Alex J Booking Bot',
-          },
-          To: [{ Email: process.env.ADMIN_EMAIL!, Name: 'Chef Alex' }],
-          Subject: 'New Booking Request',
-          HTMLPart: htmlContent,
-          TextPart: text,
-        },
-      ],
+    const mailOptions = {
+      from: `"Chef Alex J Booking Bot" <${process.env.SENDER_EMAIL}>`,
+      to: `"Chef Alex" <${process.env.ADMIN_EMAIL}>`,
+      subject: 'New Booking Request',
+      html: htmlContent,
+      text: text,
     };
     
-    console.log('📧 STEP 2: Email data:', JSON.stringify(emailData, null, 2));
-    console.log('📧 STEP 2: Sending email via Mailjet API...');
+    console.log('📧 STEP 2: Email data:', JSON.stringify(mailOptions, null, 2));
+    console.log('📧 STEP 2: Sending email via Nodemailer SMTP...');
     
-    const result = await mailjetClient
-      .post('send', { version: 'v3.1' })
-      .request(emailData);
+    const result = await transporter.sendMail(mailOptions);
     
     console.log('📧 STEP 2: ✅ Admin notification sent successfully!');
-    console.log('📧 STEP 2: Mailjet response:', JSON.stringify(result.body, null, 2));
+    console.log('📧 STEP 2: Nodemailer response:', JSON.stringify(result, null, 2));
     
     return result;
   } catch (error) {
@@ -257,10 +242,6 @@ Admin Dashboard: ${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/
     console.error('📧 STEP 2: Error details:', error);
     console.error('📧 STEP 2: Error message:', error instanceof Error ? error.message : 'Unknown error');
     console.error('📧 STEP 2: Error stack:', error instanceof Error ? error.stack : 'No stack trace');
-    
-    if (error && typeof error === 'object' && 'response' in error) {
-      console.error('📧 STEP 2: API Response error:', (error as any).response?.data || (error as any).response);
-    }
     
     throw error;
   }
@@ -295,32 +276,20 @@ export async function sendBookingNotificationToAlex(bookingId: string, data: any
     
     console.log('📧 STEP 3: HTML content:', htmlContent);
     
-    const emailData = {
-      Messages: [
-        {
-          From: {
-            Email: process.env.SENDER_EMAIL!,
-            Name: 'Chef Alex Booking Bot',
-          },
-          To: [
-            {
-              Email: 'hello@chefalexj.com',
-              Name: 'Chef Alex',
-            },
-          ],
-          Subject: `New Booking Request from ${data.fullName}`,
-          HTMLPart: htmlContent,
-        },
-      ],
+    const mailOptions = {
+      from: `"Chef Alex Booking Bot" <${process.env.SENDER_EMAIL}>`,
+      to: `"Chef Alex" <hello@chefalexj.com>`,
+      subject: `New Booking Request from ${data.fullName}`,
+      html: htmlContent,
     };
     
-    console.log('📧 STEP 3: Email data:', JSON.stringify(emailData, null, 2));
-    console.log('📧 STEP 3: Sending email via Mailjet API...');
+    console.log('📧 STEP 3: Email data:', JSON.stringify(mailOptions, null, 2));
+    console.log('📧 STEP 3: Sending email via Nodemailer SMTP...');
     
-    const result = await mailjetClient.post('send', { version: 'v3.1' }).request(emailData);
+    const result = await transporter.sendMail(mailOptions);
     
     console.log('📧 STEP 3: ✅ Booking notification to Alex sent successfully!');
-    console.log('📧 STEP 3: Mailjet response:', JSON.stringify(result.body, null, 2));
+    console.log('📧 STEP 3: Nodemailer response:', JSON.stringify(result, null, 2));
     
     return result;
   } catch (error) {
@@ -328,10 +297,6 @@ export async function sendBookingNotificationToAlex(bookingId: string, data: any
     console.error('📧 STEP 3: Error details:', error);
     console.error('📧 STEP 3: Error message:', error instanceof Error ? error.message : 'Unknown error');
     console.error('📧 STEP 3: Error stack:', error instanceof Error ? error.stack : 'No stack trace');
-    
-    if (error && typeof error === 'object' && 'response' in error) {
-      console.error('📧 STEP 3: API Response error:', (error as any).response?.data || (error as any).response);
-    }
     
     throw error;
   }
@@ -445,30 +410,21 @@ Best regards,
 Chef Alex J`;
     
     console.log('📧 STEP 4: Preparing email data...');
-    const emailData = {
-      Messages: [
-        {
-          From: {
-            Email: process.env.SENDER_EMAIL!,
-            Name: 'Chef Alex J',
-          },
-          To: [{ Email: bookingData.clientEmail, Name: bookingData.clientName }],
-          Subject: `Alternative Times Available - Your Event Booking`,
-          HTMLPart: htmlContent,
-          TextPart: textContent,
-        },
-      ],
+    const mailOptions = {
+      from: `"Chef Alex J" <${process.env.SENDER_EMAIL}>`,
+      to: `"${bookingData.clientName}" <${bookingData.clientEmail}>`,
+      subject: `Alternative Times Available - Your Event Booking`,
+      html: htmlContent,
+      text: textContent,
     };
     
     console.log('📧 STEP 4: Email data prepared');
-    console.log('📧 STEP 4: Sending suggested times email via Mailjet API...');
+    console.log('📧 STEP 4: Sending suggested times email via Nodemailer SMTP...');
     
-    const result = await mailjetClient
-      .post('send', { version: 'v3.1' })
-      .request(emailData);
+    const result = await transporter.sendMail(mailOptions);
     
     console.log('📧 STEP 4: ✅ Suggested times email sent successfully!');
-    console.log('📧 STEP 4: Mailjet response:', JSON.stringify(result.body, null, 2));
+    console.log('📧 STEP 4: Nodemailer response:', JSON.stringify(result, null, 2));
     
     return result;
   } catch (error) {
@@ -476,10 +432,6 @@ Chef Alex J`;
     console.error('📧 STEP 4: Error details:', error);
     console.error('📧 STEP 4: Error message:', error instanceof Error ? error.message : 'Unknown error');
     console.error('📧 STEP 4: Error stack:', error instanceof Error ? error.stack : 'No stack trace');
-    
-    if (error && typeof error === 'object' && 'response' in error) {
-      console.error('📧 STEP 4: API Response error:', (error as any).response?.data || (error as any).response);
-    }
     
     throw error;
   }
